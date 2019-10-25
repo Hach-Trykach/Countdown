@@ -21,11 +21,11 @@
 
                 <TextView
                     android:id="@+id/yrs"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
+                    android:paddingEnd="135dp"
                     android:text="00"
-                    android:paddingStart="110dp"
                     android:textAlignment="textEnd"
                     android:textColor="@android:color/white"
                     android:textSize="95sp"
@@ -67,11 +67,11 @@
 
                 <TextView
                     android:id="@+id/day"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
+                    android:paddingEnd="135dp"
                     android:text="00"
-                    android:paddingStart="110dp"
                     android:textAlignment="textEnd"
                     android:textColor="@android:color/white"
                     android:textSize="95sp"
@@ -113,11 +113,11 @@
 
                 <TextView
                     android:id="@+id/hrs"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
+                    android:paddingEnd="135dp"
                     android:text="00"
-                    android:paddingStart="110dp"
                     android:textAlignment="textEnd"
                     android:textColor="@android:color/white"
                     android:textSize="95sp"
@@ -159,11 +159,11 @@
 
                 <TextView
                     android:id="@+id/min"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
                     android:text="00"
-                    android:paddingStart="110dp"
+                    android:paddingEnd="135dp"
                     android:textAlignment="textEnd"
                     android:textColor="@android:color/white"
                     android:textSize="95sp"
@@ -205,11 +205,11 @@
 
                 <TextView
                     android:id="@+id/sec"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
                     android:text="00"
-                    android:paddingStart="110dp"
+                    android:paddingEnd="135dp"
                     android:textAlignment="textEnd"
                     android:textColor="@android:color/white"
                     android:textSize="95sp"
