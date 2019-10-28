@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Обратный отсчёт</string>
+    <string name="text_yrs">ГОД</string>
+    <string name="text_day">ДЕНЬ</string>
+    <string name="text_hrs">ЧАС</string>
+    <string name="text_min">МИН</string>
+    <string name="text_sec">СЕК</string>
+    <string name="question">Вы принимаете свою судьбу?</string>
+    <string name="key_yes">Да</string>
+    <string name="key_no">Нет</string>
+    <string name="countdown_is_ready">Ваш обратный отсчёт готов.</string>
+</resources>

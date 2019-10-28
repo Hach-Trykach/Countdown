@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Countdown</string>
+    <string name="text_yrs">YRS</string>
+    <string name="text_day">DAY</string>
+    <string name="text_hrs">HRS</string>
+    <string name="text_min">MIN</string>
+    <string name="text_sec">SEC</string>
+    <string name="question">Do you accept your fate?</string>
+    <string name="key_yes">Yes</string>
+    <string name="key_no">No</string>
+    <string name="countdown_is_ready">Your countdown is ready.</string>
 </resources>

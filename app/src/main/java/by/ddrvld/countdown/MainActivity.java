@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        if (settings.contains(DateActivity.YEARS) || settings.contains(DateActivity.DAYS) || settings.contains(DateActivity.HOURS) || settings.contains(DateActivity.MINS) || settings.contains(DateActivity.SECS)) {
+        if (settings.contains(DateActivity.RANDOMLIFETIME)) {
             finish();
             Intent intent = new Intent(MainActivity.this, DateActivity.class);
             startActivity(intent);
