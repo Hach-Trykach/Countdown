@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="by.ddrvld.countdown">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
@@ -21,6 +24,11 @@
         </activity>
         <activity android:name=".DateActivity">
         </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7528412641056592~1179343785"/>
+
     </application>
 
 </manifest>

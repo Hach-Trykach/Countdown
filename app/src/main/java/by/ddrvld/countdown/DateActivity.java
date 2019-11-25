@@ -7,9 +7,17 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,6 +37,8 @@ public class DateActivity extends Activity {
 
     TextView tvYrs, tvDay, tvHrs, tvMin, tvSec;
     TextView textYrs, textDay, textHrs, textMin, textSec;
+
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,11 +77,17 @@ public class DateActivity extends Activity {
                 hash_int += Integer.valueOf(n);
             }
 
-            Long result;
-            if (android_id_int < 1500) result = Long.parseLong(String.format("186%d", android_id_int));
-            else result = Long.parseLong(String.format("1%d%d0", hash_int, android_id_int));
+            Calendar cal = Calendar.getInstance();
+            int first = cal.get(Calendar.DAY_OF_MONTH);
+            if(first >= 3) first = Math.round(first / 3);
 
-            randomLifeTime = 1572252685L + result;
+//            first = 1;
+//            System.out.println("FIRST: " + first);
+
+            Long result;
+            result = Long.parseLong(String.format("%d%d%d", first, hash_int, android_id_int));
+
+            randomLifeTime = 1574338153L + result;
             while (randomLifeTime < currentTime) randomLifeTime += (android_id_int + hash_int);
             while (randomLifeTime > 3238171085L) randomLifeTime -= (android_id_int + hash_int);
         }
@@ -85,6 +101,20 @@ public class DateActivity extends Activity {
         secs = timerTime % 60;
 
         setValues();
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        AdView adView = new AdView(this);
+        adView.setAdSize(AdSize.BANNER);
+        adView.setAdUnitId("ca-app-pub-7528412641056592/4698457402");
+
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     public static String MD5(String s) {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Зваротны адлiк</string>
+    <string name="countdown_is_ready">Ваш зваротны адлік гатовы.</string>
+    <string name="key_no">Нет</string>
+    <string name="key_yes">Да</string>
+    <string name="question">Вы прымаеце свой лёс?</string>
+    <string name="text_day">ДЗЁН</string>
+    <string name="text_hrs">ГАДЗIН</string>
+    <string name="text_yrs">ГАДОЎ</string>
+    <string name="text_sec">СЕКУНД</string>
+    <string name="text_min">ХВIЛIН</string>
+</resources>

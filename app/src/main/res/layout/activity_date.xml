@@ -1,180 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/yrs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
-        android:paddingEnd="135dp"
+        android:paddingStart="0dp"
         android:text="00"
-        android:textAlignment="textEnd"
+        android:textAlignment="center"
         android:textColor="@android:color/white"
+        android:textSize="88sp"
         android:textStyle="bold"
-        app:autoSizeMaxTextSize="128sp"
-        app:autoSizeMinTextSize="95sp"
-        app:autoSizeTextType="uniform"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
+        tools:layout_editor_absoluteX="-195dp" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/day"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
-        android:paddingEnd="135dp"
-        android:text="00"
-        android:textAlignment="textEnd"
+        android:paddingStart="0dp"
+        android:text="000"
+        android:textAlignment="center"
         android:textColor="@android:color/white"
+        android:textSize="88sp"
         android:textStyle="bold"
-        app:autoSizeMaxTextSize="128sp"
-        app:autoSizeMinTextSize="95sp"
-        app:autoSizeTextType="uniform"
         app:layout_constraintTop_toBottomOf="@+id/yrs"
         tools:layout_editor_absoluteX="0dp" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/hrs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
-        android:paddingEnd="135dp"
+        android:paddingStart="0dp"
         android:text="00"
-        android:textAlignment="textEnd"
+        android:textAlignment="center"
         android:textColor="@android:color/white"
+        android:textSize="88sp"
         android:textStyle="bold"
-        app:autoSizeMaxTextSize="128sp"
-        app:autoSizeMinTextSize="95sp"
-        app:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/day" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/min"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
-        android:paddingEnd="135dp"
+        android:paddingStart="0dp"
         android:text="00"
-        android:textAlignment="textEnd"
+        android:textAlignment="center"
         android:textColor="@android:color/white"
+        android:textSize="88sp"
         android:textStyle="bold"
-        app:autoSizeMaxTextSize="128sp"
-        app:autoSizeMinTextSize="95sp"
-        app:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/hrs" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/sec"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="monospace"
-        android:paddingEnd="135dp"
+        android:paddingStart="0dp"
         android:text="00"
-        android:textAlignment="textEnd"
+        android:textAlignment="center"
         android:textColor="@android:color/white"
+        android:textSize="88sp"
         android:textStyle="bold"
-        app:autoSizeMaxTextSize="128sp"
-        app:autoSizeMinTextSize="95sp"
-        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/min" />
+        app:layout_constraintTop_toBottomOf="@+id/min"
+        app:layout_constraintVertical_bias="0.0" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/text_yrs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="65dp"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
         android:fontFamily="monospace"
         android:paddingBottom="20dp"
         android:text="@string/text_yrs"
-        android:textAlignment="textEnd"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/white"
-        app:autoSizeMaxTextSize="36sp"
-        app:autoSizeMinTextSize="30sp"
-        app:autoSizeTextType="uniform"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/yrs"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/yrs" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/text_day"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="96dp"
+        android:layout_height="50dp"
         android:fontFamily="monospace"
         android:paddingBottom="20dp"
         android:text="@string/text_day"
-        android:textAlignment="textEnd"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/white"
-        app:autoSizeMaxTextSize="36sp"
-        app:autoSizeMinTextSize="30sp"
-        app:autoSizeTextType="uniform"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/day"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/text_hrs" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/text_hrs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
         android:fontFamily="monospace"
         android:paddingBottom="20dp"
         android:text="@string/text_hrs"
-        android:textAlignment="textEnd"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/white"
-        app:autoSizeMaxTextSize="36sp"
-        app:autoSizeMinTextSize="30sp"
-        app:autoSizeTextType="uniform"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/hrs"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/text_yrs" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/text_min"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
         android:fontFamily="monospace"
         android:paddingBottom="20dp"
         android:text="@string/text_min"
-        android:textAlignment="textEnd"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/white"
-        app:autoSizeMaxTextSize="36sp"
-        app:autoSizeMinTextSize="30sp"
-        app:autoSizeTextType="uniform"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/min"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/text_day" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/text_sec"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
         android:fontFamily="monospace"
         android:paddingBottom="20dp"
         android:text="@string/text_sec"
-        android:textAlignment="textEnd"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/white"
-        app:autoSizeMaxTextSize="36sp"
-        app:autoSizeMinTextSize="30sp"
-        app:autoSizeTextType="uniform"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/sec"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/text_min" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            app:adSize="BANNER"
+            app:adUnitId="ca-app-pub-7528412641056592/4698457402">
+        </com.google.android.gms.ads.AdView>
+    </RelativeLayout>
+</RelativeLayout>
