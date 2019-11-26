@@ -21,7 +21,7 @@ public class WaitActivity extends Activity {
             int logoTimer = 0;
             public void run() {
                 try {
-                    while (logoTimer < 5000) {
+                    while (logoTimer < 1000) {
                         sleep(100);
                         logoTimer = logoTimer + 100;
                     }
@@ -52,22 +52,17 @@ public class WaitActivity extends Activity {
             @Override
             public void onAdFailedToLoad(int errorCode) {
                 super.onAdFailedToLoad(errorCode);
-                AdRequest adRequesti = new AdRequest.Builder()
-                        .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
-                        .build();
-                interstitial.loadAd(adRequesti);
+                logoTimer.start();
             }
 
             @Override
             public void onAdOpened() {
                 super.onAdOpened();
-                logoTimer.start();
             }
 
             @Override
             public void onAdClicked() {
                 super.onAdClicked();
-                logoTimer.start();
             }
 
             @Override

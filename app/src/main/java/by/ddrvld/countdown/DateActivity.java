@@ -3,6 +3,7 @@ package by.ddrvld.countdown;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.TextView;
@@ -45,6 +46,16 @@ public class DateActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_date);
+
+        MediaPlayer mediaPlayer;
+        mediaPlayer = MediaPlayer.create(DateActivity.this, R.raw.countdown);
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mediaPlayer.release();
+            }
+        });
+        mediaPlayer.start();
 
         tvYrs = findViewById(R.id.yrs);
         tvDay = findViewById(R.id.day);
