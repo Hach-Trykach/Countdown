@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.TextView;
 
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
@@ -89,17 +87,20 @@ public class DateActivity extends Activity {
                 hash_int += Integer.valueOf(n);
             }
 
+//            System.out.println("android_id: " + android_id.length());
+
             Calendar cal = Calendar.getInstance();
             int first = cal.get(Calendar.DAY_OF_MONTH);
-            if(first >= 3) first = Math.round(first / 3);
+            if (first >= 3) first = Math.round(first / 3);
 
 //            first = 1;
 //            System.out.println("FIRST: " + first);
 
             Long result;
             result = Long.parseLong(String.format("%d%d%d", first, hash_int, android_id_int));
+//            System.out.println("result: " + result);
 
-            randomLifeTime = 1574338153L + result;
+            randomLifeTime = 1575871936L + result;
             while (randomLifeTime < currentTime) randomLifeTime += (android_id_int + hash_int);
             while (randomLifeTime > 3238171085L) randomLifeTime -= (android_id_int + hash_int);
         }
