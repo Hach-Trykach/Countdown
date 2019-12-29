@@ -3,9 +3,11 @@ package by.ddrvld.countdown;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.Gravity;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
@@ -126,6 +128,13 @@ public class DateActivity extends Activity {
             public void onInitializationComplete(InitializationStatus initializationStatus) {
             }
         });
+
+        FloatingActionButton fabButton = new FloatingActionButton.Builder(this)
+                .withDrawable(getResources().getDrawable(R.drawable.more_apps))
+                .withButtonColor(Color.BLACK)
+                .withGravity(Gravity.BOTTOM | Gravity.START)
+                .withMargins(16, 0, 0, 64)
+                .create();
     }
 
     public static String MD5(String s) {
