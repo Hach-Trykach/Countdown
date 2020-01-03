@@ -37,7 +37,7 @@ public class WaitActivity extends Activity {
 
         //Создаём межстраничное объявление
         interstitial = new InterstitialAd(this);
-        interstitial.setAdUnitId("ca-app-pub-7528412641056592/9234282990");
+        interstitial.setAdUnitId("ca-app-pub-7528412641056592/2188777318");
         AdRequest adRequesti = new AdRequest.Builder()
                 .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
                 .build();
