@@ -1,4 +1,4 @@
-package by.ddrvld.countdown;
+package by.ddrvld.countdownapp;
 
 import org.junit.Test;
 

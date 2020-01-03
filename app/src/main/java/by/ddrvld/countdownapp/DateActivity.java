@@ -1,4 +1,4 @@
-package by.ddrvld.countdown;
+package by.ddrvld.countdownapp;
 
 import android.app.Activity;
 import android.content.Context;
@@ -99,12 +99,12 @@ public class DateActivity extends Activity {
 //            System.out.println("FIRST: " + first);
 
             Long result;
-            result = Long.parseLong(String.format("%d%d%d", first, hash_int, android_id_int));
+            result = Long.parseLong(String.format("%d%d%d", hash_int, first, android_id_int));
 //            System.out.println("result: " + result);
 
-            randomLifeTime = 1575871936L + result;
+            randomLifeTime = 1578040974L + result;
             while (randomLifeTime < currentTime) randomLifeTime += (android_id_int + hash_int);
-            while (randomLifeTime > 3238171085L) randomLifeTime -= (android_id_int + hash_int);
+            while (randomLifeTime > 3561368072L) randomLifeTime -= (android_id_int + hash_int);
         }
 
         Long timerTime = randomLifeTime - currentTime;
