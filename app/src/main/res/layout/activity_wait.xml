@@ -8,16 +8,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/wait">
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="@android:style/Widget.DeviceDefault.Light.ProgressBar"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_centerInParent="true"
-            android:indeterminateTint="#B3ffffff" />
-
-    </RelativeLayout>
+        android:background="@drawable/wait"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

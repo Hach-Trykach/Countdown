@@ -3,11 +3,11 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "by.ddrvld.countdown"
+        applicationId "by.ddrvld.countdownapp"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 7
-        versionName "1.2.3"
+        versionCode 1
+        versionName "1.2.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
