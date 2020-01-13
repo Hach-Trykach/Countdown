@@ -10,4 +10,6 @@
     <string name="text_yrs">ГАДОЎ</string>
     <string name="text_sec">СЕКУНД</string>
     <string name="text_min">ХВIЛIН</string>
+    <string name="read_phone_state_text">Для працы прыкладання зайдзіце ў налады, знайдзіце гэта дадатак і падайце дазвол \"Тэлефон\" у раздзеле \"Дазволы прыкладанняў\".</string>
+    <string name="understand">Зразумела</string>
 </resources>

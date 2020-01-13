@@ -9,4 +9,6 @@
     <string name="key_yes">Yes</string>
     <string name="key_no">No</string>
     <string name="countdown_is_ready">Your countdown is ready.</string>
+    <string name="read_phone_state_text">For the application to work, go to the settings, find this application and provide the \"Phone\" permission in the \"Application Permissions\" section.</string>
+    <string name="understand">ОК</string>
 </resources>

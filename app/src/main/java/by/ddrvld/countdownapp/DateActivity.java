@@ -1,15 +1,20 @@
 package by.ddrvld.countdownapp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.view.Gravity;
 import android.widget.TextView;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -74,39 +79,50 @@ public class DateActivity extends Activity {
         if (settings.contains(RANDOMLIFETIME)) {
             randomLifeTime = settings.getLong(RANDOMLIFETIME, 0);
         } else {
-            final String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-            int android_id_int = 0;
-            for (int i = 0; i < android_id.length(); ++i) {
-                char ch = android_id.charAt(i);
-                int n = (int) ch + (int) 'a' + 1;
-                android_id_int += Integer.valueOf(n);
-            }
-            String hash = MD5(android_id);
-            int hash_int = 0;
-            for (int i = 0; i < hash.length(); ++i) {
-                char ch = hash.charAt(i);
-                int n = (int) ch + (int) 'a' + 1;
-                hash_int += Integer.valueOf(n);
-            }
+//            final String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+//            int android_id_int = 0;
+//            for (int i = 0; i < android_id.length(); ++i) {
+//                char ch = android_id.charAt(i);
+//                int n = (int) ch + (int) 'a' + 1;
+//                android_id_int += Integer.valueOf(n);
+//            }
+//            String hash = MD5(android_id);
+//            int hash_int = 0;
+//            for (int i = 0; i < hash.length(); ++i) {
+//                char ch = hash.charAt(i);
+//                int n = (int) ch + (int) 'a' + 1;
+//                hash_int += Integer.valueOf(n);
+//            }
 
-//            System.out.println("android_id: " + android_id.length());
+//            System.out.println("android_id: " + android_id);
 
-            Calendar cal = Calendar.getInstance();
-            int first = cal.get(Calendar.DAY_OF_MONTH);
-            if (first >= 3) first = Math.round(first / 3);
+//            Calendar cal = Calendar.getInstance();
+//            int first = cal.get(Calendar.DAY_OF_MONTH);
+//            if (first >= 3) first = Math.round(first / 3);
 
 //            first = 1;
 //            System.out.println("FIRST: " + first);
 
-            Long result;
-            result = Long.parseLong(String.format("%d%d%d", hash_int, first, android_id_int));
+//            Long result;
+//            result = Long.parseLong(String.format("%d%d%d", hash_int, first, android_id_int));
 //            System.out.println("result: " + result);
 
-            randomLifeTime = 1578040974L + result;
-            while (randomLifeTime < currentTime) randomLifeTime += (android_id_int + hash_int);
-            while (randomLifeTime > 3561368072L) randomLifeTime -= (android_id_int + hash_int);
-        }
+//            randomLifeTime = 1578040974L + result;
+//            while (randomLifeTime < currentTime) randomLifeTime += (android_id_int + hash_int);
+//            while (randomLifeTime > 3561368072L) randomLifeTime -= (android_id_int + hash_int);
 
+//            Calendar cal = Calendar.getInstance();
+//            int yearNow = cal.get(Calendar.YEAR);
+            Long imei = Long.parseLong(getIMEI(getApplicationContext()));
+//            randomLifeTime = (imei / yearNow) / yearNow;
+            randomLifeTime = imei / 400000;
+
+            // Если первое число imei меньше 5 то используем первые 9 чисел imei, иначе используем первые 8 чисел imei.
+//            for(int i = 0; i < 8; i++)
+
+            if(randomLifeTime < (3600 * 24) * 4) randomLifeTime = currentTime + ((3600L * 24) * 4) + 1111;
+            else if(randomLifeTime > currentTime + 1982459975L) randomLifeTime = currentTime + 1982459975L;
+        }
         Long timerTime = randomLifeTime - currentTime;
 
         years = timerTime / 31536000;
@@ -114,6 +130,14 @@ public class DateActivity extends Activity {
         hours = timerTime / 3600 % 24;
         mins = timerTime / 60 % 60;
         secs = timerTime % 60;
+
+//        System.out.println("\nyears: " + years);
+//        System.out.println("\ndays: " + days);
+//        System.out.println("\nhours: " + hours);
+//        System.out.println("\nmins: " + mins);
+//        System.out.println("\nsecs: " + secs);
+
+        System.out.println("\nIMEI: " + getIMEI(getApplicationContext()));
 
         setValues();
 
@@ -137,19 +161,26 @@ public class DateActivity extends Activity {
                 .create();
     }
 
-    public static String MD5(String s) {
-        MessageDigest m = null;
+    public String getIMEI(Context context){
 
-        try {
-            m = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        m.update(s.getBytes(),0,s.length());
-        String hash = new BigInteger(1, m.digest()).toString(16);
-        return hash;
+        TelephonyManager mngr = (TelephonyManager) context.getSystemService(context.TELEPHONY_SERVICE);
+        String imei = mngr.getDeviceId();
+        return imei;
     }
+
+//    public static String MD5(String s) {
+//        MessageDigest m = null;
+//
+//        try {
+//            m = MessageDigest.getInstance("MD5");
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//
+//        m.update(s.getBytes(),0,s.length());
+//        String hash = new BigInteger(1, m.digest()).toString(16);
+//        return hash;
+//    }
 
     public void theEnd() {
     }

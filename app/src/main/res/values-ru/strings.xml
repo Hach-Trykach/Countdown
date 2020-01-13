@@ -10,4 +10,6 @@
     <string name="key_yes">Да</string>
     <string name="key_no">Нет</string>
     <string name="countdown_is_ready">Ваш обратный отсчёт готов.</string>
+    <string name="read_phone_state_text">Для работы приложения зайдите в настройки, найдите это приложение и предоставьте разрешение \"Телефон\" в разделе \"Разрешения приложений\".</string>
+    <string name="understand">Понятно</string>
 </resources>
