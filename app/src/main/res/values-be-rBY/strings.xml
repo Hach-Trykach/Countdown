@@ -5,11 +5,21 @@
     <string name="key_no">Нет</string>
     <string name="key_yes">Да</string>
     <string name="question">Вы прымаеце свой лёс?</string>
-    <string name="text_day">ДЗЁН</string>
-    <string name="text_hrs">ГАДЗIН</string>
-    <string name="text_yrs">ГАДОЎ</string>
-    <string name="text_sec">СЕКУНД</string>
-    <string name="text_min">ХВIЛIН</string>
+    <string name="text_day3">Дзён</string>
+    <string name="text_hrs3">Гадзiн</string>
+    <string name="text_yrs3">Гадоў</string>
+    <string name="text_sec3">Секунд</string>
+    <string name="text_min3">Хвiлiн</string>
     <string name="read_phone_state_text">Для працы прыкладання зайдзіце ў налады, знайдзіце гэта дадатак і падайце дазвол \"Тэлефон\" у раздзеле \"Дазволы прыкладанняў\".</string>
     <string name="understand">Зразумела</string>
+    <string name="text_day2">Днi</string>
+    <string name="text_day1">Дзень</string>
+    <string name="text_hrs1">Гадзiна</string>
+    <string name="text_hrs2">Гадзiны</string>
+    <string name="text_min2">Хвiлiны</string>
+    <string name="text_min1">Хвiлiна</string>
+    <string name="text_sec1">Секунда</string>
+    <string name="text_sec2">Секунды</string>
+    <string name="text_yrs1">Год</string>
+    <string name="text_yrs2">Гады</string>
 </resources>

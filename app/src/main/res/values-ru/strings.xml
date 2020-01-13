@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Обратный отсчёт</string>
-    <string name="text_yrs">ЛЕТ</string>
-    <string name="text_day">ДНЕЙ</string>
-    <string name="text_hrs">ЧАСОВ</string>
-    <string name="text_min">МИН</string>
-    <string name="text_sec">СЕК</string>
+    <string name="text_yrs3">Лет</string>
+    <string name="text_day3">Дней</string>
+    <string name="text_hrs3">Часов</string>
+    <string name="text_min3">Минут</string>
+    <string name="text_sec3">Секунд</string>
     <string name="question">Вы принимаете свою судьбу?</string>
     <string name="key_yes">Да</string>
     <string name="key_no">Нет</string>
     <string name="countdown_is_ready">Ваш обратный отсчёт готов.</string>
     <string name="read_phone_state_text">Для работы приложения зайдите в настройки, найдите это приложение и предоставьте разрешение \"Телефон\" в разделе \"Разрешения приложений\".</string>
     <string name="understand">Понятно</string>
+    <string name="text_day2">Дня</string>
+    <string name="text_day1">День</string>
+    <string name="text_hrs1">Час</string>
+    <string name="text_hrs2">Часа</string>
+    <string name="text_min1">Минута</string>
+    <string name="text_min2">Минуты</string>
+    <string name="text_sec1">Секунда</string>
+    <string name="text_sec2">Секунды</string>
+    <string name="text_yrs1">Год</string>
+    <string name="text_yrs2">Года</string>
 </resources>

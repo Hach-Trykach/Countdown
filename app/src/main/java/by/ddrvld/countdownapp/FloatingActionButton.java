@@ -68,7 +68,7 @@ public class FloatingActionButton extends View {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             setAlpha(1.0f);
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("https://ddrvld.ru"));
+            intent.setData(Uri.parse("https://play.google.com/store/search?q=DDRVLD"));
             context.startActivity(intent);
         } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
             setAlpha(0.6f);

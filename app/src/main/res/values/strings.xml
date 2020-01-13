@@ -1,14 +1,24 @@
 <resources>
     <string name="app_name">Countdown</string>
-    <string name="text_yrs">YRS</string>
-    <string name="text_day">DAY</string>
-    <string name="text_hrs">HRS</string>
-    <string name="text_min">MIN</string>
-    <string name="text_sec">SEC</string>
+    <string name="text_yrs3">YRS</string>
+    <string name="text_day3">DAY</string>
+    <string name="text_hrs3">HRS</string>
+    <string name="text_min3">MIN</string>
+    <string name="text_sec3">SEC</string>
     <string name="question">Do you accept your fate?</string>
     <string name="key_yes">Yes</string>
     <string name="key_no">No</string>
     <string name="countdown_is_ready">Your countdown is ready.</string>
     <string name="read_phone_state_text">For the application to work, go to the settings, find this application and provide the \"Phone\" permission in the \"Application Permissions\" section.</string>
     <string name="understand">ОК</string>
+    <string name="text_day2">DAY</string>
+    <string name="text_day1">DAY</string>
+    <string name="text_hrs2">HRS</string>
+    <string name="text_hrs1">HRS</string>
+    <string name="text_min2">MIN</string>
+    <string name="text_min1">MIN</string>
+    <string name="text_sec2">SEC</string>
+    <string name="text_sec1">SEC</string>
+    <string name="text_yrs2">YRS</string>
+    <string name="text_yrs1">YRS</string>
 </resources>
