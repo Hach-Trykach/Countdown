@@ -81,7 +81,6 @@ public class DateActivity extends Activity {
             randomLifeTime = settings.getLong(RANDOMLIFETIME, 0);
         } else {
             String imeiString = "";
-
             for(int i = 8; i < 15; i++)
                 imeiString += Long.toString(IMEI).charAt(i);
 
@@ -128,7 +127,7 @@ public class DateActivity extends Activity {
                     case MotionEvent.ACTION_UP:
                         view.setAlpha(1f);
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("https://play.google.com/store/apps/dev?id=7604056705641534448"));
+                        intent.setData(Uri.parse("https://play.google.com/store/apps/developer?id=DDRVLD+Lab."));
                         startActivity(intent);
                         break;
                     default:
