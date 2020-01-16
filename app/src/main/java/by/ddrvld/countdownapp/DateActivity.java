@@ -2,12 +2,15 @@ package by.ddrvld.countdownapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
@@ -26,6 +29,7 @@ public class DateActivity extends Activity {
     static SharedPreferences settings;
     static final String APP_PREFERENCES = "settings";
     static final String RANDOMLIFETIME = "randomlifetime";
+    private ImageView moreAppsBtn;
 
     Long randomLifeTime;
     Long currentTime = System.currentTimeMillis() / 1000;
@@ -68,6 +72,8 @@ public class DateActivity extends Activity {
         textHrs = findViewById(R.id.text_hrs);
         textMin = findViewById(R.id.text_min);
         textSec = findViewById(R.id.text_sec);
+
+        moreAppsBtn = findViewById(R.id.more_apps_button);
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 
@@ -112,12 +118,26 @@ public class DateActivity extends Activity {
             }
         });
 
-        FloatingActionButton fabButton = new FloatingActionButton.Builder(this)
-                .withDrawable(getResources().getDrawable(R.drawable.more_apps))
-                .withButtonColor(Color.BLACK)
-                .withGravity(Gravity.BOTTOM | Gravity.START)
-                .withMargins(16, 0, 0, 64)
-                .create();
+        moreAppsBtn.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch (View view, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        view.setAlpha(0.5f);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        view.setAlpha(1f);
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse("https://play.google.com/store/apps/dev?id=7604056705641534448"));
+                        startActivity(intent);
+                        break;
+                    default:
+                        view.setAlpha(1f);
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     public void theEnd() {
