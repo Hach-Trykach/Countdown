@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -106,10 +105,6 @@ public class WaitActivity extends Activity {
 
     public void ErrorReadPhoneStateDialog()
     {
-        Toast toast = Toast.makeText(getApplicationContext(),
-                R.string.read_phone_state_text, Toast.LENGTH_LONG);
-        toast.show();
-
         final Context context = this;
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
