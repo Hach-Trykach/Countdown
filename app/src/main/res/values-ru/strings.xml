@@ -22,4 +22,5 @@
     <string name="text_sec2">Секунды</string>
     <string name="text_yrs1">Год</string>
     <string name="text_yrs2">Года</string>
+    <string name="accept_and_continue">Принять и продолжить</string>
 </resources>
