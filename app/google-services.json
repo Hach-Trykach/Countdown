@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "331604710303",
+    "firebase_url": "https://countdown-death-app.firebaseio.com",
+    "project_id": "countdown-death-app",
+    "storage_bucket": "countdown-death-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331604710303:android:3a6a820586494b2d36e3aa",
+        "android_client_info": {
+          "package_name": "by.ddrvld.countdownapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "331604710303-5hq14uvn7h79a6cf95suarotdvsq9ecs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "by.ddrvld.countdownapp",
+            "certificate_hash": "9f10bf03a80f8be8b58d57c080f142b6acbd2bcd"
+          }
+        },
+        {
+          "client_id": "331604710303-vcue7q0gn6881up8lnteo63tts61itne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqzk-cK3b7DI4zr4pZTlTwOVTap2bWSdQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "331604710303-vcue7q0gn6881up8lnteo63tts61itne.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
