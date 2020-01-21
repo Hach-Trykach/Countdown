@@ -59,6 +59,9 @@ public class MainActivity extends Activity {
 
     private AdView mAdView;
 
+    private int PERIOD = 1000;
+    private int MULTIPLIER = 500;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -346,9 +349,9 @@ public class MainActivity extends Activity {
             int logoTimer = 0;
             public void run() {
                 try {
-                    while (logoTimer < 1000) {
+                    while (logoTimer < 5000) {
                         sleep(100);
-                        logoTimer = logoTimer + 100;
+                        logoTimer += 1000;
                     }
                     runOnUiThread(new Runnable() {
                         @Override
@@ -366,6 +369,7 @@ public class MainActivity extends Activity {
     }
 
     public void theEnd() {
+        sendInAppNotification();
     }
 
     public String getIMEI() {
@@ -391,110 +395,156 @@ public class MainActivity extends Activity {
 
     private void setValues() {
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
+        if (MULTIPLIER == 1) {
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if (secs > 0) secs--;
+                    else {
+                        if (mins > 0) mins--;
+                        else {
+                            if (hours > 0) hours--;
+                            else {
+                                if (days > 0) days--;
+                                else {
+                                    if (years > 0) years--;
+                                    else {
+                                        end = true;
+                                        return;
+                                    }
+                                    days = fullDays;
+                                }
+                                hours = fullHours;
+                            }
+                            mins = fullMins;
+                        }
+                        secs = fullSecs;
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUI();
+                        }
+                    });
+                }
+            }, 0, PERIOD / MULTIPLIER);
+        }
+        else {
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if (secs > 0) secs--;
+                    else {
+                        if (mins > 0) mins--;
+                        else {
+                            mins = fullMins;
+                        }
+                        secs = fullSecs;
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(years == 0 && days == 0 && hours == 0) {
+                                updateUI();
+                            }
+                        }
+                    });
+                }
+            }, 0, PERIOD / MULTIPLIER);
+            Timer timer2 = new Timer();
+            timer2.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if (hours > 0) hours--;
+                    else {
+                        if (days > 0) days--;
+                        else {
+                            if (years > 0) years--;
+                            else {
+                                end = true;
+                                return;
+                            }
+                            days = fullDays;
+                        }
+                        hours = fullHours;
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUI();
+                        }
+                    });
+                }
+            }, 0, PERIOD / (MULTIPLIER / 2));
+        }
+    }
 
+    private void updateUI() {
+        if(years >= 10) tvYrs.setText("" + years);
+        else tvYrs.setText("0" + years);
 
-                if(secs == 30) {
-                    Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
-//                    Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/raw/krik");
+        if(days >= 10) tvDay.setText("" + days);
+        else tvDay.setText("0" + days);
 
-//                    Notification notification = builder.build();
-//                    notification.sound = Uri.parse("android.resource://"
-//                            + context.getPackageName() + "/" + R.raw.sound);
+        if(hours >= 10) tvHrs.setText("" + hours);
+        else tvHrs.setText("0" + hours);
 
-                    NotificationCompat.Builder builder =
-                            new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
-                                    .setSmallIcon(R.drawable.icon)
-                                    .setContentTitle(getResources().getString(R.string.app_name))
-                                    .setContentText(getResources().getString(R.string.user_agreement_broken))
-                                    .setSound(soundUri)
-//                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                    .setLights(0xff0000ff, 100, 100)
-//                                    .setVibrate(new long[] { 3000, 3000})
-                                    .setOngoing(true)
-                                    .setTimeoutAfter(30000)
+        if(mins >= 10) tvMin.setText("" + mins);
+        else tvMin.setText("0" + mins);
+
+        if(secs >= 10) tvSec.setText("" + secs);
+        else tvSec.setText("0" + secs);
+
+        textYrs.setText(GetWord(years, getResources().getString(R.string.text_yrs1), getResources().getString(R.string.text_yrs2), getResources().getString(R.string.text_yrs3)));
+        textDay.setText(GetWord(days, getResources().getString(R.string.text_day1), getResources().getString(R.string.text_day2), getResources().getString(R.string.text_day3)));
+        textHrs.setText(GetWord(hours, getResources().getString(R.string.text_hrs1), getResources().getString(R.string.text_hrs2), getResources().getString(R.string.text_hrs3)));
+        textMin.setText(GetWord(mins, getResources().getString(R.string.text_min1), getResources().getString(R.string.text_min2), getResources().getString(R.string.text_min3)));
+        textSec.setText(GetWord(secs, getResources().getString(R.string.text_sec1), getResources().getString(R.string.text_sec2), getResources().getString(R.string.text_sec3)));
+
+        if(years == 0) {
+            tvYrs.setTextColor(getResources().getColor(R.color.red));
+            textYrs.setTextColor(getResources().getColor(R.color.red));
+            if(days == 0) {
+                tvDay.setTextColor(getResources().getColor(R.color.red));
+                textDay.setTextColor(getResources().getColor(R.color.red));
+                if(hours == 0) {
+                    tvHrs.setTextColor(getResources().getColor(R.color.red));
+                    textHrs.setTextColor(getResources().getColor(R.color.red));
+                    if(mins == 0) {
+                        tvMin.setTextColor(getResources().getColor(R.color.red));
+                        textMin.setTextColor(getResources().getColor(R.color.red));
+                        if(secs == 0) {
+                            tvSec.setTextColor(getResources().getColor(R.color.red));
+                            textSec.setTextColor(getResources().getColor(R.color.red));
+                        }
+                    }
+                }
+            }
+        }
+        if(end) theEnd();
+    }
+
+    private void sendInAppNotification() {
+        if(mins%11 == 0 && secs == 54) {
+            Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
+            NotificationCompat.Builder builder =
+                    new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
+                            .setSmallIcon(R.drawable.icon)
+                            .setContentTitle(getResources().getString(R.string.app_name))
+                            .setContentText(getResources().getString(R.string.user_agreement_broken))
+                            .setSound(soundUri)
+                            .setLights(0xff0000ff, 100, 100)
+                            .setVibrate(new long[] { 200, 3000})
+                            .setOngoing(true)
+                            .setTimeoutAfter(30000)
 //                                    .setDefaults(Notification.DEFAULT_LIGHTS)
 //                                    .setWhen(System.currentTimeMillis())
-                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                    NotificationManagerCompat notificationManager =
-                            NotificationManagerCompat.from(MainActivity.this);
-                    notificationManager.notify(1, builder.build());
-                }
-
-
-                if(secs > 0) secs--;
-                else {
-                    if(mins > 0) mins--;
-                    else {
-                        if(hours > 0) hours--;
-                        else {
-                            if (days > 0) days--;
-                            else {
-                                if (years > 0) years--;
-                                else {
-                                    end = true;
-                                    return;
-                                }
-                                days = fullDays;
-                            }
-                            hours = fullHours;
-                        }
-                        mins = fullMins;
-                    }
-                    secs = fullSecs;
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(years >= 10) tvYrs.setText("" + years);
-                        else tvYrs.setText("0" + years);
-
-                        if(days >= 10) tvDay.setText("" + days);
-                        else tvDay.setText("0" + days);
-
-                        if(hours >= 10) tvHrs.setText("" + hours);
-                        else tvHrs.setText("0" + hours);
-
-                        if(mins >= 10) tvMin.setText("" + mins);
-                        else tvMin.setText("0" + mins);
-
-                        if(secs >= 10) tvSec.setText("" + secs);
-                        else tvSec.setText("0" + secs);
-
-                        textYrs.setText(GetWord(years, getResources().getString(R.string.text_yrs1), getResources().getString(R.string.text_yrs2), getResources().getString(R.string.text_yrs3)));
-                        textDay.setText(GetWord(days, getResources().getString(R.string.text_day1), getResources().getString(R.string.text_day2), getResources().getString(R.string.text_day3)));
-                        textHrs.setText(GetWord(hours, getResources().getString(R.string.text_hrs1), getResources().getString(R.string.text_hrs2), getResources().getString(R.string.text_hrs3)));
-                        textMin.setText(GetWord(mins, getResources().getString(R.string.text_min1), getResources().getString(R.string.text_min2), getResources().getString(R.string.text_min3)));
-                        textSec.setText(GetWord(secs, getResources().getString(R.string.text_sec1), getResources().getString(R.string.text_sec2), getResources().getString(R.string.text_sec3)));
-
-                        if(years == 0) {
-                            tvYrs.setTextColor(getResources().getColor(R.color.red));
-                            textYrs.setTextColor(getResources().getColor(R.color.red));
-                            if(days == 0) {
-                                tvDay.setTextColor(getResources().getColor(R.color.red));
-                                textDay.setTextColor(getResources().getColor(R.color.red));
-                                if(hours == 0) {
-                                    tvHrs.setTextColor(getResources().getColor(R.color.red));
-                                    textHrs.setTextColor(getResources().getColor(R.color.red));
-                                    if(mins == 0) {
-                                        tvMin.setTextColor(getResources().getColor(R.color.red));
-                                        textMin.setTextColor(getResources().getColor(R.color.red));
-                                        if(secs == 0) {
-                                            tvSec.setTextColor(getResources().getColor(R.color.red));
-                                            textSec.setTextColor(getResources().getColor(R.color.red));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if(end) theEnd();
-                    }
-                });
-            }
-        }, 0, 1000);
+            NotificationManagerCompat notificationManager =
+                    NotificationManagerCompat.from(MainActivity.this);
+            notificationManager.notify(0, builder.build());
+        }
     }
 
     @Override

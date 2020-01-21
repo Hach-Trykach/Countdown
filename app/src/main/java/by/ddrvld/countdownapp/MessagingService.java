@@ -2,9 +2,9 @@ package by.ddrvld.countdownapp;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
 import android.net.Uri;
 
 import androidx.core.app.NotificationCompat;
@@ -13,8 +13,6 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class MessagingService extends FirebaseMessagingService {
-
-    private static final String TAG = "MessagingService";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -29,13 +27,20 @@ public class MessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(remoteMessage.getNotification().getTitle())
-                .setContentText(remoteMessage.getNotification().getBody())
+                .setSmallIcon(R.drawable.icon)
+//                .setContentTitle(remoteMessage.getNotification().getTitle())
+//                .setContentText(remoteMessage.getNotification().getBody())
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
+                .setContentTitle(getResources().getString(R.string.app_name))
+                .setContentText(getResources().getString(R.string.user_agreement_broken))
+                .setSound(soundUri)
+                .setLights(0xff0000ff, 100, 100)
+                .setVibrate(new long[] { 200, 3000})
+                .setOngoing(true)
+                .setTimeoutAfter(30000)
+
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
