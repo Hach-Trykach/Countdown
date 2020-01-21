@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "331604710303-qe3h31hcagj7n523kijqjivl385g54p0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "by.ddrvld.countdownapp",
+            "certificate_hash": "cbe80b396788fcfbb79133020124725a9c1e93a8"
+          }
+        },
+        {
+          "client_id": "331604710303-dvgfg17fjqghaaaq3qfunu6pb9b52joj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "by.ddrvld.countdownapp",
+            "certificate_hash": "aa9b4a3f47be82318b6498f62857c31339c4dbf1"
+          }
+        },
+        {
           "client_id": "331604710303-5hq14uvn7h79a6cf95suarotdvsq9ecs.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

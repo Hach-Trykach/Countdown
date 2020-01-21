@@ -1,14 +1,17 @@
 package by.ddrvld.countdownapp;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.Notification;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.ColorSpace;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -19,7 +22,6 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -32,9 +34,7 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.annotations.Nullable;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -59,47 +59,10 @@ public class MainActivity extends Activity {
 
     private AdView mAdView;
 
-    private int SIGN_IN_CODE = 1;
-    FirebaseDatabase database;
-    DatabaseReference reference;
-
-    // Идентификатор уведомления
-    private static final int NOTIFY_ID = 101;
-
-    // Идентификатор канала
-    private static String CHANNEL_ID = "Cat channel";
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.terms_of_use);
-
-
-//    mAuth = FirebaseAuth.getInstance();
-//    mAuth.signInAnonymously()
-//        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//            @Override
-//            public void onComplete(@NonNull Task<AuthResult> task) {
-//                if (task.isSuccessful()) {
-//                    // Sign in success, update UI with the signed-in user's information
-//                    Log.d(TAG, "signInAnonymously:success");
-//                    FirebaseUser user = mAuth.getCurrentUser();
-////                            updateUI(user);
-//                } else {
-//                    // If sign in fails, display a message to the user.
-//                    Log.w(TAG, "signInAnonymously:failure", task.getException());
-//                    Toast.makeText(MainActivity.this, "Authentication failed.",
-//                            Toast.LENGTH_SHORT).show();
-////                            updateUI(null);
-//                }
-//
-//                // ...
-//            }
-//        });
-//        System.out.println("UID:" + FirebaseAuth.getInstance().getUid());
-//        FirebaseDatabase.getInstance().getReference().push().setValue(FirebaseAuth.getInstance().getUid());
-
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (settings.contains(RANDOMLIFETIME)) {
@@ -118,21 +81,6 @@ public class MainActivity extends Activity {
         }
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == SIGN_IN_CODE) {
-            if(resultCode == RESULT_OK) {
-//                Snackbar.make(activity_date, "Вы уже авторизованы", Snackbar.LENGTH_LONG).show();
-            }
-            else {
-//                Snackbar.make(activity_main, "Вы не авторизованы", Snackbar.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
 
@@ -185,8 +133,6 @@ public class MainActivity extends Activity {
 //            System.out.println("\nIMEI String: " + imeiString);
 //            System.out.println("\nrandomLifeTime: " + randomLifeTime);
 
-            database = FirebaseDatabase.getInstance();
-            reference = database.getReference("users");
             FirebaseDatabase.getInstance().getReference().push().setValue(IMEI);
         }
 //        FirebaseDatabase.getInstance().getReference().push().setValue(randomLifeTime);
@@ -199,22 +145,6 @@ public class MainActivity extends Activity {
         secs = timerTime % 60;
 
         setValues();
-
-
-
-//        NotificationCompat.Builder builder =
-//                new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
-//                        .setSmallIcon(R.drawable.icon)
-//                        .setContentTitle(getResources().getString(R.string.app_name))
-//                        .setContentText("USER AGREEMENT BROKEN")
-//                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-//
-//        NotificationManagerCompat notificationManager =
-//                NotificationManagerCompat.from(MainActivity.this);
-//        notificationManager.notify(NOTIFY_ID, builder.build());
-
-
-
 
         mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
@@ -462,9 +392,39 @@ public class MainActivity extends Activity {
     private void setValues() {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
-
             @Override
             public void run() {
+
+
+                if(secs == 30) {
+                    Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
+//                    Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/raw/krik");
+
+//                    Notification notification = builder.build();
+//                    notification.sound = Uri.parse("android.resource://"
+//                            + context.getPackageName() + "/" + R.raw.sound);
+
+                    NotificationCompat.Builder builder =
+                            new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
+                                    .setSmallIcon(R.drawable.icon)
+                                    .setContentTitle(getResources().getString(R.string.app_name))
+                                    .setContentText(getResources().getString(R.string.user_agreement_broken))
+                                    .setSound(soundUri)
+//                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                    .setLights(0xff0000ff, 100, 100)
+//                                    .setVibrate(new long[] { 3000, 3000})
+                                    .setOngoing(true)
+                                    .setTimeoutAfter(30000)
+//                                    .setDefaults(Notification.DEFAULT_LIGHTS)
+//                                    .setWhen(System.currentTimeMillis())
+                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+                    NotificationManagerCompat notificationManager =
+                            NotificationManagerCompat.from(MainActivity.this);
+                    notificationManager.notify(1, builder.build());
+                }
+
+
                 if(secs > 0) secs--;
                 else {
                     if(mins > 0) mins--;

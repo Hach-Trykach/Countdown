@@ -12,6 +12,7 @@
     <string name="read_phone_state_text">For the application to work, go to the settings, find this application and provide the \"Phone\"
         permission in the \"Application Permissions\" section.
     </string>
+    <string name="user_agreement_broken">USER AGREEMENT BROKEN</string>
     <string name="understand">ОК</string>
     <string name="text_day2">DAY</string>
     <string name="text_day1">DAY</string>
