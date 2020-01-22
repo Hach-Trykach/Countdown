@@ -1,27 +1,25 @@
 package by.ddrvld.countdownapp;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.Notification;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.ColorSpace;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.text.Html;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -36,10 +34,19 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.firebase.database.FirebaseDatabase;
 
+import com.mikepenz.crossfader.Crossfader;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.MiniDrawer;
+import com.mikepenz.materialdrawer.interfaces.ICrossfader;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialize.util.UIUtils;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     static SharedPreferences settings;
     static final String APP_PREFERENCES = "settings";
     private final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
@@ -58,9 +65,18 @@ public class MainActivity extends Activity {
     TextView textYrs, textDay, textHrs, textMin, textSec;
 
     private AdView mAdView;
+    private Drawer drawerResult;
+    private MiniDrawer miniResult;
+    private ICrossfader crossFader;
 
     private int PERIOD = 1000;
     private int MULTIPLIER = 500;
+
+    private final int BTN_COLOR_MATCH = 1;
+    private final int BTN_JUMP_UP = 2;
+    private final int BTN_CHRISTMAS_GAME = 3;
+    private final int BTN_CHRISTMAS_TREE = 4;
+    private final int BTN_BARLEY_BREAK = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +102,40 @@ public class MainActivity extends Activity {
 
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
+        drawerResult = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withRootView(R.id.drawer_layout)
+                .withSliderBackgroundColorRes(R.color.transparent)
+                .withGenerateMiniDrawer(true)
+                .withActionBarDrawerToggleAnimated(true)
+                .addStickyDrawerItems(initializeDrawerItems())
+                .withOnDrawerItemClickListener(onClicksLis)
+                .build();
+//                .withAccountHeader(accountHeader)
+
+//        miniResult = new MiniDrawer().withDrawer(drawerResult).withInnerShadow(true);
+//
+////define the width of the normal drawer, and the minidrawer
+//        int first = (int) UIUtils.convertDpToPixel(300, this);
+//        int second = (int) UIUtils.convertDpToPixel(72, this);
+//
+////create the Crossfader used to hook the MiniDrawer and the normal drawer together. This also handles the crossfade effect.
+//        crossFader = new Crossfader()
+//                .withContent(findViewById(R.id.crossfade_content))
+//                .withFirst(drawerResult.getSlider(), first)
+//                .withSecond(miniResult.build(this), second)
+//                .withSavedInstance(savedInstanceState)
+//                .build();
+//
+//// inform the MiniDrawer about the crossfader.
+//        miniResult.withCrossFader(new CrossfadeWrapper(crossFader));
+
 
 //        Long lll = 352662060043475L;
 //        final Long IMEI = Long.parseLong(lll.toString());
@@ -162,27 +212,111 @@ public class MainActivity extends Activity {
             }
         });
 
-        moreAppsBtn.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        view.setAlpha(0.5f);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        view.setAlpha(1f);
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("https://play.google.com/store/apps/developer?id=DDRVLD+Lab."));
-                        startActivity(intent);
-                        break;
-                    default:
-                        view.setAlpha(1f);
-                        break;
-                }
+//        moreAppsBtn.setOnTouchListener(new View.OnTouchListener() {
+//        @Override
+//        public boolean onTouch(View view, MotionEvent event) {
+//            switch (event.getAction()) {
+//                case MotionEvent.ACTION_DOWN:
+//                    view.setAlpha(0.5f);
+//                    break;
+//                case MotionEvent.ACTION_UP:
+//                    view.setAlpha(1f);
+//                    Intent intent = new Intent(Intent.ACTION_VIEW);
+//                    intent.setData(Uri.parse("https://play.google.com/store/apps/developer?id=DDRVLD+Lab."));
+//                    startActivity(intent);
+//                    break;
+//                default:
+//                    view.setAlpha(1f);
+//                    break;
+//            }
+//            return true;
+//        }
+//    });
+}
+
+    private Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
+        @Override
+        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+            if(drawerItem.getIdentifier() == BTN_COLOR_MATCH)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.colormatch"));
+                startActivity(intent);
                 return true;
             }
-        });
+            else if(drawerItem.getIdentifier() == BTN_JUMP_UP)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.jumpup"));
+                startActivity(intent);
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_GAME)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmasgame"));
+                startActivity(intent);
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_TREE)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmastree"));
+                startActivity(intent);
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_BARLEY_BREAK)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.barleybreak"));
+                startActivity(intent);
+                return true;
+            }
+            return false;
+        }
+    };
+
+    private IDrawerItem[] initializeDrawerItems() {
+        return new IDrawerItem[] {
+                new PrimaryDrawerItem()
+                        .withName("Color Match")
+                        .withIcon(R.drawable.icon)
+                        .withIdentifier(BTN_COLOR_MATCH),
+
+                new PrimaryDrawerItem()
+                        .withName("Jump Up")
+                        .withIcon(R.drawable.icon)
+                        .withIdentifier(BTN_JUMP_UP),
+
+                new PrimaryDrawerItem()
+                        .withName("Christmas Game")
+                        .withIcon(R.drawable.icon)
+                        .withIdentifier(BTN_CHRISTMAS_GAME),
+
+                new PrimaryDrawerItem()
+                        .withName("Christmas Tree")
+                        .withIcon(R.drawable.icon)
+                        .withIdentifier(BTN_CHRISTMAS_TREE),
+
+                new PrimaryDrawerItem()
+                        .withName("Barley Break")
+                        .withIcon(R.drawable.icon)
+                        .withIdentifier(BTN_BARLEY_BREAK)
+        };
     }
+
+//    private AccountHeader initializeAccountHeader() {
+//        IProfile profile = new ProfileDrawerItem()
+//                .withName("Dudarev Vlad")
+//                .withEmail("dudarev.vlad@gmail.com");
+////                .withIcon((getResources().getDrawable(R.drawable.com_facebook_profile_picture_blank_portrait));
+//
+//        return new AccountHeaderBuilder()
+//                .withActivity(this)
+//                .withHeaderBackground(R.color.colorPrimaryDark)
+//                .addProfiles(profile)
+//                .build();
+//    }
 
     private void Dialog() {
         final Context context = this;
@@ -544,6 +678,15 @@ public class MainActivity extends Activity {
             NotificationManagerCompat notificationManager =
                     NotificationManagerCompat.from(MainActivity.this);
             notificationManager.notify(0, builder.build());
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawerResult != null && drawerResult.isDrawerOpen()) {
+            drawerResult.closeDrawer();
+        } else {
+            super.onBackPressed();
         }
     }
 
