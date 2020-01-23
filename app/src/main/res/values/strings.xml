@@ -12,7 +12,6 @@
     <string name="read_phone_state_text">For the application to work, go to the settings, find this application and provide the \"Phone\"
         permission in the \"Application Permissions\" section.
     </string>
-    <string name="user_agreement_broken">USER AGREEMENT BROKEN</string>
     <string name="understand">ОК</string>
     <string name="text_day2">DAY</string>
     <string name="text_day1">DAY</string>
@@ -105,4 +104,13 @@
     </string>
 
     <string name="accept_and_continue">ACCEPT AND CONTINUE</string>
+    <string name="color_match" translatable="false">Color Match</string>
+    <string name="jump_up" translatable="false">Jump Up</string>
+    <string name="christmas_game">Christmas game</string>
+    <string name="barley_break">Barley-Break</string>
+    <string name="christmas_tree">Christmas Tree (Widget)</string>
+    <string name="user_agreement_broken">USER AGREEMENT BROKEN</string>
+    <string name="later">Later</string>
+    <string name="of_course">Of course</string>
+    <string name="rating_text">Want to rate the app?</string>
 </resources>

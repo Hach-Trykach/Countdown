@@ -34,15 +34,16 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.firebase.database.FirebaseDatabase;
 
-import com.mikepenz.crossfader.Crossfader;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.MiniDrawer;
 import com.mikepenz.materialdrawer.interfaces.ICrossfader;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialize.util.UIUtils;
 
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,7 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
     boolean end;
     static final String RANDOMLIFETIME = "randomlifetime";
+    static final String LAST_RATING_DAY = "last_rating_day";
     private ImageView moreAppsBtn;
+
+    int lastRatingDay;
 
     Long randomLifeTime;
     Long currentTime = System.currentTimeMillis() / 1000;
@@ -94,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             accept_and_continue_Btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Dialog();
+                    DialogAcceptAndContinue();
                 }
             });
         }
@@ -107,35 +111,32 @@ public class MainActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
+
+        if (settings.contains(LAST_RATING_DAY)) {
+            lastRatingDay = settings.getInt(LAST_RATING_DAY, 0);
+
+            Calendar cal = Calendar.getInstance();
+            int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
+
+            if(dayOfMonth != lastRatingDay) {
+                TimerRating();
+            }
+        }
+        else TimerRating();
+
+//        AccountHeader accountHeader = initializeAccountHeader();
         drawerResult = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withRootView(R.id.drawer_layout)
                 .withSliderBackgroundColorRes(R.color.transparent)
-                .withGenerateMiniDrawer(true)
+//                .withGenerateMiniDrawer(true)
                 .withActionBarDrawerToggleAnimated(true)
-                .addStickyDrawerItems(initializeDrawerItems())
+                .addDrawerItems(initializeDrawerItems())
+//                .addStickyDrawerItems(initializeDrawerItems())
                 .withOnDrawerItemClickListener(onClicksLis)
-                .build();
 //                .withAccountHeader(accountHeader)
-
-//        miniResult = new MiniDrawer().withDrawer(drawerResult).withInnerShadow(true);
-//
-////define the width of the normal drawer, and the minidrawer
-//        int first = (int) UIUtils.convertDpToPixel(300, this);
-//        int second = (int) UIUtils.convertDpToPixel(72, this);
-//
-////create the Crossfader used to hook the MiniDrawer and the normal drawer together. This also handles the crossfade effect.
-//        crossFader = new Crossfader()
-//                .withContent(findViewById(R.id.crossfade_content))
-//                .withFirst(drawerResult.getSlider(), first)
-//                .withSecond(miniResult.build(this), second)
-//                .withSavedInstance(savedInstanceState)
-//                .build();
-//
-//// inform the MiniDrawer about the crossfader.
-//        miniResult.withCrossFader(new CrossfadeWrapper(crossFader));
-
+                .build();
 
 //        Long lll = 352662060043475L;
 //        final Long IMEI = Long.parseLong(lll.toString());
@@ -164,8 +165,6 @@ public class MainActivity extends AppCompatActivity {
         textSec = findViewById(R.id.text_sec);
 
         moreAppsBtn = findViewById(R.id.more_apps_button);
-
-//        settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 
         if (settings.contains(RANDOMLIFETIME)) {
             randomLifeTime = settings.getLong(RANDOMLIFETIME, 0);
@@ -278,47 +277,59 @@ public class MainActivity extends AppCompatActivity {
 
     private IDrawerItem[] initializeDrawerItems() {
         return new IDrawerItem[] {
-                new PrimaryDrawerItem()
-                        .withName("Color Match")
-                        .withIcon(R.drawable.icon)
-                        .withIdentifier(BTN_COLOR_MATCH),
 
-                new PrimaryDrawerItem()
-                        .withName("Jump Up")
-                        .withIcon(R.drawable.icon)
-                        .withIdentifier(BTN_JUMP_UP),
+            new SectionDrawerItem(),
 
-                new PrimaryDrawerItem()
-                        .withName("Christmas Game")
-                        .withIcon(R.drawable.icon)
-                        .withIdentifier(BTN_CHRISTMAS_GAME),
+            new SecondaryDrawerItem()
+//                    .withName(R.string.color_match)
+//                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_color_match)
+                    .withIdentifier(BTN_COLOR_MATCH),
+            new DividerDrawerItem(),
 
-                new PrimaryDrawerItem()
-                        .withName("Christmas Tree")
-                        .withIcon(R.drawable.icon)
-                        .withIdentifier(BTN_CHRISTMAS_TREE),
+            new SecondaryDrawerItem()
+//                    .withName(R.string.jump_up)
+//                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_jump_up)
+                    .withIdentifier(BTN_JUMP_UP),
+                new DividerDrawerItem(),
 
-                new PrimaryDrawerItem()
-                        .withName("Barley Break")
-                        .withIcon(R.drawable.icon)
-                        .withIdentifier(BTN_BARLEY_BREAK)
+            new SecondaryDrawerItem()
+//                    .withName(R.string.christmas_game)
+//                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_christmas_game)
+                    .withIdentifier(BTN_CHRISTMAS_GAME),
+                new DividerDrawerItem(),
+
+            new SecondaryDrawerItem()
+//                    .withName(R.string.christmas_tree)
+//                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_christmas_tree)
+                    .withIdentifier(BTN_CHRISTMAS_TREE),
+                new DividerDrawerItem(),
+
+            new SecondaryDrawerItem()
+//                    .withName(R.string.barley_break)
+//                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_barley_break)
+                    .withIdentifier(BTN_BARLEY_BREAK)
         };
     }
 
 //    private AccountHeader initializeAccountHeader() {
 //        IProfile profile = new ProfileDrawerItem()
-//                .withName("Dudarev Vlad")
-//                .withEmail("dudarev.vlad@gmail.com");
-////                .withIcon((getResources().getDrawable(R.drawable.com_facebook_profile_picture_blank_portrait));
+//            .withName(R.string.color_match)
+////            .withEmail("dudarev.vlad@gmail.com")
+//            .withIcon((getResources().getDrawable(R.drawable.img_color_match)));
 //
 //        return new AccountHeaderBuilder()
-//                .withActivity(this)
-//                .withHeaderBackground(R.color.colorPrimaryDark)
-//                .addProfiles(profile)
-//                .build();
+//            .withActivity(this)
+//            .withHeaderBackground(R.color.grey)
+//            .addProfiles(profile)
+//            .build();
 //    }
 
-    private void Dialog() {
+    private void DialogAcceptAndContinue() {
         final Context context = this;
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -341,6 +352,42 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.cancel();
                 finish();
+            }
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    private void DialogRating() {
+        final Context context = this;
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.rating_app);
+
+        Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
+        Button dialogButtonNo = dialog.findViewById(R.id.dialogButtonNo);
+
+        dialogButtonYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.countdownapp"));
+                startActivity(intent);
+            }
+        });
+        dialogButtonNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+
+                Calendar cal = Calendar.getInstance();
+                lastRatingDay = cal.get(Calendar.DAY_OF_MONTH);
+
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putInt(LAST_RATING_DAY, lastRatingDay);
+                editor.apply();
             }
         });
         dialog.setCancelable(false);
@@ -476,6 +523,30 @@ public class MainActivity extends AppCompatActivity {
             // other 'case' lines to check for other
             // permissions this app might request.
         }
+    }
+
+    public void TimerRating() {
+        final Thread logoTimer = new Thread() {
+            int logoTimer = 0;
+            public void run() {
+                try {
+                    while (logoTimer < 5000) {
+                        sleep(1000);
+                        logoTimer += 1000;
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            DialogRating();
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                }
+            }
+        };
+        logoTimer.start();
     }
 
     public void Timer() {

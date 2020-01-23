@@ -24,4 +24,10 @@
     <string name="text_yrs2">Года</string>
     <string name="accept_and_continue">Принять и продолжить</string>
     <string name="user_agreement_broken">ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ НАРУШЕНО</string>
+    <string name="christmas_game">Ёлочка: Потерянный носок</string>
+    <string name="barley_break">Пятнашки</string>
+    <string name="christmas_tree">Ёлочка (Виджет)</string>
+    <string name="later">Позже</string>
+    <string name="of_course">Конечно</string>
+    <string name="rating_text">Хотите оценить приложение?</string>
 </resources>

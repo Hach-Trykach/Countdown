@@ -36,7 +36,8 @@ dependencies {
     implementation ('com.mikepenz:materialdrawer:6.1.2') {
         transitive = true
     }
-    implementation "com.mikepenz:crossfader:1.6.0"
+//    implementation 'com.mikepenz:crossfader:1.6.0'
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
