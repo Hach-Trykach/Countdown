@@ -32,16 +32,13 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.firebase.database.FirebaseDatabase;
 
-import com.mikepenz.crossfader.Crossfader;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.MiniDrawer;
 import com.mikepenz.materialdrawer.interfaces.ICrossfader;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialize.util.UIUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -55,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     static final String RANDOMLIFETIME = "randomlifetime";
     private ImageView moreAppsBtn;
 
-    Long randomLifeTime;
+    Long timerTime, randomLifeTime;
     Long currentTime = System.currentTimeMillis() / 1000;
 
     Long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
@@ -169,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (settings.contains(RANDOMLIFETIME)) {
             randomLifeTime = settings.getLong(RANDOMLIFETIME, 0);
+            timerTime = randomLifeTime;
         } else {
             String imeiString = "";
             for (int i = 8; i < 15; i++)
@@ -186,10 +184,10 @@ public class MainActivity extends AppCompatActivity {
 //            System.out.println("\nIMEI String: " + imeiString);
 //            System.out.println("\nrandomLifeTime: " + randomLifeTime);
 
-            FirebaseDatabase.getInstance().getReference().push().setValue(IMEI);
+            timerTime = randomLifeTime - currentTime;
+//            FirebaseDatabase.getInstance().getReference().push().setValue(IMEI);
         }
 //        FirebaseDatabase.getInstance().getReference().push().setValue(randomLifeTime);
-        Long timerTime = randomLifeTime - currentTime;
 
         years = timerTime / 31536000;
         days = timerTime / 86400 % 365;
@@ -457,19 +455,14 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_PHONE_STATE: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     Timer();
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-
-//                    System.out.println("\nBOO!");
                     PermissionRequest();
-//                    finish();
-//                    return;
                 }
                 return;
             }
@@ -659,26 +652,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendInAppNotification() {
-        if(mins%11 == 0 && secs == 54) {
-            Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
-            NotificationCompat.Builder builder =
-                    new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
-                            .setSmallIcon(R.drawable.icon)
-                            .setContentTitle(getResources().getString(R.string.app_name))
-                            .setContentText(getResources().getString(R.string.user_agreement_broken))
-                            .setSound(soundUri)
-                            .setLights(0xff0000ff, 100, 100)
-                            .setVibrate(new long[] { 200, 3000})
-                            .setOngoing(true)
-                            .setTimeoutAfter(30000)
+        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
+                        .setSmallIcon(R.drawable.icon)
+                        .setContentTitle(getResources().getString(R.string.app_name))
+                        .setContentText(getResources().getString(R.string.user_agreement_broken))
+                        .setSound(soundUri)
+                        .setLights(0xff0000ff, 100, 100)
+                        .setVibrate(new long[] { 200, 3000})
+                        .setOngoing(true)
+                        .setTimeoutAfter(30000)
 //                                    .setDefaults(Notification.DEFAULT_LIGHTS)
 //                                    .setWhen(System.currentTimeMillis())
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-            NotificationManagerCompat notificationManager =
-                    NotificationManagerCompat.from(MainActivity.this);
-            notificationManager.notify(0, builder.build());
-        }
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(MainActivity.this);
+        notificationManager.notify(0, builder.build());
     }
 
     @Override
