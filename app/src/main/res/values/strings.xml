@@ -24,19 +24,19 @@
     <string name="text_yrs2">YRS</string>
     <string name="text_yrs1">YRS</string>
 
-    <string name="cross_text_1" translatable="false">+LICENSE++++++++++++++++++++++++++</string>
-    <string name="cross_text_2" translatable="false">+DISTRIBUTION+++++++++++++++++++++</string>
-    <string name="cross_text_3" translatable="false">+USER AGREEMENT++++++++++++++++++</string>
-    <string name="cross_text_4" translatable="false">++Use+++++++++++++++++++++++++++++</string>
-    <string name="cross_text_5" translatable="false">++Use Restrictions+++++++++++++++++++</string>
-    <string name="cross_text_6" translatable="false">++Copyright Restriction++++++++++++++</string>
-    <string name="cross_text_7" translatable="false">++Limitation of Responsibility++++++++++</string>
+    <string name="cross_text_1">+LICENSE++++++++++++++++++++++++++</string>
+    <string name="cross_text_2">+DISTRIBUTION+++++++++++++++++++++</string>
+    <string name="cross_text_3">+USER AGREEMENT++++++++++++++++++</string>
+    <string name="cross_text_4">++Use+++++++++++++++++++++++++++++</string>
+    <string name="cross_text_5">++Use Restrictions+++++++++++++++++++</string>
+    <string name="cross_text_6">++Copyright Restriction++++++++++++++</string>
+    <string name="cross_text_7">++Limitation of Responsibility++++++++++</string>
 
-    <string name="countdown_copyright" translatable="false">Countdown Copyright © Countdown Fate Systems, LLC IMPORTANT:
+    <string name="countdown_copyright">Countdown Copyright © Countdown Fate Systems, LLC IMPORTANT:
         PLEASE READ THIS LICENSE CAREFULLY BEFORE USING THIS SOFTWARE.
     </string>
 
-    <string name="countdown_text_1" translatable="false">User shall use the application strictly in accordance with the related agreements.
+    <string name="countdown_text_1">User shall use the application strictly in accordance with the related agreements.
         By receiving, opening the file package, and/or using Countdown("Software") containing this software, you agree that this End User
         User License Agreement(EULA) is a legally binding and valid contract and agree to be bound by it.
         You agree to abide by the intellectual property laws and all of the terms and conditions of this Agreement.
@@ -47,20 +47,20 @@
         agreement with Countdown Fate Systems, LLC. Countdown Fate Systems, LLC does not transfer the title of Countdown to you; the license granted to
         you is not a sale. This agreement is a binding legal agreement between Countdown Fate Systems, LLC and the purchasers or users of Countdown.
     </string>
-    <string name="countdown_text_2" translatable="false">If you do not agree to be bound by this agreement, remove Countdown from your computer now and,
+    <string name="countdown_text_2">If you do not agree to be bound by this agreement, remove Countdown from your computer now and,
         if applicable, promptly return to Countdown Fate Systems, LLC by mail any copies of Countdown and related documentation and packaging in your possession.
     </string>
 
-    <string name="countdown_text_3" translatable="false">Countdown and the license herein
+    <string name="countdown_text_3">Countdown and the license herein
         granted shall not be copied, shared, distributed, re-sold, offered for re-sale, transferred or
         sub-licensed in whole or in part except that you may make one copy for archive purposes only.
         For information about redistribution of Countdown contact Countdown Fate Systems, LLC.
     </string>
 
-    <string name="countdown_text_4" translatable="false">Your license to use Countdown is limited to the number of licenses purchased by you.
+    <string name="countdown_text_4">Your license to use Countdown is limited to the number of licenses purchased by you.
         You shall not allow others to use, copy or evaluate copies of Countdown.</string>
 
-    <string name="countdown_text_5" translatable="false">You shall use Countdown in compliance with all applicable laws and not for any unlawful purpose.
+    <string name="countdown_text_5">You shall use Countdown in compliance with all applicable laws and not for any unlawful purpose.
         Without limiting the foregoing, use, display or distribution of Countdown together with material that is pornographic,
         racist, vulgar, obscene, defamatory, libelous, abusive, promoting hatred, discriminating or displaying prejudice based
         on religion, ethnic heritage, race, sexual orientation or age is strictly prohibited.
@@ -75,7 +75,7 @@
         agreement is being violated and you are responsible for that violation!
     </string>
 
-    <string name="countdown_text_6" translatable="false">This Software contains copyrighted material, trade secrets and other proprietary material.
+    <string name="countdown_text_6">This Software contains copyrighted material, trade secrets and other proprietary material.
         You shall not, and shall not attempt to, modify, reverse engineer, disassemble or decompile Countdown.
         Nor can you create any derivative works or other works that are based upon or derived from Countdown in whole or in part.
         Countdown Fate Systems, LLC\'s name, logo and graphics file that represents Countdown shall not be used in any way to promote products developed
@@ -85,7 +85,7 @@
         user except as intended within the bounds of the single user program. All rights not expressly granted hereunder are reserved for Countdown Fate Systems, LLC.
     </string>
 
-    <string name="countdown_text_7" translatable="false">You will indemnify, hold harmless, and defend
+    <string name="countdown_text_7">You will indemnify, hold harmless, and defend
         Countdown Fate Systems, LLC , its employees, agents and distributors against any and all claims, proceedings,
         demand and costs resulting from or in any way connected with your use of Countdown Fate Systems, LLC\'s Software.
         In no event (including, without limitation, in the event of negligence) will Countdown Fate Systems, LLC ,

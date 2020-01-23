@@ -9,30 +9,29 @@
     android:background="@android:color/black"
     tools:context=".MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/transparent">
+<!--    <com.google.android.material.appbar.AppBarLayout-->
+<!--        android:id="@+id/appbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@color/transparent">-->
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:titleTextColor="@color/black"
-            app:subtitleTextColor="@color/black"/>
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolbar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:titleTextColor="@color/black"-->
+<!--            app:subtitleTextColor="@color/black"/>-->
 
-    </com.google.android.material.appbar.AppBarLayout>
+<!--    </com.google.android.material.appbar.AppBarLayout>-->
 
-    <FrameLayout
-        android:id="@+id/drawer_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<!--    <FrameLayout-->
+<!--        android:id="@+id/drawer_layout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
 
-        <include layout="@layout/toolbar"/>
+<!--        <include layout="@layout/toolbar"/>-->
 
-    </FrameLayout>
-
+<!--    </FrameLayout>-->
 
     <LinearLayout
         android:id="@+id/linear_layout"
@@ -40,8 +39,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="100"
-        android:layout_above="@+id/relative_layout_ads"
-        android:layout_below="@+id/appbar">
+        android:layout_above="@+id/relative_layout_ads">
+<!--        android:layout_below="@+id/appbar" >-->
 
         <LinearLayout
             android:id="@+id/layout_yrs"
@@ -248,11 +247,52 @@
             fab:fab_addButtonPlusIconColor="#808080">
 
             <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/color_match"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 fab:fab_colorNormal="@color/grey"
                 fab:fab_colorPressed="@color/white"
                 fab:fab_icon="@drawable/img_color_match">
+
+            </com.getbase.floatingactionbutton.FloatingActionButton>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/jump_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/grey"
+                fab:fab_colorPressed="@color/white"
+                fab:fab_icon="@drawable/img_jump_up">
+
+            </com.getbase.floatingactionbutton.FloatingActionButton>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/christmas_game"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/grey"
+                fab:fab_colorPressed="@color/white"
+                fab:fab_icon="@drawable/img_christmas_game">
+
+            </com.getbase.floatingactionbutton.FloatingActionButton>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/christmas_tree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/grey"
+                fab:fab_colorPressed="@color/white"
+                fab:fab_icon="@drawable/img_christmas_tree">
+
+            </com.getbase.floatingactionbutton.FloatingActionButton>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/barley_break"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/grey"
+                fab:fab_colorPressed="@color/white"
+                fab:fab_icon="@drawable/img_barley_break">
 
             </com.getbase.floatingactionbutton.FloatingActionButton>
 

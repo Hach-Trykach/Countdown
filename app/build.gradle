@@ -28,15 +28,14 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:18.3.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
-    implementation 'com.google.firebase:firebase-auth:19.2.0'
-    implementation 'com.google.firebase:firebase-database:19.2.0'
+//    implementation 'com.google.firebase:firebase-auth:19.2.0'
+//    implementation 'com.google.firebase:firebase-database:19.2.0'
     implementation 'com.google.firebase:firebase-core:17.2.2'
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
 
-    implementation ('com.mikepenz:materialdrawer:6.1.2') {
-        transitive = true
-    }
-//    implementation 'com.mikepenz:crossfader:1.6.0'
+//    implementation ('com.mikepenz:materialdrawer:6.1.2') {
+//        transitive = true
+//    }
     implementation 'com.getbase:floatingactionbutton:1.10.1'
 
     testImplementation 'junit:junit:4.12'

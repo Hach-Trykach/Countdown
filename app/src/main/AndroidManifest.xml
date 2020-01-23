@@ -13,7 +13,9 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Translucent.NoTitleBar">
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,6 +43,8 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
+        <receiver android:name=".AlarmBroadcastReceiver"/>
 
     </application>
 

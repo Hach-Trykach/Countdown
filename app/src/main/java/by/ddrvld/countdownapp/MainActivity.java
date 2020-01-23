@@ -1,21 +1,28 @@
 package by.ddrvld.countdownapp;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,14 +40,15 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
-import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.MiniDrawer;
-import com.mikepenz.materialdrawer.interfaces.ICrossfader;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+//import com.mikepenz.materialdrawer.Drawer;
+//import com.mikepenz.materialdrawer.DrawerBuilder;
+//import com.mikepenz.materialdrawer.MiniDrawer;
+//import com.mikepenz.materialdrawer.interfaces.ICrossfader;
+//import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+//import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+//import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+//import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.Calendar;
 import java.util.Timer;
@@ -58,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     int lastRatingDay;
 
-    Long randomLifeTime;
+    Long timerTime, randomLifeTime;
     Long currentTime = System.currentTimeMillis() / 1000;
 
     Long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
@@ -68,18 +76,21 @@ public class MainActivity extends AppCompatActivity {
     TextView textYrs, textDay, textHrs, textMin, textSec;
 
     private AdView mAdView;
-    private Drawer drawerResult;
-    private MiniDrawer miniResult;
-    private ICrossfader crossFader;
+//    private Drawer drawerResult;
+
+    private PendingIntent pIntent1;
+    private PendingIntent pIntent2;
 
     private int PERIOD = 1000;
-    private int MULTIPLIER = 500;
 
     private final int BTN_COLOR_MATCH = 1;
     private final int BTN_JUMP_UP = 2;
     private final int BTN_CHRISTMAS_GAME = 3;
     private final int BTN_CHRISTMAS_TREE = 4;
     private final int BTN_BARLEY_BREAK = 5;
+
+    private AlarmManager am;
+    private NotificationManager nm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +117,13 @@ public class MainActivity extends AppCompatActivity {
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
 
+        am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        am.set(AlarmManager.RTC, System.currentTimeMillis() + 4000, pIntent1);
+        am.setRepeating(AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + 3000, 5000, pIntent2);
+
+
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -123,19 +141,19 @@ public class MainActivity extends AppCompatActivity {
         }
         else TimerRating();
 
-//        AccountHeader accountHeader = initializeAccountHeader();
-        drawerResult = new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .withRootView(R.id.drawer_layout)
-                .withSliderBackgroundColorRes(R.color.transparent)
-//                .withGenerateMiniDrawer(true)
-                .withActionBarDrawerToggleAnimated(true)
-                .addDrawerItems(initializeDrawerItems())
-//                .addStickyDrawerItems(initializeDrawerItems())
-                .withOnDrawerItemClickListener(onClicksLis)
-//                .withAccountHeader(accountHeader)
-                .build();
+////        AccountHeader accountHeader = initializeAccountHeader();
+//        drawerResult = new DrawerBuilder()
+//                .withActivity(this)
+//                .withToolbar(toolbar)
+//                .withRootView(R.id.drawer_layout)
+//                .withSliderBackgroundColorRes(R.color.transparent)
+////                .withGenerateMiniDrawer(true)
+//                .withActionBarDrawerToggleAnimated(true)
+//                .addDrawerItems(initializeDrawerItems())
+////                .addStickyDrawerItems(initializeDrawerItems())
+//                .withOnDrawerItemClickListener(onClicksLis)
+////                .withAccountHeader(accountHeader)
+//                .build();
 
 //        Long lll = 352662060043475L;
 //        final Long IMEI = Long.parseLong(lll.toString());
@@ -167,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (settings.contains(RANDOMLIFETIME)) {
             randomLifeTime = settings.getLong(RANDOMLIFETIME, 0);
-            timerTime = randomLifeTime;
+            timerTime = randomLifeTime - currentTime;
         } else {
             String imeiString = "";
             for (int i = 8; i < 15; i++)
@@ -231,90 +249,140 @@ public class MainActivity extends AppCompatActivity {
 //            return true;
 //        }
 //    });
-}
 
-    private Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
-        @Override
-        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-            if(drawerItem.getIdentifier() == BTN_COLOR_MATCH)
-            {
+        final FloatingActionButton color_match = findViewById(R.id.color_match);
+        color_match.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.colormatch"));
                 startActivity(intent);
-                return true;
             }
-            else if(drawerItem.getIdentifier() == BTN_JUMP_UP)
-            {
+        });
+
+        final FloatingActionButton jump_up = findViewById(R.id.jump_up);
+        jump_up.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.jumpup"));
                 startActivity(intent);
-                return true;
             }
-            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_GAME)
-            {
+        });
+
+        final FloatingActionButton christmas_game = findViewById(R.id.christmas_game);
+        christmas_game.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmasgame"));
                 startActivity(intent);
-                return true;
             }
-            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_TREE)
-            {
+        });
+
+        final FloatingActionButton christmas_tree = findViewById(R.id.christmas_tree);
+        christmas_tree.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmastree"));
                 startActivity(intent);
-                return true;
             }
-            else if(drawerItem.getIdentifier() == BTN_BARLEY_BREAK)
-            {
+        });
+
+        final FloatingActionButton barley_break = findViewById(R.id.barley_break);
+        barley_break.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.barleybreak"));
                 startActivity(intent);
-                return true;
             }
-            return false;
-        }
-    };
-
-    private IDrawerItem[] initializeDrawerItems() {
-        return new IDrawerItem[] {
-
-            new SectionDrawerItem(),
-
-            new SecondaryDrawerItem()
-//                    .withName(R.string.color_match)
-//                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_color_match)
-                    .withIdentifier(BTN_COLOR_MATCH),
-            new DividerDrawerItem(),
-
-            new SecondaryDrawerItem()
-//                    .withName(R.string.jump_up)
-//                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_jump_up)
-                    .withIdentifier(BTN_JUMP_UP),
-                new DividerDrawerItem(),
-
-            new SecondaryDrawerItem()
-//                    .withName(R.string.christmas_game)
-//                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_christmas_game)
-                    .withIdentifier(BTN_CHRISTMAS_GAME),
-                new DividerDrawerItem(),
-
-            new SecondaryDrawerItem()
-//                    .withName(R.string.christmas_tree)
-//                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_christmas_tree)
-                    .withIdentifier(BTN_CHRISTMAS_TREE),
-                new DividerDrawerItem(),
-
-            new SecondaryDrawerItem()
-//                    .withName(R.string.barley_break)
-//                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_barley_break)
-                    .withIdentifier(BTN_BARLEY_BREAK)
-        };
+        });
     }
+
+//    private Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
+//        @Override
+//        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+//            if(drawerItem.getIdentifier() == BTN_COLOR_MATCH)
+//            {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.colormatch"));
+//                startActivity(intent);
+//                return true;
+//            }
+//            else if(drawerItem.getIdentifier() == BTN_JUMP_UP)
+//            {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.jumpup"));
+//                startActivity(intent);
+//                return true;
+//            }
+//            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_GAME)
+//            {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmasgame"));
+//                startActivity(intent);
+//                return true;
+//            }
+//            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_TREE)
+//            {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmastree"));
+//                startActivity(intent);
+//                return true;
+//            }
+//            else if(drawerItem.getIdentifier() == BTN_BARLEY_BREAK)
+//            {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.barleybreak"));
+//                startActivity(intent);
+//                return true;
+//            }
+//            return false;
+//        }
+//    };
+
+//    private IDrawerItem[] initializeDrawerItems() {
+//        return new IDrawerItem[] {
+//
+//            new SectionDrawerItem(),
+//
+//            new SecondaryDrawerItem()
+////                    .withName(R.string.color_match)
+////                    .withTextColorRes(R.color.white)
+//                    .withIcon(R.drawable.img_color_match)
+//                    .withIdentifier(BTN_COLOR_MATCH),
+//            new DividerDrawerItem(),
+//
+//            new SecondaryDrawerItem()
+////                    .withName(R.string.jump_up)
+////                    .withTextColorRes(R.color.white)
+//                    .withIcon(R.drawable.img_jump_up)
+//                    .withIdentifier(BTN_JUMP_UP),
+//                new DividerDrawerItem(),
+//
+//            new SecondaryDrawerItem()
+////                    .withName(R.string.christmas_game)
+////                    .withTextColorRes(R.color.white)
+//                    .withIcon(R.drawable.img_christmas_game)
+//                    .withIdentifier(BTN_CHRISTMAS_GAME),
+//                new DividerDrawerItem(),
+//
+//            new SecondaryDrawerItem()
+////                    .withName(R.string.christmas_tree)
+////                    .withTextColorRes(R.color.white)
+//                    .withIcon(R.drawable.img_christmas_tree)
+//                    .withIdentifier(BTN_CHRISTMAS_TREE),
+//                new DividerDrawerItem(),
+//
+//            new SecondaryDrawerItem()
+////                    .withName(R.string.barley_break)
+////                    .withTextColorRes(R.color.white)
+//                    .withIcon(R.drawable.img_barley_break)
+//                    .withIdentifier(BTN_BARLEY_BREAK)
+//        };
+//    }
 
 //    private AccountHeader initializeAccountHeader() {
 //        IProfile profile = new ProfileDrawerItem()
@@ -525,7 +593,7 @@ public class MainActivity extends AppCompatActivity {
             int logoTimer = 0;
             public void run() {
                 try {
-                    while (logoTimer < 5000) {
+                    while (logoTimer < 5000) { // 180000
                         sleep(1000);
                         logoTimer += 1000;
                     }
@@ -594,79 +662,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setValues() {
-        Timer timer = new Timer();
-        if (MULTIPLIER == 1) {
+            final Timer timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    if (secs > 0) secs--;
-                    else {
-                        if (mins > 0) mins--;
+                    if (PERIOD == 1000) {
+                        if (secs > 0) secs--;
                         else {
-                            if (hours > 0) hours--;
+                            if (mins > 0) mins--;
                             else {
-                                if (days > 0) days--;
+                                if (hours > 0) hours--;
                                 else {
-                                    if (years > 0) years--;
+                                    if (days > 0) days--;
                                     else {
-                                        end = true;
-                                        return;
+                                        if (years > 0) years--;
+                                        else {
+                                            end = true;
+                                            return;
+                                        }
+                                        days = fullDays;
                                     }
-                                    days = fullDays;
+                                    hours = fullHours;
                                 }
-                                hours = fullHours;
+                                mins = fullMins;
                             }
-                            mins = fullMins;
+                            secs = fullSecs;
                         }
-                        secs = fullSecs;
                     }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateUI();
-                        }
-                    });
-                }
-            }, 0, PERIOD / MULTIPLIER);
-        }
-        else {
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    if (secs > 0) secs--;
                     else {
-                        if (mins > 0) mins--;
+                        if (years > 0) years--;
                         else {
-                            mins = fullMins;
-                        }
-                        secs = fullSecs;
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(years == 0 && days == 0 && hours == 0) {
-                                updateUI();
-                            }
-                        }
-                    });
-                }
-            }, 0, PERIOD / MULTIPLIER);
-            Timer timer2 = new Timer();
-            timer2.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    if (hours > 0) hours--;
-                    else {
-                        if (days > 0) days--;
-                        else {
-                            if (years > 0) years--;
+                            if (days > 0) days--;
                             else {
-                                end = true;
-                                return;
+//                                if (hours > 0) hours--;
+//                                else {
+//                                    if (mins > 0) mins--;
+//                                    else {
+//                                        if (secs > 0) secs--;
+//                                        else {
+//                                        }
+//                                    }
+//                                }
+                                PERIOD = 1000;
+                                sendInAppNotification();
+                                timer.cancel();
+                                setValues();
                             }
-                            days = fullDays;
                         }
-                        hours = fullHours;
                     }
                     runOnUiThread(new Runnable() {
                         @Override
@@ -675,9 +717,22 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
-            }, 0, PERIOD / (MULTIPLIER / 2));
+            }, 0, PERIOD);
         }
-    }
+
+//    private void restartNotify() {
+//        AlarmManager manager = (AlarmManager)getSystemService(
+//                Context.ALARM_SERVICE);
+//
+//
+//// На случай, если мы ранее запускали активити, а потом поменяли время,
+//// откажемся от уведомления
+//        am.cancel(pendingIntent);
+//// Устанавливаем разовое напоминание
+//        Date date = new Date();
+//        long millis = date.getTime();
+//        am.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
+//    }
 
     private void updateUI() {
         if(years >= 10) tvYrs.setText("" + years);
@@ -727,31 +782,44 @@ public class MainActivity extends AppCompatActivity {
     private void sendInAppNotification() {
         Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
-                        .setSmallIcon(R.drawable.icon)
-                        .setContentTitle(getResources().getString(R.string.app_name))
-                        .setContentText(getResources().getString(R.string.user_agreement_broken))
-                        .setSound(soundUri)
-                        .setLights(0xff0000ff, 100, 100)
-                        .setVibrate(new long[] { 200, 3000})
-                        .setOngoing(true)
-                        .setTimeoutAfter(30000)
-//                                    .setDefaults(Notification.DEFAULT_LIGHTS)
-//                                    .setWhen(System.currentTimeMillis())
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
+                .setSmallIcon(R.drawable.icon)
+                .setContentTitle(getResources().getString(R.string.app_name))
+                .setContentText(getResources().getString(R.string.user_agreement_broken))
+                .setSound(soundUri)
+                .setLights(0xff0000ff, 100, 100)
+                .setVibrate(new long[] { 200, 3000})
+                .setOngoing(true)
+                .setTimeoutAfter(30000)
+//                .setDefaults(Notification.DEFAULT_LIGHTS)
+//                .setWhen(System.currentTimeMillis())
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager =
                 NotificationManagerCompat.from(MainActivity.this);
         notificationManager.notify(0, builder.build());
+
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("1", getResources().getString(R.string.app_name),
+                    NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("My channel description");
+            channel.enableLights(true);
+            channel.setLightColor(Color.RED);
+            channel.enableVibration(true);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if(drawerResult != null && drawerResult.isDrawerOpen()) {
-            drawerResult.closeDrawer();
-        } else {
+//        if(drawerResult != null && drawerResult.isDrawerOpen()) {
+//            drawerResult.closeDrawer();
+//        } else {
             super.onBackPressed();
-        }
+//        }
     }
 
     @Override
@@ -763,3 +831,5 @@ public class MainActivity extends AppCompatActivity {
         editor.apply();
     }
 }
+//в Alarm Manager помещаем следующий PendingIntent
+//PendingIntent.getBroadcast( context, 1, new Intent( context, AlarmBroadcastReceiver.class), 0);
