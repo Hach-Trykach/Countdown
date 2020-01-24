@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -41,6 +42,8 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.willy.ratingbar.BaseRatingBar;
+import com.willy.ratingbar.ScaleRatingBar;
 //import com.mikepenz.materialdrawer.Drawer;
 //import com.mikepenz.materialdrawer.DrawerBuilder;
 //import com.mikepenz.materialdrawer.MiniDrawer;
@@ -297,6 +300,27 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.barleybreak"));
                 startActivity(intent);
+            }
+        });
+
+        ScaleRatingBar ratingBar = new ScaleRatingBar(this);
+        ratingBar.setNumStars(5);
+        ratingBar.setMinimumStars(1);
+        ratingBar.setRating(5);
+        ratingBar.setStarPadding(3);
+        ratingBar.setStepSize(1.0f);
+        ratingBar.setStarWidth(100);
+        ratingBar.setStarHeight(100);
+        ratingBar.setIsIndicator(false);
+        ratingBar.setClickable(true);
+        ratingBar.setScrollable(true);
+        ratingBar.setClearRatingEnabled(true);
+        ratingBar.setEmptyDrawableRes(R.drawable.icon_empty);
+        ratingBar.setFilledDrawableRes(R.drawable.icon_filled);
+        ratingBar.setOnRatingChangeListener(new BaseRatingBar.OnRatingChangeListener() {
+            @Override
+            public void onRatingChange(BaseRatingBar ratingBar, float rating, boolean fromUser) {
+                System.out.println("Rating: " + rating);
             }
         });
     }
