@@ -3,6 +3,7 @@ package by.ddrvld.countdownapp;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -26,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -42,6 +44,11 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.willy.ratingbar.BaseRatingBar;
 import com.willy.ratingbar.ScaleRatingBar;
 //import com.mikepenz.materialdrawer.Drawer;
@@ -54,6 +61,7 @@ import com.willy.ratingbar.ScaleRatingBar;
 //import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -81,19 +89,13 @@ public class MainActivity extends AppCompatActivity {
     private AdView mAdView;
 //    private Drawer drawerResult;
 
-    private PendingIntent pIntent1;
-    private PendingIntent pIntent2;
+    public static int PERIOD = 1000;
 
-    private int PERIOD = 1000;
-
-    private final int BTN_COLOR_MATCH = 1;
-    private final int BTN_JUMP_UP = 2;
-    private final int BTN_CHRISTMAS_GAME = 3;
-    private final int BTN_CHRISTMAS_TREE = 4;
-    private final int BTN_BARLEY_BREAK = 5;
-
-    private AlarmManager am;
-    private NotificationManager nm;
+//    private final int BTN_COLOR_MATCH = 1;
+//    private final int BTN_JUMP_UP = 2;
+//    private final int BTN_CHRISTMAS_GAME = 3;
+//    private final int BTN_CHRISTMAS_TREE = 4;
+//    private final int BTN_BARLEY_BREAK = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,13 +122,6 @@ public class MainActivity extends AppCompatActivity {
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
 
-        am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        am.set(AlarmManager.RTC, System.currentTimeMillis() + 4000, pIntent1);
-        am.setRepeating(AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + 3000, 5000, pIntent2);
-
-
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -138,25 +133,11 @@ public class MainActivity extends AppCompatActivity {
             Calendar cal = Calendar.getInstance();
             int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 
-            if(dayOfMonth != lastRatingDay) {
+            if(dayOfMonth != lastRatingDay && lastRatingDay <= 31) {
                 TimerRating();
             }
         }
         else TimerRating();
-
-////        AccountHeader accountHeader = initializeAccountHeader();
-//        drawerResult = new DrawerBuilder()
-//                .withActivity(this)
-//                .withToolbar(toolbar)
-//                .withRootView(R.id.drawer_layout)
-//                .withSliderBackgroundColorRes(R.color.transparent)
-////                .withGenerateMiniDrawer(true)
-//                .withActionBarDrawerToggleAnimated(true)
-//                .addDrawerItems(initializeDrawerItems())
-////                .addStickyDrawerItems(initializeDrawerItems())
-//                .withOnDrawerItemClickListener(onClicksLis)
-////                .withAccountHeader(accountHeader)
-//                .build();
 
 //        Long lll = 352662060043475L;
 //        final Long IMEI = Long.parseLong(lll.toString());
@@ -232,6 +213,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+////        AccountHeader accountHeader = initializeAccountHeader();
+//        drawerResult = new DrawerBuilder()
+//                .withActivity(this)
+//                .withToolbar(toolbar)
+//                .withRootView(R.id.drawer_layout)
+//                .withSliderBackgroundColorRes(R.color.transparent)
+////                .withGenerateMiniDrawer(true)
+//                .withActionBarDrawerToggleAnimated(true)
+//                .addDrawerItems(initializeDrawerItems())
+////                .addStickyDrawerItems(initializeDrawerItems())
+//                .withOnDrawerItemClickListener(onClicksLis)
+////                .withAccountHeader(accountHeader)
+//                .build();
+
 //        moreAppsBtn.setOnTouchListener(new View.OnTouchListener() {
 //        @Override
 //        public boolean onTouch(View view, MotionEvent event) {
@@ -303,26 +298,60 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ScaleRatingBar ratingBar = new ScaleRatingBar(this);
-        ratingBar.setNumStars(5);
-        ratingBar.setMinimumStars(1);
-        ratingBar.setRating(5);
-        ratingBar.setStarPadding(3);
-        ratingBar.setStepSize(1.0f);
-        ratingBar.setStarWidth(100);
-        ratingBar.setStarHeight(100);
-        ratingBar.setIsIndicator(false);
-        ratingBar.setClickable(true);
-        ratingBar.setScrollable(true);
-        ratingBar.setClearRatingEnabled(true);
-        ratingBar.setEmptyDrawableRes(R.drawable.icon_empty);
-        ratingBar.setFilledDrawableRes(R.drawable.icon_filled);
-        ratingBar.setOnRatingChangeListener(new BaseRatingBar.OnRatingChangeListener() {
-            @Override
-            public void onRatingChange(BaseRatingBar ratingBar, float rating, boolean fromUser) {
-                System.out.println("Rating: " + rating);
-            }
-        });
+//        ScaleRatingBar ratingBar = new ScaleRatingBar(this);
+//        ratingBar.setNumStars(5);
+//        ratingBar.setMinimumStars(1);
+//        ratingBar.setRating(5);
+//        ratingBar.setStarPadding(3);
+//        ratingBar.setStepSize(1.0f);
+//        ratingBar.setStarWidth(100);
+//        ratingBar.setStarHeight(100);
+//        ratingBar.setIsIndicator(false);
+//        ratingBar.setClickable(true);
+//        ratingBar.setScrollable(true);
+//        ratingBar.setClearRatingEnabled(true);
+//        ratingBar.setEmptyDrawableRes(R.drawable.icon_empty);
+//        ratingBar.setFilledDrawableRes(R.drawable.icon_filled);
+//        ratingBar.setOnRatingChangeListener(new BaseRatingBar.OnRatingChangeListener() {
+//            @Override
+//            public void onRatingChange(BaseRatingBar ratingBar, float rating, boolean fromUser) {
+//                System.out.println("RATING");
+//            }
+//        });
+
+
+
+        int i = 43200; // 10800 // 12 часов
+        Intent intent = new Intent(this, Receiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast( this.getApplicationContext(), 234324243, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (i * 1000), pendingIntent);
+//        Snackbar.make(findViewById(android.R.id.content), "Alarm set in " + i + " seconds",Snackbar.LENGTH_LONG).show();
+
+
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("1", "broken", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription(getResources().getString(R.string.user_agreement_broken));
+            channel.enableLights(true);
+            channel.setLightColor(Color.RED);
+            channel.enableVibration(true);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+//        FirebaseMessaging.getInstance().subscribeToTopic("general")
+//            .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                @Override
+//                public void onComplete(@NonNull Task<Void> task) {
+//                    String msg = "Successfull";
+//                    if(!task.isSuccessful()) {
+//                        msg = "Failed";
+//                    }
+//                    Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT).show();
+//                }
+//            });
     }
 
 //    private Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
@@ -464,8 +493,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.cancel();
 
+                lastRatingDay = 1000;
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putInt(LAST_RATING_DAY, lastRatingDay);
+                editor.apply();
+
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.countdownapp"));
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
                 startActivity(intent);
             }
         });
@@ -617,7 +651,7 @@ public class MainActivity extends AppCompatActivity {
             int logoTimer = 0;
             public void run() {
                 try {
-                    while (logoTimer < 5000) { // 180000
+                    while (logoTimer < 180000) { // 180000
                         sleep(1000);
                         logoTimer += 1000;
                     }
@@ -686,38 +720,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setValues() {
-            final Timer timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    if (PERIOD == 1000) {
-                        if (secs > 0) secs--;
-                        else {
-                            if (mins > 0) mins--;
-                            else {
-                                if (hours > 0) hours--;
-                                else {
-                                    if (days > 0) days--;
-                                    else {
-                                        if (years > 0) years--;
-                                        else {
-                                            end = true;
-                                            return;
-                                        }
-                                        days = fullDays;
-                                    }
-                                    hours = fullHours;
-                                }
-                                mins = fullMins;
-                            }
-                            secs = fullSecs;
-                        }
-                    }
+        final Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (PERIOD == 1000) {
+                    if (secs > 0) secs--;
                     else {
-                        if (years > 0) years--;
+                        if (mins > 0) mins--;
                         else {
-                            if (days > 0) days--;
+                            if (hours > 0) hours--;
                             else {
+                                if (days > 0) days--;
+                                else {
+                                    if (years > 0) years--;
+                                    else {
+                                        end = true;
+                                        return;
+                                    }
+                                    days = fullDays;
+                                }
+                                hours = fullHours;
+                            }
+                            mins = fullMins;
+                        }
+                        secs = fullSecs;
+                    }
+                }
+                else {
+                    if (years > 0) years--;
+                    else {
+                        if (days > 0) days--;
+                        else {
 //                                if (hours > 0) hours--;
 //                                else {
 //                                    if (mins > 0) mins--;
@@ -727,36 +761,22 @@ public class MainActivity extends AppCompatActivity {
 //                                        }
 //                                    }
 //                                }
-                                PERIOD = 1000;
-                                sendInAppNotification();
-                                timer.cancel();
-                                setValues();
-                            }
+                            PERIOD = 1000;
+                            sendInAppNotification();
+                            timer.cancel();
+                            setValues();
                         }
                     }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateUI();
-                        }
-                    });
                 }
-            }, 0, PERIOD);
-        }
-
-//    private void restartNotify() {
-//        AlarmManager manager = (AlarmManager)getSystemService(
-//                Context.ALARM_SERVICE);
-//
-//
-//// На случай, если мы ранее запускали активити, а потом поменяли время,
-//// откажемся от уведомления
-//        am.cancel(pendingIntent);
-//// Устанавливаем разовое напоминание
-//        Date date = new Date();
-//        long millis = date.getTime();
-//        am.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
-//    }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateUI();
+                    }
+                });
+            }
+        }, 0, PERIOD);
+    }
 
     private void updateUI() {
         if(years >= 10) tvYrs.setText("" + years);
@@ -804,13 +824,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendInAppNotification() {
-        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
+//        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
         NotificationCompat.Builder builder =
             new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle(getResources().getString(R.string.app_name))
                 .setContentText(getResources().getString(R.string.user_agreement_broken))
-                .setSound(soundUri)
+//                .setSound(soundUri)
                 .setLights(0xff0000ff, 100, 100)
                 .setVibrate(new long[] { 200, 3000})
                 .setOngoing(true)
@@ -822,19 +842,6 @@ public class MainActivity extends AppCompatActivity {
         NotificationManagerCompat notificationManager =
                 NotificationManagerCompat.from(MainActivity.this);
         notificationManager.notify(0, builder.build());
-
-//        NotificationManager notificationManager =
-//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("1", getResources().getString(R.string.app_name),
-                    NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("My channel description");
-            channel.enableLights(true);
-            channel.setLightColor(Color.RED);
-            channel.enableVibration(true);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 
     @Override

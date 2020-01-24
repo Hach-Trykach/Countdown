@@ -16,11 +16,8 @@ public class MessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // Handle data payload of FCM messages.
-        handleNotification(remoteMessage);
-    }
+        super.onMessageReceived(remoteMessage);
 
-    private void handleNotification(RemoteMessage remoteMessage) {
         // Create Notification
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

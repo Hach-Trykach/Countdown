@@ -44,7 +44,7 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".AlarmBroadcastReceiver"/>
+        <receiver android:name=".Receiver" />
 
     </application>
 
