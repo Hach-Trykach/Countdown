@@ -4,15 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.net.Uri;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-
-import static by.ddrvld.countdownapp.MainActivity.PERIOD_SETTINGS;
-import static by.ddrvld.countdownapp.MainActivity.settings;
 
 public class Receiver extends BroadcastReceiver {
 
@@ -23,9 +18,9 @@ public class Receiver extends BroadcastReceiver {
 //        mp = MediaPlayer.create(context, R.raw.krik);
 //        mp.start();
 
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(PERIOD_SETTINGS, 100);
-        editor.apply();
+//        SharedPreferences.Editor editor = settings.edit();
+//        editor.putInt(IMEI_STRING, 100);
+//        editor.apply();
 
         Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getApplicationContext().getPackageName() + "/" + R.raw.krik);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "1")

@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -41,6 +42,8 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.FirebaseDatabase;
 //import com.mikepenz.materialdrawer.Drawer;
 //import com.mikepenz.materialdrawer.DrawerBuilder;
 //import com.mikepenz.materialdrawer.MiniDrawer;
@@ -59,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     static final String APP_PREFERENCES = "settings";
     private final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
 
-    boolean end;
     static final String IMEI_STRING = "randomlifetime";
     static final String PERIOD_SETTINGS = "period";
     static final String LAST_RATING_DAY = "last_rating_day";
@@ -67,10 +69,8 @@ public class MainActivity extends AppCompatActivity {
 
     int lastRatingDay;
 
-    long timerTime;
-    //    Long randomLifeTime;
-    long IMEI;
-    long currentTime = System.currentTimeMillis() / 1000;
+    Long timerTime, IMEI;
+    Long currentTime = System.currentTimeMillis() / 1000;
 
     long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
     long years, days, hours, mins, secs;
@@ -97,11 +97,10 @@ public class MainActivity extends AppCompatActivity {
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (settings.contains(IMEI_STRING)) {
             onCreateActivityDate();
-        }
-        else setContentView(R.layout.terms_of_use);
+        } else setContentView(R.layout.terms_of_use);
 
         Button accept_and_continue_Btn = findViewById(R.id.accept_and_continue);
-        if(accept_and_continue_Btn != null) {
+        if (accept_and_continue_Btn != null) {
             accept_and_continue_Btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -125,15 +124,13 @@ public class MainActivity extends AppCompatActivity {
             Calendar cal = Calendar.getInstance();
             int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
 
-            if(dayOfMonth != lastRatingDay && lastRatingDay <= 31) {
+            if (dayOfMonth != lastRatingDay && lastRatingDay <= 31) {
                 TimerRating();
             }
-        }
-        else TimerRating();
+        } else TimerRating();
         if (settings.contains(PERIOD_SETTINGS)) {
             PERIOD = settings.getInt(PERIOD_SETTINGS, 0);
-        }
-        else PERIOD = 1000;
+        } else PERIOD = 1000;
 
 //        Long lll = 352662060043475L;
 //        final Long IMEI = Long.parseLong(lll.toString());
@@ -186,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
             timerTime = IMEI - currentTime;
 //            FirebaseDatabase.getInstance().getReference().push().setValue(IMEI);
         }
+//        timerTime = 20L;
 
         years = timerTime / 31536000;
         days = timerTime / 86400 % 365;
@@ -330,7 +328,6 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-
 
 
 //        FirebaseMessaging.getInstance().subscribeToTopic("general")
@@ -559,37 +556,38 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void PermissionRequest() {
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.READ_PHONE_STATE)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                ErrorReadPhoneStateDialog();
-            } else {
-                // No explanation needed; request the permission
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.READ_PHONE_STATE},
-                        MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
+    private void PermissionRequest() {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Here, thisActivity is the current activity
+            if (ContextCompat.checkSelfPermission(MainActivity.this,
+                    Manifest.permission.READ_PHONE_STATE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Permission is not granted
+                // Should we show an explanation?
+                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                        Manifest.permission.READ_PHONE_STATE)) {
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+                    ErrorReadPhoneStateDialog();
+                } else {
+                    // No explanation needed; request the permission
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.READ_PHONE_STATE},
+                            MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
 
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                    // app-defined int constant. The callback method gets the
+                    // result of the request.
+                }
+            } else {
+                // Permission has already been granted
+                Timer();
             }
-        } else {
-            // Permission has already been granted
-            Timer();
-        }
+        } else Timer();
     }
 
-    public void ErrorReadPhoneStateDialog()
-    {
+    public void ErrorReadPhoneStateDialog() {
         final Context context = this;
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -624,7 +622,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_PHONE_STATE: {
                 // If request is cancelled, the result arrays are empty.
@@ -647,6 +645,7 @@ public class MainActivity extends AppCompatActivity {
     public void TimerRating() {
         final Thread logoTimer = new Thread() {
             int logoTimer = 0;
+
             public void run() {
                 try {
                     while (logoTimer < 180000) { // 180000
@@ -671,6 +670,7 @@ public class MainActivity extends AppCompatActivity {
     public void Timer() {
         final Thread logoTimer = new Thread() {
             int logoTimer = 0;
+
             public void run() {
                 try {
                     while (logoTimer < 5000) {
@@ -693,14 +693,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void theEnd() {
-        sendInAppNotification();
+        MediaPlayer mp;
+        mp = MediaPlayer.create(MainActivity.this, R.raw.krik);
+        mp.start();
     }
 
     public String getIMEI() {
-
-        TelephonyManager mngr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        String imei = mngr.getImei(1);
-//        String imei = "132132546546123";
+        String imei;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
+            android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+            TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+            imei = manager.getDeviceId(0);
+        }
+        else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O &&
+                android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+            TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+            imei = manager.getImei(0);
+        }
+        else imei = "352662064043475";
         return imei;
     }
 
@@ -723,50 +733,34 @@ public class MainActivity extends AppCompatActivity {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (PERIOD == 1000) {
-                    if (secs > 0) secs--;
-                    else {
-                        if (mins > 0) mins--;
-                        else {
-                            if (hours > 0) hours--;
-                            else {
-                                if (days > 0) days--;
-                                else {
-                                    if (years > 0) years--;
-                                    else {
-                                        end = true;
-                                        return;
-                                    }
-                                    days = fullDays;
-                                }
-                                hours = fullHours;
-                            }
-                            mins = fullMins;
-                        }
-                        secs = fullSecs;
-                    }
-                }
+                if (secs > 0) secs--;
                 else {
-                    if (years > 0) years--;
+                    secs = fullSecs;
+                    if (mins > 0) mins--;
                     else {
-                        if (days > 0) days--;
+                        mins = fullMins;
+                        if (hours > 0) hours--;
                         else {
-//                                if (hours > 0) hours--;
-//                                else {
-//                                    if (mins > 0) mins--;
-//                                    else {
-//                                        if (secs > 0) secs--;
-//                                        else {
-//                                        }
-//                                    }
-//                                }
-                            PERIOD = 1000;
-                            timer.cancel();
-                            setValues();
-                            sendInAppNotification();
+                            hours = fullHours;
+                            if (days > 0) days--;
+                            else {
+                                days = fullDays;
+                                if (years > 0) years--;
+                                else {
+                                    theEnd();
+                                    timer.cancel();
+                                    return;
+                                }
+                            }
                         }
                     }
                 }
+//                if (years == 0 && days == 0) {
+//                    PERIOD = 1000;
+//                    timer.cancel();
+//                    setValues();
+//                    sendInAppNotification();
+//                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -819,13 +813,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        if(end) theEnd();
     }
-
-//    public void resetTimer() {
-//        timer.cancel();
-//        setValues();
-//    }
 
     private void sendInAppNotification() {
         Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
@@ -848,16 +836,16 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(0, builder.build());
     }
 
-    private void saveImei() {
-        long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
+    private void saveTime() {
+        long time, yearsNow, daysNow, hoursNow, minsNow;
         yearsNow = years * 31536000;
-        daysNow = days * (86400 % 365);
+        daysNow = days * 86400;
         hoursNow = hours * 3600;
         minsNow = mins * 60;
-        timeToNotifi = yearsNow + daysNow + hoursNow + minsNow + secs;
+        time = yearsNow + daysNow + hoursNow + minsNow + secs;
         SharedPreferences.Editor editor = settings.edit();
-        if(IMEI != 0)
-            editor.putLong(IMEI_STRING, currentTime + timeToNotifi);
+        if(time != 0)
+            editor.putLong(IMEI_STRING, currentTime + time);
         editor.apply();
     }
 
@@ -873,33 +861,33 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (settings.contains(PERIOD_SETTINGS)) {
-            PERIOD = settings.getInt(PERIOD_SETTINGS, 0);
-        }
+//        if (settings.contains(PERIOD_SETTINGS)) {
+//            PERIOD = settings.getInt(PERIOD_SETTINGS, 0);
+//        }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        saveImei();
+    protected void onPause() {
+        super.onPause();
+        saveTime();
 
-        long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
-
-        if(PERIOD < 1000) {
+        if (timerTime != null && timerTime < 259200) { // Меньше 3х дней
+            long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
             yearsNow = years * 31536000;
-            daysNow = days * (86400 % 365);
+            daysNow = days * 86400;
             hoursNow = hours * 3600;
             minsNow = mins * 60;
-            timeToNotifi = yearsNow + daysNow + hoursNow + minsNow + secs;
-        } else {
-            timeToNotifi = 10L; // 43200L // 12 часов 10800L // 3 часа
-        }
-        System.out.println("\nTIME To NOTIFI: " + timeToNotifi);
+            timeToNotifi = (yearsNow + daysNow + hoursNow + minsNow + secs) / 3;
 
-        Intent intent = new Intent(this, Receiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeToNotifi * 1000), pendingIntent);
-//        Snackbar.make(findViewById(android.R.id.content), "Alarm set in " + i + " seconds",Snackbar.LENGTH_LONG).show();
+            System.out.println("TIMER_TIME: " + timerTime);
+
+            FirebaseDatabase.getInstance().getReference().push().setValue(timerTime);
+
+            Intent intent = new Intent(this, Receiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeToNotifi * 1000), pendingIntent);
+//            Snackbar.make(findViewById(android.R.id.content), "Alarm set in " + timeToNotifi + " seconds",Snackbar.LENGTH_LONG).show();
+        }
     }
 }
