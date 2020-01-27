@@ -3,7 +3,6 @@ package by.ddrvld.countdownapp;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,21 +12,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -44,13 +41,6 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.google.android.gms.tasks.OnCanceledListener;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.willy.ratingbar.BaseRatingBar;
-import com.willy.ratingbar.ScaleRatingBar;
 //import com.mikepenz.materialdrawer.Drawer;
 //import com.mikepenz.materialdrawer.DrawerBuilder;
 //import com.mikepenz.materialdrawer.MiniDrawer;
@@ -61,7 +51,6 @@ import com.willy.ratingbar.ScaleRatingBar;
 //import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -71,17 +60,20 @@ public class MainActivity extends AppCompatActivity {
     private final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
 
     boolean end;
-    static final String RANDOMLIFETIME = "randomlifetime";
+    static final String IMEI_STRING = "randomlifetime";
+    static final String PERIOD_SETTINGS = "period";
     static final String LAST_RATING_DAY = "last_rating_day";
     private ImageView moreAppsBtn;
 
     int lastRatingDay;
 
-    Long timerTime, randomLifeTime;
-    Long currentTime = System.currentTimeMillis() / 1000;
+    long timerTime;
+    //    Long randomLifeTime;
+    long IMEI;
+    long currentTime = System.currentTimeMillis() / 1000;
 
-    Long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
-    Long years, days, hours, mins, secs;
+    long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
+    long years, days, hours, mins, secs;
 
     TextView tvYrs, tvDay, tvHrs, tvMin, tvSec;
     TextView textYrs, textDay, textHrs, textMin, textSec;
@@ -89,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private AdView mAdView;
 //    private Drawer drawerResult;
 
-    public static int PERIOD = 1000;
+    public static int PERIOD;
 
 //    private final int BTN_COLOR_MATCH = 1;
 //    private final int BTN_JUMP_UP = 2;
@@ -103,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.terms_of_use);
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        if (settings.contains(RANDOMLIFETIME)) {
+        if (settings.contains(IMEI_STRING)) {
             onCreateActivityDate();
         }
         else setContentView(R.layout.terms_of_use);
@@ -138,10 +130,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else TimerRating();
+        if (settings.contains(PERIOD_SETTINGS)) {
+            PERIOD = settings.getInt(PERIOD_SETTINGS, 0);
+        }
+        else PERIOD = 1000;
 
 //        Long lll = 352662060043475L;
 //        final Long IMEI = Long.parseLong(lll.toString());
-        final Long IMEI = Long.parseLong(getIMEI());
 
         MediaPlayer mediaPlayer;
         mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.countdown);
@@ -167,30 +162,30 @@ public class MainActivity extends AppCompatActivity {
 
         moreAppsBtn = findViewById(R.id.more_apps_button);
 
-        if (settings.contains(RANDOMLIFETIME)) {
-            randomLifeTime = settings.getLong(RANDOMLIFETIME, 0);
-            timerTime = randomLifeTime - currentTime;
+        if (settings.contains(IMEI_STRING)) {
+            IMEI = settings.getLong(IMEI_STRING, 0);
+            timerTime = IMEI - currentTime;
         } else {
+            IMEI = Long.parseLong(getIMEI());
             String imeiString = "";
             for (int i = 8; i < 15; i++)
                 imeiString += Long.toString(IMEI).charAt(i);
 
             if (Character.getNumericValue(Long.toString(IMEI).charAt(8)) <= 1)
-                randomLifeTime = Long.parseLong(String.format("16%s0", imeiString));
-            else randomLifeTime = Long.parseLong(String.format("3%s00", imeiString));
+                IMEI = Long.parseLong(String.format("16%s0", imeiString));
+            else IMEI = Long.parseLong(String.format("3%s00", imeiString));
 
-            if (randomLifeTime < currentTime + (3600 * 24) * 4)
-                randomLifeTime = currentTime + ((3600L * 24) * 4) + 1111;
-//            else if(randomLifeTime > currentTime + 1982459975L) randomLifeTime = currentTime + 1982459975L;
+            if (IMEI < currentTime + (3600 * 24) * 4)
+                IMEI = currentTime + ((3600L * 24) * 4) + 1111;
+//            else if(IMEI > currentTime + 1982459975L) IMEI = currentTime + 1982459975L;
 
 //            System.out.println("\nIMEI: " + IMEI);
 //            System.out.println("\nIMEI String: " + imeiString);
-//            System.out.println("\nrandomLifeTime: " + randomLifeTime);
+//            System.out.println("\IMEI: " + IMEI);
 
-            timerTime = randomLifeTime - currentTime;
+            timerTime = IMEI - currentTime;
 //            FirebaseDatabase.getInstance().getReference().push().setValue(IMEI);
         }
-//        FirebaseDatabase.getInstance().getReference().push().setValue(randomLifeTime);
 
         years = timerTime / 31536000;
         days = timerTime / 86400 % 365;
@@ -319,27 +314,24 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-
-
-        int i = 43200; // 10800 // 12 часов
-        Intent intent = new Intent(this, Receiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast( this.getApplicationContext(), 234324243, intent, 0);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (i * 1000), pendingIntent);
-//        Snackbar.make(findViewById(android.R.id.content), "Alarm set in " + i + " seconds",Snackbar.LENGTH_LONG).show();
-
-
-
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("1", "broken", NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription(getResources().getString(R.string.user_agreement_broken));
+            Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
+            NotificationChannel channel = new NotificationChannel("1", getResources().getString(R.string.user_agreement_broken), NotificationManager.IMPORTANCE_HIGH);
+//            channel.setDescription(getResources().getString(R.string.user_agreement_broken));
             channel.enableLights(true);
             channel.setLightColor(Color.RED);
             channel.enableVibration(true);
+            AudioAttributes attribute = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build();
+            channel.setSound(soundUri, attribute);
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+
+
 
 //        FirebaseMessaging.getInstance().subscribeToTopic("general")
 //            .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -619,6 +611,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.cancel();
                 finish();
+                Intent intentX = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intentX.setData(uri);
+                if (intentX.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intentX);
+                }
             }
         });
         dialog.setCancelable(false);
@@ -701,7 +699,8 @@ public class MainActivity extends AppCompatActivity {
     public String getIMEI() {
 
         TelephonyManager mngr = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        String imei = mngr.getImei();
+        String imei = mngr.getImei(1);
+//        String imei = "132132546546123";
         return imei;
     }
 
@@ -762,9 +761,9 @@ public class MainActivity extends AppCompatActivity {
 //                                    }
 //                                }
                             PERIOD = 1000;
-                            sendInAppNotification();
                             timer.cancel();
                             setValues();
+                            sendInAppNotification();
                         }
                     }
                 }
@@ -823,25 +822,43 @@ public class MainActivity extends AppCompatActivity {
         if(end) theEnd();
     }
 
+//    public void resetTimer() {
+//        timer.cancel();
+//        setValues();
+//    }
+
     private void sendInAppNotification() {
-//        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
+        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
         NotificationCompat.Builder builder =
-            new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
-                .setSmallIcon(R.drawable.icon)
-                .setContentTitle(getResources().getString(R.string.app_name))
-                .setContentText(getResources().getString(R.string.user_agreement_broken))
-//                .setSound(soundUri)
-                .setLights(0xff0000ff, 100, 100)
-                .setVibrate(new long[] { 200, 3000})
-                .setOngoing(true)
-                .setTimeoutAfter(30000)
+                new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
+                        .setSmallIcon(R.drawable.icon)
+                        .setContentTitle(getResources().getString(R.string.app_name))
+                        .setContentText(getResources().getString(R.string.user_agreement_broken))
+                        .setSound(soundUri)
+                        .setLights(0xff0000ff, 100, 100)
+                        .setVibrate(new long[] { 200, 3000})
+                        .setOngoing(true)
+                        .setTimeoutAfter(30000)
 //                .setDefaults(Notification.DEFAULT_LIGHTS)
 //                .setWhen(System.currentTimeMillis())
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager =
                 NotificationManagerCompat.from(MainActivity.this);
         notificationManager.notify(0, builder.build());
+    }
+
+    private void saveImei() {
+        long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
+        yearsNow = years * 31536000;
+        daysNow = days * (86400 % 365);
+        hoursNow = hours * 3600;
+        minsNow = mins * 60;
+        timeToNotifi = yearsNow + daysNow + hoursNow + minsNow + secs;
+        SharedPreferences.Editor editor = settings.edit();
+        if(IMEI != 0)
+            editor.putLong(IMEI_STRING, currentTime + timeToNotifi);
+        editor.apply();
     }
 
     @Override
@@ -849,18 +866,40 @@ public class MainActivity extends AppCompatActivity {
 //        if(drawerResult != null && drawerResult.isDrawerOpen()) {
 //            drawerResult.closeDrawer();
 //        } else {
-            super.onBackPressed();
+        super.onBackPressed();
 //        }
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        SharedPreferences.Editor editor = settings.edit();
-        if(randomLifeTime != null)
-            editor.putLong(RANDOMLIFETIME, randomLifeTime);
-        editor.apply();
+    protected void onResume() {
+        super.onResume();
+        if (settings.contains(PERIOD_SETTINGS)) {
+            PERIOD = settings.getInt(PERIOD_SETTINGS, 0);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveImei();
+
+        long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
+
+        if(PERIOD < 1000) {
+            yearsNow = years * 31536000;
+            daysNow = days * (86400 % 365);
+            hoursNow = hours * 3600;
+            minsNow = mins * 60;
+            timeToNotifi = yearsNow + daysNow + hoursNow + minsNow + secs;
+        } else {
+            timeToNotifi = 10L; // 43200L // 12 часов 10800L // 3 часа
+        }
+        System.out.println("\nTIME To NOTIFI: " + timeToNotifi);
+
+        Intent intent = new Intent(this, Receiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeToNotifi * 1000), pendingIntent);
+//        Snackbar.make(findViewById(android.R.id.content), "Alarm set in " + i + " seconds",Snackbar.LENGTH_LONG).show();
     }
 }
-//в Alarm Manager помещаем следующий PendingIntent
-//PendingIntent.getBroadcast( context, 1, new Intent( context, AlarmBroadcastReceiver.class), 0);
