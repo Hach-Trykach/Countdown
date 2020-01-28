@@ -170,12 +170,18 @@ public class MainActivity extends AppCompatActivity {
             IMEI = settings.getLong(IMEI_STRING, 0);
             timerTime = IMEI - currentTime;
         } else {
-            IMEI = Long.parseLong(getIMEI());
+//            IMEI = Long.parseLong(getIMEI());
+////            IMEI = Long.parseLong("352662064043475");
+//            String imeiString = "";
+//            for (int i = 8; i < 15; i++)
+//                imeiString += Long.toString(IMEI).charAt(i);
+
+
             String imeiString = "";
             for (int i = 8; i < 15; i++)
-                imeiString += Long.toString(IMEI).charAt(i);
+                imeiString += getIMEI().charAt(i);
 
-            if (Character.getNumericValue(Long.toString(IMEI).charAt(8)) <= 1)
+            if (Character.getNumericValue(getIMEI().charAt(8)) <= 1)
                 IMEI = Long.parseLong(String.format("16%s0", imeiString));
             else IMEI = Long.parseLong(String.format("3%s00", imeiString));
 
@@ -190,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
             timerTime = IMEI - currentTime;
 //            FirebaseDatabase.getInstance().getReference().push().setValue(IMEI);
         }
-//        timerTime = 20L; // uncomment for testing
 
         years = timerTime / 31536000;
         days = timerTime / 86400 % 365;
@@ -252,6 +257,13 @@ public class MainActivity extends AppCompatActivity {
         color_match.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                timerTime = 60L; // uncomment for testing
+//                years = timerTime / 31536000; // uncomment for testing
+//                days = timerTime / 86400 % 365; // uncomment for testing
+//                hours = timerTime / 3600 % 24; // uncomment for testing
+//                mins = timerTime / 60 % 60; // uncomment for testing
+//                secs = timerTime % 60; // uncomment for testing
+
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.colormatch"));
                 startActivity(intent);
@@ -718,18 +730,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getIMEI() {
-        String imei;
-        if (android.os.Build.VERSION.SDK_INT == 20 || android.os.Build.VERSION.SDK_INT == 21 || android.os.Build.VERSION.SDK_INT == 22) {
+        String imei = "";
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT &&
+                android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             imei = manager.getDeviceId(0);
+            System.out.println("1");
         }
-        else if (android.os.Build.VERSION.SDK_INT == 23 || android.os.Build.VERSION.SDK_INT == 24 ||
-                android.os.Build.VERSION.SDK_INT == 25 || android.os.Build.VERSION.SDK_INT == 26 ||
-                android.os.Build.VERSION.SDK_INT == 27 || android.os.Build.VERSION.SDK_INT == 28) {
+        else if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             imei = manager.getImei(0);
+            System.out.println("2");
         }
-        else imei = "352662064043475";
+        else if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            imei = "852662063043475";
+            System.out.println("3");
+        }
+        else {
+            if(imei == "" || imei == null)
+                imei = "352662064043475";
+            System.out.println("4");
+        }
         return imei;
     }
 
@@ -879,18 +901,18 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(0, builder.build());
     }
 
-    private void saveTime() {
-        long time, yearsNow, daysNow, hoursNow, minsNow;
-        yearsNow = years * 31536000;
-        daysNow = days * 86400;
-        hoursNow = hours * 3600;
-        minsNow = mins * 60;
-        time = yearsNow + daysNow + hoursNow + minsNow + secs;
-        SharedPreferences.Editor editor = settings.edit();
-        if(time != 0)
-            editor.putLong(IMEI_STRING, currentTime + time);
-        editor.apply();
-    }
+//    private void saveTime() {
+//        long time, yearsNow, daysNow, hoursNow, minsNow;
+//        yearsNow = years * 31536000;
+//        daysNow = days * 86400;
+//        hoursNow = hours * 3600;
+//        minsNow = mins * 60;
+//        time = yearsNow + daysNow + hoursNow + minsNow + secs;
+//        SharedPreferences.Editor editor = settings.edit();
+//        if(time != 0)
+//            editor.putLong(IMEI_STRING, currentTime + time);
+//        editor.apply();
+//    }
 
     @Override
     public void onBackPressed() {
@@ -912,7 +934,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        saveTime();
+//        saveTime();
 
         if (timerTime != null && timerTime < 259200) { // Меньше 3х дней
             long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
@@ -924,8 +946,11 @@ public class MainActivity extends AppCompatActivity {
 
             if(timerTime > 36000)
                 timeToNotifi = timeToNotifi / 3;
-            else
+            else if(timerTime > 160)
                 timeToNotifi = timerTime - 160L;
+            else if(timerTime > 3)
+                timeToNotifi = timerTime;
+            else return;
 
             System.out.println("TIMER_TIME: " + timerTime);
 
