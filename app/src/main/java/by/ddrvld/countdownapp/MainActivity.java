@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -135,15 +136,21 @@ public class MainActivity extends AppCompatActivity {
 //        Long lll = 352662060043475L;
 //        final Long IMEI = Long.parseLong(lll.toString());
 
-        MediaPlayer mediaPlayer;
-        mediaPlayer = MediaPlayer.create(MainActivity.this, R.raw.countdown);
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        MediaPlayer mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mp = MediaPlayer.create(MainActivity.this, R.raw.countdown);
+        mp.start();
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
+        {
             @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayer.release();
+            public void onCompletion(MediaPlayer mp)
+            {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
             }
         });
-        mediaPlayer.start();
 
         tvYrs = findViewById(R.id.yrs);
         tvDay = findViewById(R.id.day);
@@ -183,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
             timerTime = IMEI - currentTime;
 //            FirebaseDatabase.getInstance().getReference().push().setValue(IMEI);
         }
-//        timerTime = 20L;
+//        timerTime = 20L; // uncomment for testing
 
         years = timerTime / 31536000;
         days = timerTime / 86400 % 365;
@@ -693,20 +700,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void theEnd() {
-        MediaPlayer mp;
+        final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        MediaPlayer mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mp = MediaPlayer.create(MainActivity.this, R.raw.krik);
         mp.start();
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
+        {
+            @Override
+            public void onCompletion(MediaPlayer mp)
+            {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
+            }
+        });
     }
 
-    public String getIMEI() {
+    private String getIMEI() {
         String imei;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
-            android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+        if (android.os.Build.VERSION.SDK_INT == 20 || android.os.Build.VERSION.SDK_INT == 21 || android.os.Build.VERSION.SDK_INT == 22) {
             TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             imei = manager.getDeviceId(0);
         }
-        else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O &&
-                android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) {
+        else if (android.os.Build.VERSION.SDK_INT == 23 || android.os.Build.VERSION.SDK_INT == 24 ||
+                android.os.Build.VERSION.SDK_INT == 25 || android.os.Build.VERSION.SDK_INT == 26 ||
+                android.os.Build.VERSION.SDK_INT == 27 || android.os.Build.VERSION.SDK_INT == 28) {
             TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             imei = manager.getImei(0);
         }
@@ -755,12 +774,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }
-//                if (years == 0 && days == 0) {
-//                    PERIOD = 1000;
-//                    timer.cancel();
-//                    setValues();
-//                    sendInAppNotification();
-//                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -772,20 +785,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI() {
-        if(years >= 10) tvYrs.setText("" + years);
+        if (years >= 10) tvYrs.setText("" + years);
         else tvYrs.setText("0" + years);
 
-        if(days >= 10) tvDay.setText("" + days);
+        if (days >= 10) tvDay.setText("" + days);
         else tvDay.setText("0" + days);
 
-        if(hours >= 10) tvHrs.setText("" + hours);
+        if (hours >= 10) tvHrs.setText("" + hours);
         else tvHrs.setText("0" + hours);
 
-        if(mins >= 10) tvMin.setText("" + mins);
+        if (mins >= 10) tvMin.setText("" + mins);
         else tvMin.setText("0" + mins);
 
-        if(secs >= 10) tvSec.setText("" + secs);
+        if (secs >= 10) tvSec.setText("" + secs);
         else tvSec.setText("0" + secs);
+
+        if (years == 0 && days == 0 && hours == 0 && mins == 0 && secs == 0) {
+            tvYrs.setText("B");
+            tvDay.setText("O");
+            tvHrs.setText("O");
+            tvMin.setText("O");
+            tvSec.setText("O");
+
+            textYrs.setVisibility(View.INVISIBLE);
+            textDay.setVisibility(View.INVISIBLE);
+            textHrs.setVisibility(View.INVISIBLE);
+            textMin.setVisibility(View.INVISIBLE);
+            textSec.setVisibility(View.INVISIBLE);
+        }
 
         textYrs.setText(GetWord(years, getResources().getString(R.string.text_yrs1), getResources().getString(R.string.text_yrs2), getResources().getString(R.string.text_yrs3)));
         textDay.setText(GetWord(days, getResources().getString(R.string.text_day1), getResources().getString(R.string.text_day2), getResources().getString(R.string.text_day3)));
@@ -816,13 +843,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendInAppNotification() {
-        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
+        final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        MediaPlayer mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mp = MediaPlayer.create(MainActivity.this, R.raw.krik);
+        mp.start();
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
+        {
+            @Override
+            public void onCompletion(MediaPlayer mp)
+            {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
+            }
+        });
+
+//        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
                         .setSmallIcon(R.drawable.icon)
                         .setContentTitle(getResources().getString(R.string.app_name))
                         .setContentText(getResources().getString(R.string.user_agreement_broken))
-                        .setSound(soundUri)
+//                        .setSound(soundUri)
                         .setLights(0xff0000ff, 100, 100)
                         .setVibrate(new long[] { 200, 3000})
                         .setOngoing(true)
@@ -877,7 +920,12 @@ public class MainActivity extends AppCompatActivity {
             daysNow = days * 86400;
             hoursNow = hours * 3600;
             minsNow = mins * 60;
-            timeToNotifi = (yearsNow + daysNow + hoursNow + minsNow + secs) / 3;
+            timeToNotifi = yearsNow + daysNow + hoursNow + minsNow + secs;
+
+            if(timerTime > 36000)
+                timeToNotifi = timeToNotifi / 3;
+            else
+                timeToNotifi = timerTime - 160L;
 
             System.out.println("TIMER_TIME: " + timerTime);
 
