@@ -731,7 +731,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String getIMEI() {
         String imei = "";
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT &&
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 &&
                 android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             imei = manager.getDeviceId(0);
