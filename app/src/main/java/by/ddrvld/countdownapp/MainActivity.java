@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.RawRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -137,10 +138,10 @@ public class MainActivity extends AppCompatActivity {
 //        final Long IMEI = Long.parseLong(lll.toString());
 
         final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
         MediaPlayer mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
         mp = MediaPlayer.create(MainActivity.this, R.raw.countdown);
         mp.start();
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mp)
             {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
+                mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
             }
         });
 
@@ -713,10 +714,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void theEnd() {
         final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
         MediaPlayer mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
         mp = MediaPlayer.create(MainActivity.this, R.raw.krik);
         mp.start();
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
@@ -724,33 +725,32 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mp)
             {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
+                mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
             }
         });
     }
 
     private String getIMEI() {
         String imei = "";
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 &&
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                 android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             imei = manager.getDeviceId(0);
-            System.out.println("1");
+            System.out.println("5.0 API 21 - 5.1 API 22");
         }
         else if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
                 android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             imei = manager.getImei(0);
-            System.out.println("2");
+            System.out.println("6.0 API 23 - 9.0 Pie API 28");
         }
         else if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
             imei = "852662063043475";
-            System.out.println("3");
+            System.out.println("10.0 (Q) API 29");
         }
-        else {
-            if(imei == "" || imei == null)
-                imei = "352662064043475";
-            System.out.println("4");
+        else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            imei = "352662064043475";
+            System.out.println("4.4 Kitkat API 19");
         }
         return imei;
     }
@@ -865,21 +865,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendInAppNotification() {
-        final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-        MediaPlayer mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mp = MediaPlayer.create(MainActivity.this, R.raw.krik);
-        mp.start();
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
-        {
-            @Override
-            public void onCompletion(MediaPlayer mp)
-            {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
-            }
-        });
+        theEnd();
 
 //        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
         NotificationCompat.Builder builder =

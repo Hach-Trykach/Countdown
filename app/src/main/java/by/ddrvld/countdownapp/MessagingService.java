@@ -17,21 +17,8 @@ public class MessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-        MediaPlayer mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mp = MediaPlayer.create(getApplicationContext(), R.raw.krik);
-        mp.start();
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
-        {
-            @Override
-            public void onCompletion(MediaPlayer mp)
-            {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
-            }
-        });
+
+        theEnd();
 
         // Create Notification
         Intent intent = new Intent(this, MainActivity.class);
@@ -58,5 +45,23 @@ public class MessagingService extends FirebaseMessagingService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    public void theEnd() {
+        final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
+        MediaPlayer mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+        mp = MediaPlayer.create(MessagingService.this, R.raw.krik);
+        mp.start();
+        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
+        {
+            @Override
+            public void onCompletion(MediaPlayer mp)
+            {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
+            }
+        });
     }
 }

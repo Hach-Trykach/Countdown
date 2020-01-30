@@ -16,10 +16,10 @@ public class Receiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         final AudioManager mAudioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
-        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
         MediaPlayer mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
         mp = MediaPlayer.create(context, R.raw.krik);
         mp.start();
         mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
@@ -27,7 +27,7 @@ public class Receiver extends BroadcastReceiver {
             @Override
             public void onCompletion(MediaPlayer mp)
             {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
+                mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
             }
         });
 
