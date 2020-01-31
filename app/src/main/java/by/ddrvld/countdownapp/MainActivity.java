@@ -43,6 +43,7 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
 //import com.mikepenz.materialdrawer.Drawer;
 //import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 //        Long lll = 352662060043475L;
 //        final Long date_of_death = Long.parseLong(lll.toString());
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
             // Permission is granted
             final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
             final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
@@ -174,62 +175,10 @@ public class MainActivity extends AppCompatActivity {
         if (settings.contains(DATE_OF_DEATH)) {
             date_of_death = settings.getLong(DATE_OF_DEATH, 0);
         } else {
-//            date_of_death = getIMEI();
-
-
-
-
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-                    TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-                    if (manager.getDeviceId(1) == null) {
-                        date_of_death = Long.parseLong(manager.getImei(0));
-                    } else if (manager.getDeviceId(0) == null) {
-                        date_of_death = Long.parseLong(manager.getImei(1));
-                    } else if (manager.getImei(1) == null) {
-                        date_of_death = Long.parseLong(manager.getDeviceId(0));
-                    } else if (manager.getImei(0) == null) {
-                        date_of_death = Long.parseLong(manager.getDeviceId(1));
-                    }
-                } else {
-                    switch (Build.VERSION.SDK_INT) {
-                        case Build.VERSION_CODES.Q: {
-                            date_of_death = 852662063043475L;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                switch (Build.VERSION.SDK_INT) {
-                    case Build.VERSION_CODES.KITKAT: {
-                        date_of_death = 352662063043475L;
-                        break;
-                    }
-                    case Build.VERSION_CODES.LOLLIPOP: {
-                        date_of_death = 352662062043475L;
-                        break;
-                    }
-                    case Build.VERSION_CODES.LOLLIPOP_MR1: {
-                        date_of_death = 352662061043475L;
-                        break;
-                    }
-                    default:
-                        date_of_death = 352662064043475L;
-                }
-            }
-
-
-
-
-
-
-
-
-
+            date_of_death = getIMEI();
 //            date_of_death = 352662060003475L; // for testing
             String imeiString = "";
-            for (int i = 8; i < 15; i++)
+            for (int i = 8; i < Long.toString(date_of_death).length(); i++)
                 imeiString += Long.toString(date_of_death).charAt(i);
 
             if (Character.getNumericValue(Long.toString(date_of_death).charAt(8)) <= 1) {
@@ -765,7 +714,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void theEnd() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
             // Permission is granted
             final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
             final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
@@ -793,24 +742,23 @@ public class MainActivity extends AppCompatActivity {
         switch (android.os.Build.VERSION.SDK_INT) {
             case Build.VERSION_CODES.M:
             case Build.VERSION_CODES.N:
-            case Build.VERSION_CODES.N_MR1: {
-                TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-                imei = Long.parseLong(manager.getDeviceId(1));
-                return imei;
-            }
+            case Build.VERSION_CODES.N_MR1:
             case Build.VERSION_CODES.O:
             case Build.VERSION_CODES.O_MR1:
             case Build.VERSION_CODES.P: {
-                TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-                imei = Long.parseLong(manager.getImei(1));
-                return imei;
+                if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                    TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+                    imei = Long.parseLong(manager.getDeviceId(1));
+                    return imei;
+                }
+                else return 852662060043475L;
             }
             case Build.VERSION_CODES.Q: {
                 imei = 852662063043475L;
                 return imei;
             }
             case Build.VERSION_CODES.KITKAT:{
-                imei = 352662063043475L;
+                imei = 352662062543475L;
                 return imei;
             }
             case Build.VERSION_CODES.LOLLIPOP:{
@@ -824,6 +772,49 @@ public class MainActivity extends AppCompatActivity {
             default: return 352662064043475L;
         }
     }
+
+//    private long getIMEI2() {
+//        long imei;
+//        switch (Build.VERSION.SDK_INT) {
+//            case Build.VERSION_CODES.M:
+//            case Build.VERSION_CODES.N:
+//            case Build.VERSION_CODES.N_MR1:
+//            case Build.VERSION_CODES.O:
+//            case Build.VERSION_CODES.O_MR1:
+//            case Build.VERSION_CODES.P: {
+//                TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+//                if(manager != null) {
+//                    if (manager.getDeviceId(1) != null) {
+//                        imei = Long.parseLong(manager.getImei(1));
+//                    } else if (manager.getDeviceId(0) != null) {
+//                        imei = Long.parseLong(manager.getImei(0));
+//                    } else if (manager.getImei(1) != null) {
+//                        imei = Long.parseLong(manager.getDeviceId(1));
+//                    } else if (manager.getImei(0) != null) {
+//                        imei = Long.parseLong(manager.getDeviceId(0));
+//                    }
+//                }
+//            }
+//            case Build.VERSION_CODES.KITKAT: {
+//                imei = 352662063043475L;
+//                break;
+//            }
+//            case Build.VERSION_CODES.LOLLIPOP: {
+//                imei = 352662062043475L;
+//                break;
+//            }
+//            case Build.VERSION_CODES.LOLLIPOP_MR1: {
+//                imei = 352662061043475L;
+//                break;
+//            }
+//            case Build.VERSION_CODES.Q: {
+//                imei = 852662062543475L;
+//                break;
+//            }
+//            default: imei = 352662064043475L;
+//        }
+//        return imei;
+//    }
 
     private String GetWord(Long value, String one, String before_five, String after_five)
     {

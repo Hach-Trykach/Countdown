@@ -18,7 +18,7 @@ public class Receiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
             // Permission is granted
             final AudioManager mAudioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
             final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);

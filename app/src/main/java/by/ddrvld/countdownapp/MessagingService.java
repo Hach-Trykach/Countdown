@@ -51,7 +51,7 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     public void theEnd() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
             // Permission is granted
             final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
             final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
