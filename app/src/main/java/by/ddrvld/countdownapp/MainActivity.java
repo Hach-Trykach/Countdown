@@ -27,7 +27,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.RawRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -44,7 +43,6 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
 //import com.mikepenz.materialdrawer.Drawer;
 //import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -64,15 +62,15 @@ public class MainActivity extends AppCompatActivity {
     static final String APP_PREFERENCES = "settings";
     private final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
 
-    static final String IMEI_STRING = "randomlifetime";
+    static final String DATE_OF_DEATH = "randomlifetime";
     static final String PERIOD_SETTINGS = "period";
     static final String LAST_RATING_DAY = "last_rating_day";
     private ImageView moreAppsBtn;
 
     int lastRatingDay;
 
-    Long timerTime, IMEI;
-    Long currentTime = System.currentTimeMillis() / 1000;
+    long timerTime, date_of_death;
+    long currentTime = System.currentTimeMillis() / 1000;
 
     long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
     long years, days, hours, mins, secs;
@@ -97,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.terms_of_use);
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        if (settings.contains(IMEI_STRING)) {
+        if (settings.contains(DATE_OF_DEATH)) {
             onCreateActivityDate();
         } else setContentView(R.layout.terms_of_use);
 
@@ -135,23 +133,29 @@ public class MainActivity extends AppCompatActivity {
         } else PERIOD = 1000;
 
 //        Long lll = 352662060043475L;
-//        final Long IMEI = Long.parseLong(lll.toString());
+//        final Long date_of_death = Long.parseLong(lll.toString());
 
-        final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
-        MediaPlayer mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-        mp = MediaPlayer.create(MainActivity.this, R.raw.countdown);
-        mp.start();
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
-        {
-            @Override
-            public void onCompletion(MediaPlayer mp)
-            {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
-            }
-        });
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED) {
+            // Permission is granted
+            final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+            mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
+            MediaPlayer mp = new MediaPlayer();
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            mp = MediaPlayer.create(this, R.raw.countdown);
+            mp.start();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
+                }
+            });
+        } else {
+            MediaPlayer mp = new MediaPlayer();
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            mp = MediaPlayer.create(this, R.raw.countdown);
+            mp.start();
+        }
 
         tvYrs = findViewById(R.id.yrs);
         tvDay = findViewById(R.id.day);
@@ -167,36 +171,84 @@ public class MainActivity extends AppCompatActivity {
 
         moreAppsBtn = findViewById(R.id.more_apps_button);
 
-        if (settings.contains(IMEI_STRING)) {
-            IMEI = settings.getLong(IMEI_STRING, 0);
-            timerTime = IMEI - currentTime;
+        if (settings.contains(DATE_OF_DEATH)) {
+            date_of_death = settings.getLong(DATE_OF_DEATH, 0);
         } else {
-//            IMEI = Long.parseLong(getIMEI());
-////            IMEI = Long.parseLong("352662064043475");
-//            String imeiString = "";
-//            for (int i = 8; i < 15; i++)
-//                imeiString += Long.toString(IMEI).charAt(i);
+//            date_of_death = getIMEI();
 
 
+
+
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                    TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+                    if (manager.getDeviceId(1) == null) {
+                        date_of_death = Long.parseLong(manager.getImei(0));
+                    } else if (manager.getDeviceId(0) == null) {
+                        date_of_death = Long.parseLong(manager.getImei(1));
+                    } else if (manager.getImei(1) == null) {
+                        date_of_death = Long.parseLong(manager.getDeviceId(0));
+                    } else if (manager.getImei(0) == null) {
+                        date_of_death = Long.parseLong(manager.getDeviceId(1));
+                    }
+                } else {
+                    switch (Build.VERSION.SDK_INT) {
+                        case Build.VERSION_CODES.Q: {
+                            date_of_death = 852662063043475L;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                switch (Build.VERSION.SDK_INT) {
+                    case Build.VERSION_CODES.KITKAT: {
+                        date_of_death = 352662063043475L;
+                        break;
+                    }
+                    case Build.VERSION_CODES.LOLLIPOP: {
+                        date_of_death = 352662062043475L;
+                        break;
+                    }
+                    case Build.VERSION_CODES.LOLLIPOP_MR1: {
+                        date_of_death = 352662061043475L;
+                        break;
+                    }
+                    default:
+                        date_of_death = 352662064043475L;
+                }
+            }
+
+
+
+
+
+
+
+
+
+//            date_of_death = 352662060003475L; // for testing
             String imeiString = "";
             for (int i = 8; i < 15; i++)
-                imeiString += getIMEI().charAt(i);
+                imeiString += Long.toString(date_of_death).charAt(i);
 
-            if (Character.getNumericValue(getIMEI().charAt(8)) <= 1)
-                IMEI = Long.parseLong(String.format("16%s0", imeiString));
-            else IMEI = Long.parseLong(String.format("3%s00", imeiString));
+            if (Character.getNumericValue(Long.toString(date_of_death).charAt(8)) <= 1) {
+                int second_number_of_timestamp = Character.getNumericValue(Long.toString(currentTime).charAt(1)) + 1;
+                date_of_death = Long.parseLong("1" + second_number_of_timestamp + imeiString + "0");
+            } else date_of_death = Long.parseLong("3" + imeiString + "00");
 
-            if (IMEI < currentTime + (3600 * 24) * 4)
-                IMEI = currentTime + ((3600L * 24) * 4) + 1111;
-//            else if(IMEI > currentTime + 1982459975L) IMEI = currentTime + 1982459975L;
+            if (date_of_death < currentTime + (3600 * 24) * 4)
+                date_of_death = currentTime + ((3600L * 24) * 4) + 1111;
+//            else if(date_of_death > currentTime + 1982459975L) date_of_death = currentTime + 1982459975L;
 
-//            System.out.println("\nIMEI: " + IMEI);
-//            System.out.println("\nIMEI String: " + imeiString);
-//            System.out.println("\IMEI: " + IMEI);
+//            System.out.println("\date_of_death: " + date_of_death);
+//            System.out.println("\date_of_death String: " + imeiString);
+//            System.out.println("\date_of_death: " + date_of_death);
 
-            timerTime = IMEI - currentTime;
-//            FirebaseDatabase.getInstance().getReference().push().setValue(IMEI);
+//            FirebaseDatabase.getInstance().getReference().push().setValue(date_of_death);
+            saveTime();
         }
+        timerTime = date_of_death - currentTime;
 
         years = timerTime / 31536000;
         days = timerTime / 86400 % 365;
@@ -713,46 +765,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void theEnd() {
-        final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
-        MediaPlayer mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-        mp = MediaPlayer.create(MainActivity.this, R.raw.krik);
-        mp.start();
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
-        {
-            @Override
-            public void onCompletion(MediaPlayer mp)
-            {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
-            }
-        });
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED) {
+            // Permission is granted
+            final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+            mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
+            MediaPlayer mp = new MediaPlayer();
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            mp = MediaPlayer.create(this, R.raw.krik);
+            mp.start();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
+                }
+            });
+        } else {
+            MediaPlayer mp = new MediaPlayer();
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            mp = MediaPlayer.create(this, R.raw.krik);
+            mp.start();
+        }
     }
 
-    private String getIMEI() {
-        String imei = "";
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-            imei = manager.getDeviceId(0);
-            System.out.println("5.0 API 21 - 5.1 API 22");
+    private long getIMEI() {
+        long imei;
+        switch (android.os.Build.VERSION.SDK_INT) {
+            case Build.VERSION_CODES.M:
+            case Build.VERSION_CODES.N:
+            case Build.VERSION_CODES.N_MR1: {
+                TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+                imei = Long.parseLong(manager.getDeviceId(1));
+                return imei;
+            }
+            case Build.VERSION_CODES.O:
+            case Build.VERSION_CODES.O_MR1:
+            case Build.VERSION_CODES.P: {
+                TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+                imei = Long.parseLong(manager.getImei(1));
+                return imei;
+            }
+            case Build.VERSION_CODES.Q: {
+                imei = 852662063043475L;
+                return imei;
+            }
+            case Build.VERSION_CODES.KITKAT:{
+                imei = 352662063043475L;
+                return imei;
+            }
+            case Build.VERSION_CODES.LOLLIPOP:{
+                imei = 352662062043475L;
+                return imei;
+            }
+            case Build.VERSION_CODES.LOLLIPOP_MR1: {
+                imei = 352662061043475L;
+                return imei;
+            }
+            default: return 352662064043475L;
         }
-        else if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-            imei = manager.getImei(0);
-            System.out.println("6.0 API 23 - 9.0 Pie API 28");
-        }
-        else if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-            imei = "852662063043475";
-            System.out.println("10.0 (Q) API 29");
-        }
-        else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            imei = "352662064043475";
-            System.out.println("4.4 Kitkat API 19");
-        }
-        return imei;
     }
 
     private String GetWord(Long value, String one, String before_five, String after_five)
@@ -887,18 +957,19 @@ public class MainActivity extends AppCompatActivity {
         notificationManager.notify(0, builder.build());
     }
 
-//    private void saveTime() {
+    private void saveTime() {
 //        long time, yearsNow, daysNow, hoursNow, minsNow;
 //        yearsNow = years * 31536000;
 //        daysNow = days * 86400;
 //        hoursNow = hours * 3600;
 //        minsNow = mins * 60;
 //        time = yearsNow + daysNow + hoursNow + minsNow + secs;
-//        SharedPreferences.Editor editor = settings.edit();
-//        if(time != 0)
-//            editor.putLong(IMEI_STRING, currentTime + time);
-//        editor.apply();
-//    }
+        if(date_of_death >= 0) {
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putLong(DATE_OF_DEATH, date_of_death);
+            editor.apply();
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -920,9 +991,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        saveTime();
+        System.out.println("TIMER_TIME: " + timerTime);
+        System.out.println("date_of_death: " + date_of_death);
 
-        if (timerTime != null && timerTime < 259200) { // Меньше 3х дней
+        if (timerTime > 0 && timerTime < 259200) { // Меньше 3х дней
             long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
             yearsNow = years * 31536000;
             daysNow = days * 86400;
@@ -937,8 +1009,6 @@ public class MainActivity extends AppCompatActivity {
             else if(timerTime > 3)
                 timeToNotifi = timerTime;
             else return;
-
-            System.out.println("TIMER_TIME: " + timerTime);
 
             FirebaseDatabase.getInstance().getReference().push().setValue(timerTime);
 
