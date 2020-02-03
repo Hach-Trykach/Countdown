@@ -34,6 +34,13 @@
 <!--    </FrameLayout>-->
 
     <LinearLayout
+        android:id="@+id/left_fragment"
+        android:layout_width="0px"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:orientation="vertical"/>
+
+    <LinearLayout
         android:id="@+id/linear_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -59,7 +59,7 @@
             android:layout_height="wrap_content"
             app:srb_numStars="5"
             app:srb_minimumStars="1"
-            app:srb_rating="5"
+            app:srb_rating="3"
             app:srb_starWidth="40dp"
             app:srb_starHeight="40dp"
             app:srb_starPadding="5dp"

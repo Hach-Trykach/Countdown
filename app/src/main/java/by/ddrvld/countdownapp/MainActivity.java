@@ -3,6 +3,9 @@ package by.ddrvld.countdownapp;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -25,7 +28,9 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -45,14 +50,12 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
-//import com.mikepenz.materialdrawer.Drawer;
-//import com.mikepenz.materialdrawer.DrawerBuilder;
-//import com.mikepenz.materialdrawer.MiniDrawer;
-//import com.mikepenz.materialdrawer.interfaces.ICrossfader;
-//import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-//import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-//import com.mikepenz.materialdrawer.model.SectionDrawerItem;
-//import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.Calendar;
 import java.util.Timer;
@@ -81,14 +84,17 @@ public class MainActivity extends AppCompatActivity {
 
     private AdView mAdView;
 //    private Drawer drawerResult;
+    private Fragment leftFragment;
+
+    private RelativeLayout relativeLayout;
 
     public static int PERIOD;
 
-//    private final int BTN_COLOR_MATCH = 1;
-//    private final int BTN_JUMP_UP = 2;
-//    private final int BTN_CHRISTMAS_GAME = 3;
-//    private final int BTN_CHRISTMAS_TREE = 4;
-//    private final int BTN_BARLEY_BREAK = 5;
+    private final int BTN_COLOR_MATCH = 1;
+    private final int BTN_JUMP_UP = 2;
+    private final int BTN_CHRISTMAS_GAME = 3;
+    private final int BTN_CHRISTMAS_TREE = 4;
+    private final int BTN_BARLEY_BREAK = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,27 +142,7 @@ public class MainActivity extends AppCompatActivity {
 //        Long lll = 352662060043475L;
 //        final Long date_of_death = Long.parseLong(lll.toString());
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is granted
-            final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
-            mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
-            MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-            mp = MediaPlayer.create(this, R.raw.countdown);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
-                }
-            });
-        } else {
-            MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-            mp = MediaPlayer.create(this, R.raw.countdown);
-            mp.start();
-        }
+        playStartSound(R.raw.countdown);
 
         tvYrs = findViewById(R.id.yrs);
         tvDay = findViewById(R.id.day);
@@ -171,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         textSec = findViewById(R.id.text_sec);
 
         moreAppsBtn = findViewById(R.id.more_apps_button);
+        relativeLayout = findViewById(R.id.relative_layout);
 
         if (settings.contains(DATE_OF_DEATH)) {
             date_of_death = settings.getLong(DATE_OF_DEATH, 0);
@@ -207,24 +194,31 @@ public class MainActivity extends AppCompatActivity {
 
         setValues();
 
-        mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
-                .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
-                .build();
-        mAdView.loadAd(adRequest);
+        adsInitialization();
 
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
+        fragmentInitialization();
+
+        relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+            public void onSwipeTop() {
+                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: top", Toast.LENGTH_SHORT).show();
             }
+            public void onSwipeRight() {
+                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: right", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeLeft() {
+                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: left", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeBottom() {
+                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: bottom", Toast.LENGTH_SHORT).show();
+            }
+
         });
 
 ////        AccountHeader accountHeader = initializeAccountHeader();
 //        drawerResult = new DrawerBuilder()
 //                .withActivity(this)
 //                .withToolbar(toolbar)
-//                .withRootView(R.id.drawer_layout)
+////                .withRootView(R.id.drawer_layout)
 //                .withSliderBackgroundColorRes(R.color.transparent)
 ////                .withGenerateMiniDrawer(true)
 //                .withActionBarDrawerToggleAnimated(true)
@@ -364,6 +358,57 @@ public class MainActivity extends AppCompatActivity {
 //            });
     }
 
+    private void fragmentInitialization() {
+        // получим экземпляр FragmentTransaction из нашей Activity
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+
+        // добавляем фрагмент
+        leftFragment = new Fragment();
+        fragmentTransaction.add(R.id.left_fragment, leftFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void playStartSound(int soundID) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
+            // Permission is granted
+            final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+            mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
+            MediaPlayer mp = new MediaPlayer();
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            mp = MediaPlayer.create(this, soundID);
+            mp.start();
+            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
+                }
+            });
+        } else {
+            MediaPlayer mp = new MediaPlayer();
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            mp = MediaPlayer.create(this, soundID);
+            mp.start();
+        }
+    }
+
+    private void adsInitialization() {
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
+                .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
+                .build();
+        mAdView.loadAd(adRequest);
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+    }
+
 //    private Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
 //        @Override
 //        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -405,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
 //            return false;
 //        }
 //    };
-
+//
 //    private IDrawerItem[] initializeDrawerItems() {
 //        return new IDrawerItem[] {
 //
@@ -714,27 +759,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void theEnd() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is granted
-            final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
-            mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
-            MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-            mp = MediaPlayer.create(this, R.raw.krik);
-            mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
-                }
-            });
-        } else {
-            MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-            mp = MediaPlayer.create(this, R.raw.krik);
-            mp.start();
-        }
+        playStartSound(R.raw.krik);
     }
 
     private long getIMEI() {
