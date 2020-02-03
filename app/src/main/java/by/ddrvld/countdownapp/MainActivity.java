@@ -1,10 +1,10 @@
 package by.ddrvld.countdownapp;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,7 +49,6 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -84,9 +84,14 @@ public class MainActivity extends AppCompatActivity {
 
     private AdView mAdView;
 //    private Drawer drawerResult;
-    private Fragment leftFragment;
 
     private RelativeLayout relativeLayout;
+    private LinearLayout linearLayout;
+    private RelativeLayout floatingMenu;
+
+    private Fragment fragment1;
+    private Fragment fragment2;
+    private FragmentTransaction transaction;
 
     public static int PERIOD;
 
@@ -158,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
 
         moreAppsBtn = findViewById(R.id.more_apps_button);
         relativeLayout = findViewById(R.id.relative_layout);
+        linearLayout = findViewById(R.id.linear_layout);
+        floatingMenu = findViewById(R.id.floatingMenu);
 
         if (settings.contains(DATE_OF_DEATH)) {
             date_of_death = settings.getLong(DATE_OF_DEATH, 0);
@@ -196,20 +203,54 @@ public class MainActivity extends AppCompatActivity {
 
         adsInitialization();
 
-        fragmentInitialization();
+//        transaction = getFragmentManager().beginTransaction();
+//        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//        transaction.setCustomAnimations(R.animator.slide_in_left, R.animator.slide_in_right);
+
+        fragment1 = new LeftFragment();
+//        fragment2 = new RightFragment();
+
+        transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.fragment, fragment1)
+                .addToBackStack(null)
+//                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//                .setCustomAnimations(R.animator.slide_in_left, R.animator.slide_in_right)
+                .hide(fragment1)
+                .commit();
 
         relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeTop() {
-                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: top", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: top", Toast.LENGTH_SHORT).show();
+
+//                ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+//                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                    @Override
+//                    public void onAnimationUpdate(ValueAnimator animation) {
+//                        linearLayout.setAlpha((Float) animation.getAnimatedValue());
+//                    }
+//                });
+//                animator.start();
             }
             public void onSwipeRight() {
-                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: right", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: right", Toast.LENGTH_SHORT).show();
+//                transaction = getFragmentManager().beginTransaction();
+//                transaction.show(fragment1)
+//                    .addToBackStack(null)
+//                    .commit();
+                ObjectAnimator.ofFloat(linearLayout, View.X, 0, 800).start();
+                ObjectAnimator.ofFloat(floatingMenu, View.X, 0, 800).start();
             }
             public void onSwipeLeft() {
-                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: left", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: left", Toast.LENGTH_SHORT).show();
+//                transaction = getFragmentManager().beginTransaction();
+//                transaction.hide(fragment1)
+//                    .addToBackStack(null)
+//                    .commit();
+                ObjectAnimator.ofFloat(linearLayout, View.X, 800, 0).start();
+                ObjectAnimator.ofFloat(floatingMenu, View.X, 800, 0).start();
             }
             public void onSwipeBottom() {
-                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: bottom", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: bottom", Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -356,18 +397,6 @@ public class MainActivity extends AppCompatActivity {
 //                    Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT).show();
 //                }
 //            });
-    }
-
-    private void fragmentInitialization() {
-        // получим экземпляр FragmentTransaction из нашей Activity
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager
-                .beginTransaction();
-
-        // добавляем фрагмент
-        leftFragment = new Fragment();
-        fragmentTransaction.add(R.id.left_fragment, leftFragment);
-        fragmentTransaction.commit();
     }
 
     private void playStartSound(int soundID) {

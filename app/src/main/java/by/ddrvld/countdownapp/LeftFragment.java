@@ -2,6 +2,7 @@ package by.ddrvld.countdownapp;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +12,16 @@ import androidx.annotation.Nullable;
 
 public class LeftFragment extends Fragment {
 
+    private Fragment fragment1;
+    private Fragment fragment2;
+    private FragmentTransaction transaction;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // TODO Auto-generated method stub
-        View myFragmentView = inflater.inflate(R.layout.fragment_layout, container, false);
+        View myFragmentView = inflater.inflate(R.layout.left_fragment, container, false);
         return myFragmentView;
     }
 
@@ -29,8 +34,6 @@ public class LeftFragment extends Fragment {
 //            public void onClick(View view) {
 //
 //            }
-//            FragmentManager manager = getActivity().getFragmentManager();
-//            RightFragment firhtFragment = new RightFragment();
 //        });
     }
 }

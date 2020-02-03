@@ -14,7 +14,7 @@ public class RightFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // TODO Auto-generated method stub
-        View myFragmentView = inflater.inflate(R.layout.fragment_layout, container, false);
+        View myFragmentView = inflater.inflate(R.layout.activity_date, container, false);
         return myFragmentView;
     }
 
@@ -28,7 +28,7 @@ public class RightFragment extends Fragment {
 //
 //            }
 ////            FragmentManager manager = getActivity().getFragmentManager();
-////            RightFragment firhtFragment = new RightFragment();
+////            RightFragment firhtFragment = new LeftFragment();
 //        });
     }
 }
