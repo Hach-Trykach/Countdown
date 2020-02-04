@@ -4,7 +4,7 @@ import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -31,7 +31,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,6 +38,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -88,10 +88,6 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout relativeLayout;
     private LinearLayout linearLayout;
     private RelativeLayout floatingMenu;
-
-    private Fragment fragment1;
-    private Fragment fragment2;
-    private FragmentTransaction transaction;
 
     public static int PERIOD;
 
@@ -207,16 +203,25 @@ public class MainActivity extends AppCompatActivity {
 //        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 //        transaction.setCustomAnimations(R.animator.slide_in_left, R.animator.slide_in_right);
 
-        fragment1 = new LeftFragment();
-//        fragment2 = new RightFragment();
+//        fragment1 = new LeftFragment();
+////        fragment2 = new RightFragment();
+//
+//        transaction = getFragmentManager().beginTransaction();
+//        transaction.(R.id.fragment, fragment1)
+//                .addToBackStack(null)
+////                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+////                .setCustomAnimations(R.animator.slide_in_left, R.animator.slide_in_right)
+//                .hide(fragment1)
+//                .commit();
 
-        transaction = getFragmentManager().beginTransaction();
-        transaction.add(R.id.fragment, fragment1)
-                .addToBackStack(null)
-//                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                .setCustomAnimations(R.animator.slide_in_left, R.animator.slide_in_right)
-                .hide(fragment1)
-                .commit();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Fragment fragment1 = new LeftFragment();
+        fragmentTransaction.add(R.id.fragment, fragment1)
+//        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+//        .setCustomAnimations(R.animator.slide_in_left, R.animator.slide_in_right)
+        .commit();
 
         relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeTop() {
