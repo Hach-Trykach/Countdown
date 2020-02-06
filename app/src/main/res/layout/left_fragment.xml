@@ -6,8 +6,10 @@
     android:background="#FF0000">
 
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:text="Fragment 1" />
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Первый экран"
+        android:textStyle="bold"/>
 
 </LinearLayout>

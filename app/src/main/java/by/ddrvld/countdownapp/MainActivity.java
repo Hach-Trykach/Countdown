@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -24,8 +23,12 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.Html;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,6 +42,10 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -57,7 +64,9 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -91,11 +100,18 @@ public class MainActivity extends AppCompatActivity {
 
     public static int PERIOD;
 
+    private boolean layoutStatus = false;
+
     private final int BTN_COLOR_MATCH = 1;
     private final int BTN_JUMP_UP = 2;
     private final int BTN_CHRISTMAS_GAME = 3;
     private final int BTN_CHRISTMAS_TREE = 4;
     private final int BTN_BARLEY_BREAK = 5;
+
+    static final int PAGE_COUNT = 2;
+
+    ViewPager pager;
+    PagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,8 +134,58 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        public MyFragmentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return LeftFragment.newInstance(position);
+        }
+
+        @Override
+        public int getCount() {
+            return PAGE_COUNT;
+        }
+
+    }
+
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
+
+//        LayoutInflater inflater = LayoutInflater.from(this);
+//        List<View> pages = new ArrayList<>();
+//
+//        View page = inflater.inflate(R.layout.activity_date, null);
+//        pages.add(page);
+//
+//        page = inflater.inflate(R.layout.activity_date, null);
+//        pages.add(page);
+
+        pager = findViewById(R.id.pager);
+        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        pager.setAdapter(pagerAdapter);
+        pager.setCurrentItem(1);
+//        setContentView(pager);
+
+        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -199,32 +265,12 @@ public class MainActivity extends AppCompatActivity {
 
         adsInitialization();
 
-//        transaction = getFragmentManager().beginTransaction();
-//        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//        transaction.setCustomAnimations(R.animator.slide_in_left, R.animator.slide_in_right);
-
-//        fragment1 = new LeftFragment();
-////        fragment2 = new RightFragment();
-//
-//        transaction = getFragmentManager().beginTransaction();
-//        transaction.(R.id.fragment, fragment1)
-//                .addToBackStack(null)
-////                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-////                .setCustomAnimations(R.animator.slide_in_left, R.animator.slide_in_right)
-//                .hide(fragment1)
-//                .commit();
-
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        Fragment fragment1 = new LeftFragment();
-        fragmentTransaction.add(R.id.fragment, fragment1)
-//        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//        .setCustomAnimations(R.animator.slide_in_left, R.animator.slide_in_right)
-        .commit();
-
         relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
             public void onSwipeTop() {
+
+                final Animation animationFlipIn = AnimationUtils.loadAnimation(MainActivity.this,
+                        android.R.anim.slide_in_left);
+                relativeLayout.startAnimation(animationFlipIn);
 //                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: top", Toast.LENGTH_SHORT).show();
 
 //                ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
@@ -238,24 +284,27 @@ public class MainActivity extends AppCompatActivity {
             }
             public void onSwipeRight() {
 //                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: right", Toast.LENGTH_SHORT).show();
-//                transaction = getFragmentManager().beginTransaction();
-//                transaction.show(fragment1)
-//                    .addToBackStack(null)
-//                    .commit();
-                ObjectAnimator.ofFloat(linearLayout, View.X, 0, 800).start();
-                ObjectAnimator.ofFloat(floatingMenu, View.X, 0, 800).start();
+
+                if(!layoutStatus) {
+                    layoutStatus = true;
+                    ObjectAnimator.ofFloat(linearLayout, View.X, 0, 800).start();
+                    ObjectAnimator.ofFloat(floatingMenu, View.X, 0, 800).start();
+                }
             }
             public void onSwipeLeft() {
 //                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: left", Toast.LENGTH_SHORT).show();
-//                transaction = getFragmentManager().beginTransaction();
-//                transaction.hide(fragment1)
-//                    .addToBackStack(null)
-//                    .commit();
-                ObjectAnimator.ofFloat(linearLayout, View.X, 800, 0).start();
-                ObjectAnimator.ofFloat(floatingMenu, View.X, 800, 0).start();
+
+                if(layoutStatus) {
+                    layoutStatus = false;
+                    ObjectAnimator.ofFloat(linearLayout, View.X, 800, 0).start();
+                    ObjectAnimator.ofFloat(floatingMenu, View.X, 800, 0).start();
+                }
             }
             public void onSwipeBottom() {
 //                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: bottom", Toast.LENGTH_SHORT).show();
+                final Animation animationFlipOut = AnimationUtils.loadAnimation(MainActivity.this,
+                        android.R.anim.slide_out_right);
+                relativeLayout.startAnimation(animationFlipOut);
             }
 
         });
