@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     static final String DATE_OF_DEATH = "randomlifetime";
     static final String PERIOD_SETTINGS = "period";
     static final String LAST_RATING_DAY = "last_rating_day";
+    static final String ADS_STATUS_FOR_SOON_DYING = "AdsStatusForSoonDying";
     private ImageView moreAppsBtn;
 
     int lastRatingDay;
@@ -100,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static int PERIOD;
 
+    private boolean AdsStatusForSoonDying = false;
     private boolean layoutStatus = false;
 
     private final int BTN_COLOR_MATCH = 1;
@@ -120,7 +122,27 @@ public class MainActivity extends AppCompatActivity {
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (settings.contains(DATE_OF_DEATH)) {
-            onCreateActivityDate();
+
+//            //////////For Test/////////
+//            SharedPreferences.Editor editor = settings.edit();
+//            AdsStatusForSoonDying = true;
+//            editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
+//            editor.apply();
+//            ///////////////////////////
+
+            if (settings.contains(ADS_STATUS_FOR_SOON_DYING)) {
+                AdsStatusForSoonDying = settings.getBoolean(ADS_STATUS_FOR_SOON_DYING, false);
+                if(AdsStatusForSoonDying) {
+                    onCreateActivityDate();
+                    createInterstitialAd_For_Soon_Dying();
+                    SharedPreferences.Editor editor = settings.edit();
+                    AdsStatusForSoonDying = false;
+                    editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
+                    editor.apply();
+                }
+                else onCreateActivityDate();
+            }
+            else onCreateActivityDate();
         } else setContentView(R.layout.terms_of_use);
 
         Button accept_and_continue_Btn = findViewById(R.id.accept_and_continue);
@@ -164,26 +186,26 @@ public class MainActivity extends AppCompatActivity {
 //        page = inflater.inflate(R.layout.activity_date, null);
 //        pages.add(page);
 
-        pager = findViewById(R.id.pager);
-        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
-        pager.setAdapter(pagerAdapter);
-        pager.setCurrentItem(1);
-//        setContentView(pager);
-
-        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-            @Override
-            public void onPageSelected(int position) {
-            }
-
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
+//        pager = findViewById(R.id.pager);
+//        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+//        pager.setAdapter(pagerAdapter);
+//        pager.setCurrentItem(1);
+////        setContentView(pager);
+//
+//        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//            }
+//
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//            }
+//        });
 
 
 
@@ -265,49 +287,49 @@ public class MainActivity extends AppCompatActivity {
 
         adsInitialization();
 
-        relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
-            public void onSwipeTop() {
-
-                final Animation animationFlipIn = AnimationUtils.loadAnimation(MainActivity.this,
-                        android.R.anim.slide_in_left);
-                relativeLayout.startAnimation(animationFlipIn);
-//                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: top", Toast.LENGTH_SHORT).show();
-
-//                ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-//                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//                    @Override
-//                    public void onAnimationUpdate(ValueAnimator animation) {
-//                        linearLayout.setAlpha((Float) animation.getAnimatedValue());
-//                    }
-//                });
-//                animator.start();
-            }
-            public void onSwipeRight() {
-//                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: right", Toast.LENGTH_SHORT).show();
-
-                if(!layoutStatus) {
-                    layoutStatus = true;
-                    ObjectAnimator.ofFloat(linearLayout, View.X, 0, 800).start();
-                    ObjectAnimator.ofFloat(floatingMenu, View.X, 0, 800).start();
-                }
-            }
-            public void onSwipeLeft() {
-//                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: left", Toast.LENGTH_SHORT).show();
-
-                if(layoutStatus) {
-                    layoutStatus = false;
-                    ObjectAnimator.ofFloat(linearLayout, View.X, 800, 0).start();
-                    ObjectAnimator.ofFloat(floatingMenu, View.X, 800, 0).start();
-                }
-            }
-            public void onSwipeBottom() {
-//                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: bottom", Toast.LENGTH_SHORT).show();
-                final Animation animationFlipOut = AnimationUtils.loadAnimation(MainActivity.this,
-                        android.R.anim.slide_out_right);
-                relativeLayout.startAnimation(animationFlipOut);
-            }
-
-        });
+//        relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+//            public void onSwipeTop() {
+//
+//                final Animation animationFlipIn = AnimationUtils.loadAnimation(MainActivity.this,
+//                        android.R.anim.slide_in_left);
+//                relativeLayout.startAnimation(animationFlipIn);
+////                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: top", Toast.LENGTH_SHORT).show();
+//
+////                ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+////                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+////                    @Override
+////                    public void onAnimationUpdate(ValueAnimator animation) {
+////                        linearLayout.setAlpha((Float) animation.getAnimatedValue());
+////                    }
+////                });
+////                animator.start();
+//            }
+//            public void onSwipeBottom() {
+//            //                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: bottom", Toast.LENGTH_SHORT).show();
+//                final Animation animationFlipOut = AnimationUtils.loadAnimation(MainActivity.this,
+//                        android.R.anim.slide_out_right);
+//                relativeLayout.startAnimation(animationFlipOut);
+//            }
+//            public void onSwipeRight() {
+////                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: right", Toast.LENGTH_SHORT).show();
+//
+//                if(!layoutStatus) {
+//                    layoutStatus = true;
+//                    ObjectAnimator.ofFloat(linearLayout, View.X, 0, 800).start();
+//                    ObjectAnimator.ofFloat(floatingMenu, View.X, 0, 800).start();
+//                }
+//            }
+//            public void onSwipeLeft() {
+////                Toast.makeText(MainActivity.this, "OnSwipeTouchListener: left", Toast.LENGTH_SHORT).show();
+//
+//                if(layoutStatus) {
+//                    layoutStatus = false;
+//                    ObjectAnimator.ofFloat(linearLayout, View.X, 800, 0).start();
+//                    ObjectAnimator.ofFloat(floatingMenu, View.X, 800, 0).start();
+//                }
+//            }
+//
+//        });
 
 ////        AccountHeader accountHeader = initializeAccountHeader();
 //        drawerResult = new DrawerBuilder()
@@ -438,7 +460,6 @@ public class MainActivity extends AppCompatActivity {
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-
 
 //        FirebaseMessaging.getInstance().subscribeToTopic("general")
 //            .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -602,7 +623,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.cancel();
                 setContentView(R.layout.activity_wait);
-
                 createInterstitialAd();
             }
         });
@@ -701,6 +721,50 @@ public class MainActivity extends AppCompatActivity {
             public void onAdClosed() {
                 super.onAdClosed();
                 PermissionRequest();
+            }
+        });
+    }
+
+    private void createInterstitialAd_For_Soon_Dying() { //Создаём межстраничное объявление
+        final InterstitialAd interstitial;
+
+        interstitial = new InterstitialAd(MainActivity.this);
+        interstitial.setAdUnitId("ca-app-pub-7528412641056592/2188777318");
+        AdRequest adRequesti = new AdRequest.Builder()
+                .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
+                .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
+                .build();
+        interstitial.loadAd(adRequesti);
+        interstitial.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                interstitial.show();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                super.onAdFailedToLoad(errorCode);
+            }
+
+            @Override
+            public void onAdOpened() {
+                super.onAdOpened();
+            }
+
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                super.onAdLeftApplication();
+            }
+
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
             }
         });
     }
@@ -1108,6 +1172,11 @@ public class MainActivity extends AppCompatActivity {
             else if(timerTime > 3)
                 timeToNotifi = timerTime;
             else return;
+
+            SharedPreferences.Editor editor = settings.edit();
+            AdsStatusForSoonDying = true;
+            editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
+            editor.apply();
 
             FirebaseDatabase.getInstance().getReference().push().setValue(timerTime);
 

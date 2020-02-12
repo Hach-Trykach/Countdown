@@ -8,7 +8,7 @@ android {
         applicationId "by.ddrvld.countdownapp"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 18
+        versionCode 19
         versionName "1.5.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -230,7 +230,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/relative_layout_ads"
-        android:layout_marginStart="20dp">
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="10dp">
 
         <ImageView
             android:id="@+id/more_apps_button"
