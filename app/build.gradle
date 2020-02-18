@@ -5,10 +5,10 @@ android {
     compileSdkVersion 29
     defaultConfig {
         multiDexEnabled true
-        applicationId "by.ddrvld.countdownapp"
+        applicationId "by.ddrvld.countdowndeathapp"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 19
+        versionCode 1
         versionName "1.5.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

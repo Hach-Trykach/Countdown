@@ -57,6 +57,60 @@
             }
           ]
         }
+      },
+      "admob_app_id": "ca-app-pub-7528412641056592~7106062078"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331604710303:android:f6688c686ac956d636e3aa",
+        "android_client_info": {
+          "package_name": "by.ddrvld.countdowndeathapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "331604710303-36gebmpqsmrds3tq9g3m4hr948i817un.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "by.ddrvld.countdowndeathapp",
+            "certificate_hash": "cbe80b396788fcfbb79133020124725a9c1e93a8"
+          }
+        },
+        {
+          "client_id": "331604710303-73oaqj3nlkgo7k3orne890ofjt6drutf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "by.ddrvld.countdowndeathapp",
+            "certificate_hash": "aa9b4a3f47be82318b6498f62857c31339c4dbf1"
+          }
+        },
+        {
+          "client_id": "331604710303-lk8kh46bvdun1kj5jt8rtnainhvjo7db.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "by.ddrvld.countdowndeathapp",
+            "certificate_hash": "9f10bf03a80f8be8b58d57c080f142b6acbd2bcd"
+          }
+        },
+        {
+          "client_id": "331604710303-vcue7q0gn6881up8lnteo63tts61itne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqzk-cK3b7DI4zr4pZTlTwOVTap2bWSdQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "331604710303-vcue7q0gn6881up8lnteo63tts61itne.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
       }
     }
   ],
