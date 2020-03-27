@@ -1,6 +1,7 @@
 package by.ddrvld.countdowndeathapp;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.NotificationChannel;
@@ -21,6 +22,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -29,15 +31,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -50,13 +50,41 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
+
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.unity3d.ads.IUnityAdsListener;
+import com.unity3d.ads.UnityAds;
 
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+import static com.google.android.gms.auth.api.Auth.GoogleSignInApi;
+
+public class MainActivity extends AppCompatActivity implements IUnityAdsListener {
     static SharedPreferences settings;
     static final String APP_PREFERENCES = "settings";
     private final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
@@ -79,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     TextView textYrs, textDay, textHrs, textMin, textSec;
 
     private AdView mAdView;
-//    private Drawer drawerResult;
+    private Drawer drawerResult;
 
     private RelativeLayout relativeLayout;
     private LinearLayout linearLayout;
@@ -95,16 +123,34 @@ public class MainActivity extends AppCompatActivity {
     private final int BTN_CHRISTMAS_GAME = 3;
     private final int BTN_CHRISTMAS_TREE = 4;
     private final int BTN_BARLEY_BREAK = 5;
+    private final int BTN_SHOPPING_CALCULATOR = 6;
 
     static final int PAGE_COUNT = 2;
 
     ViewPager pager;
     PagerAdapter pagerAdapter;
 
+    private String unityGameID = "3523564";
+    private Boolean testMode = true;
+    private String placementId = "video";
+
+    private FirebaseAuth mAuth;
+    private int RC_SIGN_IN = 1101;
+    private GoogleSignInClient mGoogleSignInClient;
+
+    private String accountName = "";
+    private String accountEmail = "";
+    private Uri photoUrl;
+
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.terms_of_use);
+
+        // Initialize the SDK:
+        UnityAds.initialize (this, unityGameID, this, testMode);
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (settings.contains(DATE_OF_DEATH)) {
@@ -142,26 +188,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-
-        public MyFragmentPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return LeftFragment.newInstance(position);
-        }
-
-        @Override
-        public int getCount() {
-            return PAGE_COUNT;
-        }
-
-    }
+//    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+//
+//        public MyFragmentPagerAdapter(FragmentManager fm) {
+//            super(fm);
+//        }
+//
+//        @Override
+//        public Fragment getItem(int position) {
+//            return LeftFragment.newInstance(position);
+//        }
+//
+//        @Override
+//        public int getCount() {
+//            return PAGE_COUNT;
+//        }
+//
+//    }
 
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        // Configure Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .requestProfile()
+                .build();
+
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
 
 //        LayoutInflater inflater = LayoutInflater.from(this);
 //        List<View> pages = new ArrayList<>();
@@ -195,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
@@ -317,20 +378,6 @@ public class MainActivity extends AppCompatActivity {
 //
 //        });
 
-////        AccountHeader accountHeader = initializeAccountHeader();
-//        drawerResult = new DrawerBuilder()
-//                .withActivity(this)
-//                .withToolbar(toolbar)
-////                .withRootView(R.id.drawer_layout)
-//                .withSliderBackgroundColorRes(R.color.transparent)
-////                .withGenerateMiniDrawer(true)
-//                .withActionBarDrawerToggleAnimated(true)
-//                .addDrawerItems(initializeDrawerItems())
-////                .addStickyDrawerItems(initializeDrawerItems())
-//                .withOnDrawerItemClickListener(onClicksLis)
-////                .withAccountHeader(accountHeader)
-//                .build();
-
 //        moreAppsBtn.setOnTouchListener(new View.OnTouchListener() {
 //        @Override
 //        public boolean onTouch(View view, MotionEvent event) {
@@ -405,6 +452,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.barleybreak"));
+                startActivity(intent);
+            }
+        });
+
+        final FloatingActionButton shopping_calculator = findViewById(R.id.shopping_calculator);
+        shopping_calculator.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.notes"));
                 startActivity(intent);
             }
         });
@@ -499,48 +556,55 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    private Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
-//        @Override
-//        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-//            if(drawerItem.getIdentifier() == BTN_COLOR_MATCH)
-//            {
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.colormatch"));
-//                startActivity(intent);
-//                return true;
-//            }
-//            else if(drawerItem.getIdentifier() == BTN_JUMP_UP)
-//            {
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.jumpup"));
-//                startActivity(intent);
-//                return true;
-//            }
-//            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_GAME)
-//            {
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmasgame"));
-//                startActivity(intent);
-//                return true;
-//            }
-//            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_TREE)
-//            {
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmastree"));
-//                startActivity(intent);
-//                return true;
-//            }
-//            else if(drawerItem.getIdentifier() == BTN_BARLEY_BREAK)
-//            {
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.barleybreak"));
-//                startActivity(intent);
-//                return true;
-//            }
-//            return false;
-//        }
-//    };
-//
+    private Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
+        @Override
+        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+            if(drawerItem.getIdentifier() == BTN_COLOR_MATCH)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.colormatch"));
+                startActivity(intent);
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_JUMP_UP)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.jumpup"));
+                startActivity(intent);
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_GAME)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmasgame"));
+                startActivity(intent);
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_TREE)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmastree"));
+                startActivity(intent);
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_BARLEY_BREAK)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.barleybreak"));
+                startActivity(intent);
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_SHOPPING_CALCULATOR)
+            {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.notes"));
+                startActivity(intent);
+                return true;
+            }
+            return false;
+        }
+    };
+
 //    private IDrawerItem[] initializeDrawerItems() {
 //        return new IDrawerItem[] {
 //
@@ -578,22 +642,28 @@ public class MainActivity extends AppCompatActivity {
 ////                    .withName(R.string.barley_break)
 ////                    .withTextColorRes(R.color.white)
 //                    .withIcon(R.drawable.img_barley_break)
-//                    .withIdentifier(BTN_BARLEY_BREAK)
+//                    .withIdentifier(BTN_BARLEY_BREAK),
+//
+//            new SecondaryDrawerItem()
+////                    .withName(R.string.shopping_calculator)
+////                    .withTextColorRes(R.color.white)
+//                    .withIcon(R.drawable.img_shopping_calculator)
+//                    .withIdentifier(BTN_SHOPPING_CALCULATOR)
 //        };
 //    }
 
-//    private AccountHeader initializeAccountHeader() {
-//        IProfile profile = new ProfileDrawerItem()
-//            .withName(R.string.color_match)
-////            .withEmail("dudarev.vlad@gmail.com")
-//            .withIcon((getResources().getDrawable(R.drawable.img_color_match)));
-//
-//        return new AccountHeaderBuilder()
-//            .withActivity(this)
-//            .withHeaderBackground(R.color.grey)
-//            .addProfiles(profile)
-//            .build();
-//    }
+    private AccountHeader initializeAccountHeader() {
+        IProfile profile = new ProfileDrawerItem()
+            .withName(accountName)
+            .withEmail(accountEmail)
+            .withIcon(photoUrl);
+
+        return new AccountHeaderBuilder()
+            .withActivity(this)
+            .withHeaderBackground(R.color.grey)
+            .addProfiles(profile)
+            .build();
+    }
 
     private void DialogAcceptAndContinue() {
         final Context context = this;
@@ -609,7 +679,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.cancel();
                 setContentView(R.layout.activity_wait);
-                createInterstitialAd();
+//                createInterstitialAd();
+                DisplayUnityInterstitialAd();
             }
         });
         dialogButtonNo.setOnClickListener(new View.OnClickListener() {
@@ -1122,11 +1193,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        if(drawerResult != null && drawerResult.isDrawerOpen()) {
-//            drawerResult.closeDrawer();
-//        } else {
+        if(drawerResult != null && drawerResult.isDrawerOpen()) {
+            drawerResult.closeDrawer();
+        } else {
         super.onBackPressed();
-//        }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        updateUI(currentUser);
     }
 
     @Override
@@ -1173,4 +1252,99 @@ public class MainActivity extends AppCompatActivity {
 //            Snackbar.make(findViewById(android.R.id.content), "Alarm set in " + timeToNotifi + " seconds",Snackbar.LENGTH_LONG).show();
         }
     }
+
+    // Implement a function to display an ad if the Placement is ready:
+    public void DisplayUnityInterstitialAd() {
+        if (UnityAds.isReady (placementId)) {
+            UnityAds.show(this, placementId);
+        }
+    }
+
+    @Override
+    public void onUnityAdsReady (String placementId) {
+        // Implement functionality for an ad being ready to show.
+    }
+
+    @Override
+    public void onUnityAdsStart (String placementId) {
+        // Implement functionality for a user starting to watch an ad.
+    }
+
+    @Override
+    public void onUnityAdsFinish (String placementId, UnityAds.FinishState finishState) {
+        PermissionRequest();
+    }
+
+    @Override
+    public void onUnityAdsError (UnityAds.UnityAdsError error, String message) {
+        PermissionRequest();
+    }
+
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w("TAG", "Google sign in failed", e);
+                // ...
+            }
+        }
+    }
+
+    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
+        Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("TAG", "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+//                            updateUI(user);
+
+                            accountName = acct.getDisplayName();
+                            accountEmail = acct.getEmail();
+                            photoUrl = acct.getPhotoUrl();
+
+                            AccountHeader accountHeader = initializeAccountHeader();
+                            drawerResult = new DrawerBuilder()
+                                    .withActivity(MainActivity.this)
+                                    .withToolbar(toolbar)
+//                          .withRootView(R.id.drawer_layout)
+                                    .withSliderBackgroundColorRes(R.color.transparent)
+//                          .withGenerateMiniDrawer(true)
+                                    .withActionBarDrawerToggleAnimated(true)
+//                          .addDrawerItems(initializeDrawerItems())
+//                          .addStickyDrawerItems(initializeDrawerItems())
+                                    .withOnDrawerItemClickListener(onClicksLis)
+                                    .withAccountHeader(accountHeader)
+                                    .build();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("TAG", "signInWithCredential:failure", task.getException());
+                            Snackbar.make(findViewById(R.id.relative_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+//                            updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
 }

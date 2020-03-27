@@ -300,6 +300,16 @@
 
             </com.getbase.floatingactionbutton.FloatingActionButton>
 
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/shopping_calculator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/grey"
+                fab:fab_colorPressed="@color/white"
+                fab:fab_icon="@drawable/img_shopping_calculator">
+
+            </com.getbase.floatingactionbutton.FloatingActionButton>
+
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
     </RelativeLayout>

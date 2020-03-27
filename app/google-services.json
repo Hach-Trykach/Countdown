@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "331604710303-qe3h31hcagj7n523kijqjivl385g54p0.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "by.ddrvld.countdownapp",
-            "certificate_hash": "cbe80b396788fcfbb79133020124725a9c1e93a8"
-          }
-        },
-        {
           "client_id": "331604710303-dvgfg17fjqghaaaq3qfunu6pb9b52joj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -111,7 +103,8 @@
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-7528412641056592~6477182127"
     }
   ],
   "configuration_version": "1"
