@@ -12,7 +12,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -78,6 +83,11 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.unity3d.ads.IUnityAdsListener;
 import com.unity3d.ads.UnityAds;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -652,18 +662,40 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //        };
 //    }
 
-    private AccountHeader initializeAccountHeader() {
-        IProfile profile = new ProfileDrawerItem()
-            .withName(accountName)
-            .withEmail(accountEmail)
-            .withIcon(photoUrl);
+    private Bitmap drawable_from_url(String url) throws java.io.IOException {
 
-        return new AccountHeaderBuilder()
-            .withActivity(this)
-            .withHeaderBackground(R.color.grey)
-            .addProfiles(profile)
-            .build();
+        HttpURLConnection connection = (HttpURLConnection)new URL(url) .openConnection();
+        connection.setRequestProperty("User-agent","Mozilla/4.0");
+
+        connection.connect();
+        InputStream input = connection.getInputStream();
+
+        return BitmapFactory.decodeStream(input);
     }
+
+//    public static Drawable drawableFromUrl(String url) throws IOException {
+//        Bitmap x;
+//
+//        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+//        connection.connect();
+//        InputStream input = connection.getInputStream();
+//
+//        x = BitmapFactory.decodeStream(input);
+//        return new BitmapDrawable(Resources.getSystem(), x);
+//    }
+
+//    private AccountHeader initializeAccountHeader() {
+//        IProfile profile = new ProfileDrawerItem()
+//                .withName(accountName)
+//                .withEmail(accountEmail)
+//                .withIcon(photoUrl.toString());
+//
+//        return new AccountHeaderBuilder()
+//            .withActivity(this)
+//            .withHeaderBackground(R.color.grey)
+//            .addProfiles(profile)
+//            .build();
+//    }
 
     private void DialogAcceptAndContinue() {
         final Context context = this;
@@ -1322,7 +1354,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                             accountEmail = acct.getEmail();
                             photoUrl = acct.getPhotoUrl();
 
-                            AccountHeader accountHeader = initializeAccountHeader();
+//                            AccountHeader accountHeader = initializeAccountHeader();
                             drawerResult = new DrawerBuilder()
                                     .withActivity(MainActivity.this)
                                     .withToolbar(toolbar)
@@ -1333,7 +1365,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //                          .addDrawerItems(initializeDrawerItems())
 //                          .addStickyDrawerItems(initializeDrawerItems())
                                     .withOnDrawerItemClickListener(onClicksLis)
-                                    .withAccountHeader(accountHeader)
+//                                    .withAccountHeader(accountHeader)
                                     .build();
                         } else {
                             // If sign in fails, display a message to the user.
