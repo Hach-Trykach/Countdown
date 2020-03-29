@@ -113,4 +113,9 @@
     <string name="later">Later</string>
     <string name="of_course">Of course</string>
     <string name="rating_text">Want to rate the app?</string>
+    <string name="shopping_calculator">Shopping Calculator</string>
+    <string name="share_text_1">I have to live</string>
+    <string name="share_text_2">How much is left for you? Check it out!</string>
+    <string name="our_apps">Our apps</string>
+    <string name="share">Share</string>
 </resources>

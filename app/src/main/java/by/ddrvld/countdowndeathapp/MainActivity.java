@@ -37,6 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -75,6 +76,7 @@ import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SectionDrawerItem;
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     static final String PERIOD_SETTINGS = "period";
     static final String LAST_RATING_DAY = "last_rating_day";
     static final String ADS_STATUS_FOR_SOON_DYING = "AdsStatusForSoonDying";
-    private ImageView moreAppsBtn;
+//    private ImageView moreAppsBtn;
 
     int lastRatingDay;
 
@@ -119,14 +121,14 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     private AdView mAdView;
     private Drawer drawerResult;
 
-    private RelativeLayout relativeLayout;
-    private LinearLayout linearLayout;
-    private RelativeLayout floatingMenu;
+//    private RelativeLayout relativeLayout;
+//    private LinearLayout linearLayout;
+//    private RelativeLayout floatingMenu;
 
     public static int PERIOD;
 
     private boolean AdsStatusForSoonDying = false;
-    private boolean layoutStatus = false;
+//    private boolean layoutStatus = false;
 
     private final int BTN_COLOR_MATCH = 1;
     private final int BTN_JUMP_UP = 2;
@@ -134,11 +136,13 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     private final int BTN_CHRISTMAS_TREE = 4;
     private final int BTN_BARLEY_BREAK = 5;
     private final int BTN_SHOPPING_CALCULATOR = 6;
+    private final int BTN_OUR_APPS = 7;
+    private final int BTN_SHARE = 8;
 
-    static final int PAGE_COUNT = 2;
+//    static final int PAGE_COUNT = 2;
 
-    ViewPager pager;
-    PagerAdapter pagerAdapter;
+//    ViewPager pager;
+//    PagerAdapter pagerAdapter;
 
     private String unityGameID = "3523564";
     private Boolean testMode = true;
@@ -302,10 +306,10 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         textMin = findViewById(R.id.text_min);
         textSec = findViewById(R.id.text_sec);
 
-        moreAppsBtn = findViewById(R.id.more_apps_button);
-        relativeLayout = findViewById(R.id.relative_layout);
-        linearLayout = findViewById(R.id.linear_layout);
-        floatingMenu = findViewById(R.id.floatingMenu);
+//        moreAppsBtn = findViewById(R.id.more_apps_button);
+//        relativeLayout = findViewById(R.id.relative_layout);
+//        linearLayout = findViewById(R.id.linear_layout);
+//        floatingMenu = findViewById(R.id.floatingMenu);
 
         if (settings.contains(DATE_OF_DEATH)) {
             date_of_death = settings.getLong(DATE_OF_DEATH, 0);
@@ -409,91 +413,70 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //        }
 //    });
 
-        final FloatingActionButton color_match = findViewById(R.id.color_match);
-        color_match.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                timerTime = 60L; // uncomment for testing
-//                years = timerTime / 31536000; // uncomment for testing
-//                days = timerTime / 86400 % 365; // uncomment for testing
-//                hours = timerTime / 3600 % 24; // uncomment for testing
-//                mins = timerTime / 60 % 60; // uncomment for testing
-//                secs = timerTime % 60; // uncomment for testing
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.colormatch"));
-                startActivity(intent);
-            }
-        });
-
-        final FloatingActionButton jump_up = findViewById(R.id.jump_up);
-        jump_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.jumpup"));
-                startActivity(intent);
-            }
-        });
-
-        final FloatingActionButton christmas_game = findViewById(R.id.christmas_game);
-        christmas_game.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmasgame"));
-                startActivity(intent);
-            }
-        });
-
-        final FloatingActionButton christmas_tree = findViewById(R.id.christmas_tree);
-        christmas_tree.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmastree"));
-                startActivity(intent);
-            }
-        });
-
-        final FloatingActionButton barley_break = findViewById(R.id.barley_break);
-        barley_break.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.barleybreak"));
-                startActivity(intent);
-            }
-        });
-
-        final FloatingActionButton shopping_calculator = findViewById(R.id.shopping_calculator);
-        shopping_calculator.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.notes"));
-                startActivity(intent);
-            }
-        });
-
-//        ScaleRatingBar ratingBar = new ScaleRatingBar(this);
-//        ratingBar.setNumStars(5);
-//        ratingBar.setMinimumStars(1);
-//        ratingBar.setRating(5);
-//        ratingBar.setStarPadding(3);
-//        ratingBar.setStepSize(1.0f);
-//        ratingBar.setStarWidth(100);
-//        ratingBar.setStarHeight(100);
-//        ratingBar.setIsIndicator(false);
-//        ratingBar.setClickable(true);
-//        ratingBar.setScrollable(true);
-//        ratingBar.setClearRatingEnabled(true);
-//        ratingBar.setEmptyDrawableRes(R.drawable.icon_empty);
-//        ratingBar.setFilledDrawableRes(R.drawable.icon_filled);
-//        ratingBar.setOnRatingChangeListener(new BaseRatingBar.OnRatingChangeListener() {
+//        final FloatingActionButton color_match = findViewById(R.id.color_match);
+//        color_match.setOnClickListener(new View.OnClickListener() {
 //            @Override
-//            public void onRatingChange(BaseRatingBar ratingBar, float rating, boolean fromUser) {
-//                System.out.println("RATING");
+//            public void onClick(View view) {
+////                timerTime = 60L; // uncomment for testing
+////                years = timerTime / 31536000; // uncomment for testing
+////                days = timerTime / 86400 % 365; // uncomment for testing
+////                hours = timerTime / 3600 % 24; // uncomment for testing
+////                mins = timerTime / 60 % 60; // uncomment for testing
+////                secs = timerTime % 60; // uncomment for testing
+//
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.colormatch"));
+//                startActivity(intent);
+//            }
+//        });
+//
+//        final FloatingActionButton jump_up = findViewById(R.id.jump_up);
+//        jump_up.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.jumpup"));
+//                startActivity(intent);
+//            }
+//        });
+//
+//        final FloatingActionButton christmas_game = findViewById(R.id.christmas_game);
+//        christmas_game.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmasgame"));
+//                startActivity(intent);
+//            }
+//        });
+//
+//        final FloatingActionButton christmas_tree = findViewById(R.id.christmas_tree);
+//        christmas_tree.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmastree"));
+//                startActivity(intent);
+//            }
+//        });
+//
+//        final FloatingActionButton barley_break = findViewById(R.id.barley_break);
+//        barley_break.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.barleybreak"));
+//                startActivity(intent);
+//            }
+//        });
+//
+//        final FloatingActionButton shopping_calculator = findViewById(R.id.shopping_calculator);
+//        shopping_calculator.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.notes"));
+//                startActivity(intent);
 //            }
 //        });
 
@@ -525,6 +508,8 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //                    Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT).show();
 //                }
 //            });
+        
+        DrawerBuilder();
     }
 
     private void playStartSound(int soundID) {
@@ -611,67 +596,119 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                 startActivity(intent);
                 return true;
             }
+            else if(drawerItem.getIdentifier() == BTN_OUR_APPS) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/developer?id=DDRVLD+Lab."));
+                startActivity(intent);
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_SHARE)
+            {
+                final Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.share_text_1) +
+                        (years > 0 ? " " + years + " " + GetWord(years,
+                                getResources().getString(R.string.text_yrs1),
+                                getResources().getString(R.string.text_yrs2),
+                                getResources().getString(R.string.text_yrs3)) : "") +
+                        (days > 0 ? " " + days + " " + GetWord(days,
+                                getResources().getString(R.string.text_day1),
+                                getResources().getString(R.string.text_day2),
+                                getResources().getString(R.string.text_day3)) : "") +
+                        (hours > 0 ? " " + hours + " " + GetWord(hours,
+                                getResources().getString(R.string.text_hrs1),
+                                getResources().getString(R.string.text_hrs2),
+                                getResources().getString(R.string.text_hrs3)) : "") +
+                        (mins > 0 ? " " + mins + " " + GetWord(mins,
+                                getResources().getString(R.string.text_min1),
+                                getResources().getString(R.string.text_min2),
+                                getResources().getString(R.string.text_min3)) : "") +
+                        ".\n" + getResources().getString(R.string.share_text_2) +
+                        "\nhttps://play.google.com/store/apps/details?id=by.ddrvld.countdowndeathapp");
+                try {
+                    startActivity(Intent.createChooser(intent, getResources().getString(R.string.app_name)));
+                } catch (android.content.ActivityNotFoundException ex) {
+//            Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.some_error), Snackbar.LENGTH_SHORT).show();
+                }
+                return true;
+            }
             return false;
         }
     };
 
-//    private IDrawerItem[] initializeDrawerItems() {
-//        return new IDrawerItem[] {
-//
-//            new SectionDrawerItem(),
-//
-//            new SecondaryDrawerItem()
-////                    .withName(R.string.color_match)
-////                    .withTextColorRes(R.color.white)
-//                    .withIcon(R.drawable.img_color_match)
-//                    .withIdentifier(BTN_COLOR_MATCH),
-//            new DividerDrawerItem(),
-//
-//            new SecondaryDrawerItem()
-////                    .withName(R.string.jump_up)
-////                    .withTextColorRes(R.color.white)
-//                    .withIcon(R.drawable.img_jump_up)
-//                    .withIdentifier(BTN_JUMP_UP),
-//                new DividerDrawerItem(),
-//
-//            new SecondaryDrawerItem()
-////                    .withName(R.string.christmas_game)
-////                    .withTextColorRes(R.color.white)
-//                    .withIcon(R.drawable.img_christmas_game)
-//                    .withIdentifier(BTN_CHRISTMAS_GAME),
-//                new DividerDrawerItem(),
-//
-//            new SecondaryDrawerItem()
-////                    .withName(R.string.christmas_tree)
-////                    .withTextColorRes(R.color.white)
-//                    .withIcon(R.drawable.img_christmas_tree)
-//                    .withIdentifier(BTN_CHRISTMAS_TREE),
-//                new DividerDrawerItem(),
-//
-//            new SecondaryDrawerItem()
-////                    .withName(R.string.barley_break)
-////                    .withTextColorRes(R.color.white)
-//                    .withIcon(R.drawable.img_barley_break)
-//                    .withIdentifier(BTN_BARLEY_BREAK),
-//
-//            new SecondaryDrawerItem()
-////                    .withName(R.string.shopping_calculator)
-////                    .withTextColorRes(R.color.white)
-//                    .withIcon(R.drawable.img_shopping_calculator)
-//                    .withIdentifier(BTN_SHOPPING_CALCULATOR)
+    private IDrawerItem[] initializeDrawerItems() {
+        return new IDrawerItem[] {
+
+            new DividerDrawerItem()
+                    .withEnabled(true),
+
+            new PrimaryDrawerItem()
+                    .withName(R.string.our_apps)
+                    .withTextColorRes(R.color.white)
+                    .withIdentifier(BTN_OUR_APPS),
+
+            new PrimaryDrawerItem()
+                    .withName(R.string.color_match)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_color_match)
+                    .withIdentifier(BTN_COLOR_MATCH),
+
+            new PrimaryDrawerItem()
+                    .withName(R.string.jump_up)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_jump_up)
+                    .withIdentifier(BTN_JUMP_UP),
+
+            new PrimaryDrawerItem()
+                    .withName(R.string.christmas_game)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_christmas_game)
+                    .withIdentifier(BTN_CHRISTMAS_GAME),
+
+            new PrimaryDrawerItem()
+                    .withName(R.string.christmas_tree)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_christmas_tree)
+                    .withIdentifier(BTN_CHRISTMAS_TREE),
+
+            new PrimaryDrawerItem()
+                    .withName(R.string.barley_break)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_barley_break)
+                    .withIdentifier(BTN_BARLEY_BREAK),
+
+            new PrimaryDrawerItem()
+                    .withName(R.string.shopping_calculator)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.img_shopping_calculator)
+                    .withIdentifier(BTN_SHOPPING_CALCULATOR),
+
+            new DividerDrawerItem()
+                    .withEnabled(true),
+
+            new PrimaryDrawerItem()
+                    .withName(R.string.share)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(android.R.drawable.ic_menu_share)
+                    .withIdentifier(BTN_SHARE)
+        };
+    }
+
+//    private IDrawerItem[] initializeStickyDrawerItems() {
+//        return new IDrawerItem[]{
 //        };
 //    }
 
-    private Bitmap drawable_from_url(String url) throws java.io.IOException {
-
-        HttpURLConnection connection = (HttpURLConnection)new URL(url) .openConnection();
-        connection.setRequestProperty("User-agent","Mozilla/4.0");
-
-        connection.connect();
-        InputStream input = connection.getInputStream();
-
-        return BitmapFactory.decodeStream(input);
-    }
+//    private Bitmap drawable_from_url(String url) throws java.io.IOException {
+//
+//        HttpURLConnection connection = (HttpURLConnection)new URL(url) .openConnection();
+//        connection.setRequestProperty("User-agent","Mozilla/4.0");
+//
+//        connection.connect();
+//        InputStream input = connection.getInputStream();
+//
+//        return BitmapFactory.decodeStream(input);
+//    }
 
 //    public static Drawable drawableFromUrl(String url) throws IOException {
 //        Bitmap x;
@@ -688,7 +725,17 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //        IProfile profile = new ProfileDrawerItem()
 //                .withName(accountName)
 //                .withEmail(accountEmail)
-//                .withIcon(photoUrl.toString());
+////                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+////                    @Override
+////                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+////                        Intent intent = new Intent(Intent.ACTION_VIEW);
+////                        intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.notes"));
+////                        startActivity(intent);
+////                        return false;
+////                    }
+////                })
+//                .withIcon(getResources().getDrawable(R.drawable.ic_launcher));
+////                .withIcon(Picasso.get().load(photoUrl).toString());
 //
 //        return new AccountHeaderBuilder()
 //            .withActivity(this)
@@ -1295,11 +1342,13 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     @Override
     public void onUnityAdsReady (String placementId) {
         // Implement functionality for an ad being ready to show.
+        System.out.println("onUnityAdsReady");
     }
 
     @Override
     public void onUnityAdsStart (String placementId) {
         // Implement functionality for a user starting to watch an ad.
+        System.out.println("onUnityAdsStart");
     }
 
     @Override
@@ -1312,10 +1361,10 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         PermissionRequest();
     }
 
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
+//    private void signIn() {
+//        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//        startActivityForResult(signInIntent, RC_SIGN_IN);
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1347,26 +1396,10 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+//                            FirebaseUser user = mAuth.getCurrentUser();
 //                            updateUI(user);
 
-                            accountName = acct.getDisplayName();
-                            accountEmail = acct.getEmail();
-                            photoUrl = acct.getPhotoUrl();
-
-//                            AccountHeader accountHeader = initializeAccountHeader();
-                            drawerResult = new DrawerBuilder()
-                                    .withActivity(MainActivity.this)
-                                    .withToolbar(toolbar)
-//                          .withRootView(R.id.drawer_layout)
-                                    .withSliderBackgroundColorRes(R.color.transparent)
-//                          .withGenerateMiniDrawer(true)
-                                    .withActionBarDrawerToggleAnimated(true)
-//                          .addDrawerItems(initializeDrawerItems())
-//                          .addStickyDrawerItems(initializeDrawerItems())
-                                    .withOnDrawerItemClickListener(onClicksLis)
-//                                    .withAccountHeader(accountHeader)
-                                    .build();
+//                            DrawerBuilder();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
@@ -1379,4 +1412,23 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                 });
     }
 
+    private void DrawerBuilder() {
+//        accountName = acct.getDisplayName();
+//        accountEmail = acct.getEmail();
+//        photoUrl = acct.getPhotoUrl();
+//
+//        AccountHeader accountHeader = initializeAccountHeader();
+        drawerResult = new DrawerBuilder()
+            .withActivity(MainActivity.this)
+            .withToolbar(toolbar)
+            .withSliderBackgroundColorRes(R.color.transparent)
+            .withActionBarDrawerToggleAnimated(true)
+            .addDrawerItems(initializeDrawerItems())
+//            .addStickyDrawerItems(initializeStickyDrawerItems())
+            .withOnDrawerItemClickListener(onClicksLis)
+//            .withAccountHeader(accountHeader)
+//            .withRootView(R.id.drawer_layout)
+            .withGenerateMiniDrawer(true)
+            .build();
+    }
 }

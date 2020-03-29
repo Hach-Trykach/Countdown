@@ -45,4 +45,9 @@
     <string name="cross_text_5">++Абмежаванні выкарыстання+++++++</string>
     <string name="cross_text_6">++Абмежаванне аўтарскіх правоў+++++</string>
     <string name="cross_text_7">++Абмежаванне адказнасці++++++++++</string>
+    <string name="shopping_calculator">Калькулятар пакупак</string>
+    <string name="share_text_1">Мне засталося жыць</string>
+    <string name="share_text_2">А колькі засталося табе? Правер!</string>
+    <string name="our_apps">Нашы прыкладанні</string>
+    <string name="share">Падзяліцца</string>
 </resources>
