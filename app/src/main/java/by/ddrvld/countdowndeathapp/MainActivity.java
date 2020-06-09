@@ -1,6 +1,7 @@
 package by.ddrvld.countdowndeathapp;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -30,6 +31,9 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -158,6 +162,8 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 
     private Toolbar toolbar;
 
+    private WebView webView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -223,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
 
-        mAuth = FirebaseAuth.getInstance();
+        /*mAuth = FirebaseAuth.getInstance();
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -236,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        startActivityForResult(signInIntent, RC_SIGN_IN);*/
 
 //        LayoutInflater inflater = LayoutInflater.from(this);
 //        List<View> pages = new ArrayList<>();
@@ -758,8 +764,12 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
             public void onClick(View v) {
                 dialog.cancel();
                 setContentView(R.layout.activity_wait);
-//                createInterstitialAd();
-                DisplayUnityInterstitialAd();
+
+                webView = findViewById(R.id.webView);
+                webView.setWebViewClient(new MyWebViewClient());
+
+                createInterstitialAd();
+//                DisplayUnityInterstitialAd();
             }
         });
         dialogButtonNo.setOnClickListener(new View.OnClickListener() {
@@ -856,7 +866,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-                PermissionRequest();
+                showKinovoWebView();
             }
         });
     }
@@ -1274,8 +1284,18 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     public void onBackPressed() {
         if(drawerResult != null && drawerResult.isDrawerOpen()) {
             drawerResult.closeDrawer();
-        } else {
-        super.onBackPressed();
+        }
+        else if(webView != null) {
+            if(webView.canGoBack()/* && !webView.getUrl().equals("https://kinovo.online")*/) {
+                webView.goBack();
+            }
+            else {
+                webView.setVisibility(View.INVISIBLE);
+                PermissionRequest();
+            }
+        }
+        else {
+            super.onBackPressed();
         }
     }
 
@@ -1430,5 +1450,29 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //            .withRootView(R.id.drawer_layout)
             .withGenerateMiniDrawer(true)
             .build();
+    }
+
+    private void showKinovoWebView() {
+        webView.setVisibility(View.VISIBLE);
+        // включаем поддержку JavaScript
+        webView.getSettings().setJavaScriptEnabled(true);
+        // указываем страницу загрузки
+        webView.loadUrl("https://kinovo.online");
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+        @TargetApi(Build.VERSION_CODES.N)
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            view.loadUrl(request.getUrl().toString());
+            return true;
+        }
+
+        // Для старых устройств
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
     }
 }
