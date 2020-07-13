@@ -866,7 +866,8 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-                showKinovoWebView();
+                PermissionRequest();
+//                showKinovoWebView();
             }
         });
     }
