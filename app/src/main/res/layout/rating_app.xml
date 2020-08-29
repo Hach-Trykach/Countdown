@@ -89,7 +89,8 @@
 
             <Button
                 android:id="@+id/dialogButtonNo"
-                android:layout_width="120dp"
+                android:layout_width="match_parent"
+                android:minWidth="120dp"
                 android:layout_height="wrap_content"
                 android:text="@string/later"
                 android:textStyle="bold"
@@ -99,7 +100,6 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"/>
@@ -114,7 +114,8 @@
 
             <Button
                 android:id="@+id/dialogButtonYes"
-                android:layout_width="120dp"
+                android:layout_width="match_parent"
+                android:minWidth="120dp"
                 android:layout_height="wrap_content"
                 android:text="@string/of_course"
                 android:textStyle="bold"
