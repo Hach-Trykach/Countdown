@@ -1008,7 +1008,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 
             public void run() {
                 try {
-                    while (logoTimer < 180000) { // 180000
+                    while (logoTimer < 60000) { // 1 минута
                         sleep(1000);
                         logoTimer += 1000;
                     }
