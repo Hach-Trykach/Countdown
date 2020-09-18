@@ -4,11 +4,12 @@
     android:layout_height="match_parent"
     android:gravity="top"
     tools:context=".MainActivity" >
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#33445555"
+        android:textAlignment="center"
         android:text="@string/app_name"
         android:textSize="12pt"/>
 </LinearLayout>
