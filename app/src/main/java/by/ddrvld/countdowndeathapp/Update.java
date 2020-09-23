@@ -1,7 +1,6 @@
 package by.ddrvld.countdowndeathapp;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.content.ComponentName;
 import android.content.SharedPreferences;
 import android.app.PendingIntent;
@@ -9,10 +8,16 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+
+import java.security.Provider;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -27,13 +32,11 @@ public class Update extends AppWidgetProvider {
     static SharedPreferences settings;
     static final String APP_PREFERENCES = "settings";
     static final String DATE_OF_DEATH = "randomlifetime";
-    private static long timerTime;
     private static long years, days, hours, mins, secs;
     private PendingIntent service = null;
 
-    private static final String SYNC_CLICKED    = "btcwidget_update_action";
+    private static final String SYNC_CLICKED = "btcwidget_update_action";
     private static final String WAITING_MESSAGE = "Wait for BTC price";
-    public static final int httpsDelayMs = 300;
 
     final String LOG_TAG = "myLogs";
 
@@ -92,7 +95,7 @@ public class Update extends AppWidgetProvider {
         if (settings.contains(DATE_OF_DEATH)) {
             date_of_death = settings.getLong(DATE_OF_DEATH, 0);
         }
-        timerTime = date_of_death - currentTime;
+        long timerTime = date_of_death - currentTime;
 
         years = timerTime / 31536000;
         days = timerTime / 86400 % 365;
@@ -100,11 +103,12 @@ public class Update extends AppWidgetProvider {
         mins = timerTime / 60 % 60;
         secs = timerTime % 60;
 
-        updateUI(context);
+        updateUI();
+        updateUI2(context);
 
         // Tell the widget manager
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
-        Toast.makeText(context, "Виджет обновлён", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, "Виджет обновлён", Toast.LENGTH_SHORT).show();
     }
 
     //создание интента
@@ -118,11 +122,9 @@ public class Update extends AppWidgetProvider {
     //запускает обновление виджета
     @Override
     public void onReceive(Context context, Intent intent) {
-
         super.onReceive(context, intent);
 
         if (SYNC_CLICKED.equals(intent.getAction())) {
-
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
             RemoteViews remoteViews;
@@ -131,7 +133,7 @@ public class Update extends AppWidgetProvider {
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.appwidget_provider_layout);
             watchWidget = new ComponentName(context, Update.class);
 
-            remoteViews.setTextViewText(R.id.yrs, WAITING_MESSAGE);
+            remoteViews.setTextViewText(R.id.count, WAITING_MESSAGE);
 
             //updating widget
             appWidgetManager.updateAppWidget(watchWidget, remoteViews);
@@ -150,61 +152,101 @@ public class Update extends AppWidgetProvider {
         manager.setRepeating(AlarmManager.RTC,startTime.getTime().getTime(),1000,service);
     }
 
-    private static void updateUI(Context context) {
-        if (years >= 10) remoteViews.setTextViewText(R.id.yrs, String.valueOf(years));
-        else remoteViews.setTextViewText(R.id.yrs, "0" + years);
-
-        if (days >= 10) remoteViews.setTextViewText(R.id.day, String.valueOf(days));
-        else remoteViews.setTextViewText(R.id.day, "0" + days);
-
-        if (hours >= 10) remoteViews.setTextViewText(R.id.hrs, String.valueOf(hours));
-        else remoteViews.setTextViewText(R.id.hrs, "0" + hours);
-
-        if (mins >= 10) remoteViews.setTextViewText(R.id.min, String.valueOf(mins));
-        else remoteViews.setTextViewText(R.id.min, "0" + mins);
-
-        if (secs >= 10) remoteViews.setTextViewText(R.id.sec, String.valueOf(secs));
-        else remoteViews.setTextViewText(R.id.sec, "0" + secs);
-
-        if (years == 0 && days == 0 && hours == 0 && mins == 0 && secs == 0) {
-            remoteViews.setTextViewText(R.id.yrs, "B");
-            remoteViews.setTextViewText(R.id.yrs,"O");
-            remoteViews.setTextViewText(R.id.yrs,"O");
-            remoteViews.setTextViewText(R.id.yrs,"O");
-            remoteViews.setTextViewText(R.id.yrs,"O");
-
-//            textYrs.setVisibility(View.INVISIBLE);
-//            textDay.setVisibility(View.INVISIBLE);
-//            textHrs.setVisibility(View.INVISIBLE);
-//            textMin.setVisibility(View.INVISIBLE);
-//            textSec.setVisibility(View.INVISIBLE);
+    private static void updateUI() {
+        if (years >= 10) {
+            remoteViews.setTextViewText(R.id.count, String.valueOf(years));
+            return;
+        } else if (years > 0) {
+            remoteViews.setTextViewText(R.id.count, "0" + years);
+            return;
         }
 
-//        textYrs.setText(GetWord(years, getResources().getString(R.string.text_yrs1), getResources().getString(R.string.text_yrs2), getResources().getString(R.string.text_yrs3)));
-//        textDay.setText(GetWord(days, getResources().getString(R.string.text_day1), getResources().getString(R.string.text_day2), getResources().getString(R.string.text_day3)));
-//        textHrs.setText(GetWord(hours, getResources().getString(R.string.text_hrs1), getResources().getString(R.string.text_hrs2), getResources().getString(R.string.text_hrs3)));
-//        textMin.setText(GetWord(mins, getResources().getString(R.string.text_min1), getResources().getString(R.string.text_min2), getResources().getString(R.string.text_min3)));
-//        textSec.setText(GetWord(secs, getResources().getString(R.string.text_sec1), getResources().getString(R.string.text_sec2), getResources().getString(R.string.text_sec3)));
+        if (days >= 10) {
+            remoteViews.setTextViewText(R.id.count, String.valueOf(days));
+            return;
+        } else if (days > 0) {
+            remoteViews.setTextViewText(R.id.count, "0" + days);
+            return;
+        }
+
+        if (hours >= 10) {
+            remoteViews.setTextViewText(R.id.count, String.valueOf(hours));
+            return;
+        } else if (hours > 0) {
+            remoteViews.setTextViewText(R.id.count, "0" + hours);
+            return;
+        }
+
+        if (mins >= 10) {
+            remoteViews.setTextViewText(R.id.count, String.valueOf(mins));
+            return;
+        } else if (mins > 0) {
+            remoteViews.setTextViewText(R.id.count, "0" + mins);
+            return;
+        }
+
+        if (secs >= 10) {
+            remoteViews.setTextViewText(R.id.count, String.valueOf(secs));
+        } else if (secs > 0) {
+            remoteViews.setTextViewText(R.id.count, "0" + secs);
+        }
+
+        if (years == 0 && days == 0 && hours == 0 && mins == 0 && secs == 0) {
+            remoteViews.setTextViewText(R.id.count, "BOO");
+            remoteViews.setTextViewTextSize(R.id.count, 2, 20);
+//            remoteViews.setTextViewText(R.id.day, "O");
+//            remoteViews.setTextViewText(R.id.hrs, "O");
+//            remoteViews.setTextViewText(R.id.min, "O");
+//            remoteViews.setTextViewText(R.id.sec, "O");
+//
+            remoteViews.setViewVisibility(R.id.text_count, View.GONE);
+//            remoteViews.setViewVisibility(R.id.day, View.INVISIBLE);
+//            remoteViews.setViewVisibility(R.id.hrs, View.INVISIBLE);
+//            remoteViews.setViewVisibility(R.id.min, View.INVISIBLE);
+//            remoteViews.setViewVisibility(R.id.sec, View.INVISIBLE);
+        }
+    }
+
+    private static void updateUI2(Context context) {
+        if(secs != 0) remoteViews.setTextViewText(R.id.text_count, GetWord(secs, context.getResources().getString(R.string.text_sec1), context.getResources().getString(R.string.text_sec2), context.getResources().getString(R.string.text_sec3)));
+        if(mins != 0) remoteViews.setTextViewText(R.id.text_count, GetWord(mins, context.getResources().getString(R.string.text_min1), context.getResources().getString(R.string.text_min2), context.getResources().getString(R.string.text_min3)));
+        if(hours != 0) remoteViews.setTextViewText(R.id.text_count, GetWord(hours, context.getResources().getString(R.string.text_hrs1), context.getResources().getString(R.string.text_hrs2), context.getResources().getString(R.string.text_hrs3)));
+        if(days != 0) remoteViews.setTextViewText(R.id.text_count, GetWord(days, context.getResources().getString(R.string.text_day1), context.getResources().getString(R.string.text_day2), context.getResources().getString(R.string.text_day3)));
+        if(years != 0) remoteViews.setTextViewText(R.id.text_count, GetWord(years, context.getResources().getString(R.string.text_yrs1), context.getResources().getString(R.string.text_yrs2), context.getResources().getString(R.string.text_yrs3)));
 
         if(years == 0) {
-            remoteViews.setTextColor(R.id.yrs, context.getResources().getColor(R.color.red));
-//            textYrs.setTextColor(getResources().getColor(R.color.red));
+            remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.red));
+            remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.red));
             if(days == 0) {
-                remoteViews.setTextColor(R.id.day, context.getResources().getColor(R.color.red));
-//                textDay.setTextColor(getResources().getColor(R.color.red));
+                remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.red));
+                remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.red));
                 if(hours == 0) {
-                    remoteViews.setTextColor(R.id.hrs, context.getResources().getColor(R.color.red));
-//                    textHrs.setTextColor(getResources().getColor(R.color.red));
+                    remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.red));
+                    remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.red));
                     if(mins == 0) {
-                        remoteViews.setTextColor(R.id.min, context.getResources().getColor(R.color.red));
-//                        textMin.setTextColor(getResources().getColor(R.color.red));
+                        remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.red));
+                        remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.red));
                         if(secs == 0) {
-                            remoteViews.setTextColor(R.id.sec, context.getResources().getColor(R.color.red));
-//                            textSec.setTextColor(getResources().getColor(R.color.red));
+                            remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.red));
+                            remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.red));
                         }
                     }
                 }
             }
+        }
+    }
+
+    private static String GetWord(Long value, String one, String before_five, String after_five)
+    {
+        value %= 100;
+        if(10 < value && value < 20) return after_five;
+        switch(Integer.parseInt(value.toString())%10)
+        {
+            case 1: return one;
+            case 2:
+            case 3:
+            case 4: return before_five;
+            default: return after_five;
         }
     }
 }

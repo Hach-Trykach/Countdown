@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:padding="80dp"
         android:layout_centerInParent="true"
-        android:src="@drawable/wait">
+        android:src="@drawable/ic_launcher">
     </ImageView>
 
     <ProgressBar

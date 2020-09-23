@@ -89,11 +89,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.unity3d.ads.IUnityAdsListener;
 import com.unity3d.ads.UnityAds;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -293,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         } else TimerRating();
         if (settings.contains(PERIOD_SETTINGS)) {
             PERIOD = settings.getInt(PERIOD_SETTINGS, 0);
-        } else PERIOD = 1000;
+        } else PERIOD = 1000; // 1000
 
 //        Long lll = 352662060043475L;
 //        final Long date_of_death = Long.parseLong(lll.toString());
@@ -995,7 +990,6 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                     // functionality that depends on this permission.
                     PermissionRequest();
                 }
-                return;
             }
             // other 'case' lines to check for other
             // permissions this app might request.

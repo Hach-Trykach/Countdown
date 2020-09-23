@@ -8,8 +8,8 @@ android {
         applicationId "by.ddrvld.countdowndeathapp"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 5
-        versionName "1.5.4"
+        versionCode 6
+        versionName "1.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
