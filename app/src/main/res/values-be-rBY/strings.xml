@@ -49,5 +49,6 @@
     <string name="share_text_1">Мне засталося жыць</string>
     <string name="share_text_2">А колькі засталося табе? Правер!</string>
     <string name="our_apps">Нашы прыкладанні</string>
-    <string name="share">Падзяліцца</string>
+    <string name="share">Падзеліцца</string>
+    <string name="sign_out">Выйсцi</string>
 </resources>

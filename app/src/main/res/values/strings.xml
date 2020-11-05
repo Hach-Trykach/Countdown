@@ -24,6 +24,21 @@
     <string name="text_yrs2">YRS</string>
     <string name="text_yrs1">YRS</string>
 
+    <string name="menu_item_logout">LogOut</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="start_phone_auth">Next</string>
+    <string name="verify_phone_auth">Verify</string>
+    <string name="resend_phone_auth">Resend</string>
+    <string name="hint_phone_number">Phone Number</string>
+    <string name="hint_verification_code">Verification Code</string>
+    <string name="status_code_sent">Code Sent</string>
+    <string name="status_verification_failed">Verification failed</string>
+    <string name="status_sign_in_failed">Sign-in failed</string>
+    <string name="phone_title_text">Phone Number</string>
+    <string name="verify_code_help_message">Enter your phone number along with the country code</string>
+    <string name="phone_number_for_example">Example: +375291234567</string>
+    <string name="type_message">Type message...</string>
+
     <string name="cross_text_1">+LICENSE++++++++++++++++++++++++++</string>
     <string name="cross_text_2">+DISTRIBUTION+++++++++++++++++++++</string>
     <string name="cross_text_3">+USER AGREEMENT++++++++++++++++++</string>
