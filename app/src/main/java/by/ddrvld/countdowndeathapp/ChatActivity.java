@@ -1,6 +1,6 @@
 package by.ddrvld.countdowndeathapp;
 
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
@@ -21,15 +21,21 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.github.library.bubbleview.BubbleTextView;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
@@ -52,9 +58,11 @@ import java.util.concurrent.TimeUnit;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
-public class ChatActivity extends AppCompatActivity implements View.OnClickListener {
+import static com.firebase.ui.auth.ui.AcquireEmailHelper.RC_SIGN_IN;
 
-    //    private static int SIGN_IN_CODE = 1;
+public class ChatActivity extends AppCompatActivity {
+
+//    private static int SIGN_IN_CODE = 1;
     private RelativeLayout activity_main;
     private FirebaseListAdapter<Message> adapter;
     private EmojiconEditText emojiconEditText;
@@ -120,7 +128,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
 
         if(FirebaseAuth.getInstance().getCurrentUser() == null) {
-            onCreateAuth();
+//            onCreateAuth();
+            startGoogleVerification();
         }
         else {
             onCreateChat();
@@ -169,7 +178,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View view) {
                 if(emojiconEditText.getText().toString().equals("")) return;
-                FirebaseDatabase.getInstance().getReference().push().setValue(new Message(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber(), emojiconEditText.getText().toString()));
+                FirebaseDatabase.getInstance().getReference().push().setValue(new Message(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), emojiconEditText.getText().toString()));
                 emojiconEditText.setText("");
             }
         });
@@ -206,7 +215,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             if(drawerItem.getIdentifier() == BTN_EXIT)
             {
                 FirebaseAuth.getInstance().signOut();
-                onCreateAuth();
+//                onCreateAuth();
                 return true;
             }
             return false;
@@ -289,76 +298,76 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 //        return true;
 //    }
 
-    private void onCreateAuth() {
-        setContentView(R.layout.activity_phone_auth);
-
-        if (mVerificationInProgress && validatePhoneNumber()) {
-            startPhoneNumberVerification(mPhoneNumberField.getText().toString());
-        }
-
-        // Assign views
-        mPhoneNumberViews = findViewById(R.id.phoneAuthFields);
-        mSignedInViews = findViewById(R.id.signedInButtons);
-
-        mStatusText = findViewById(R.id.status);
-        mDetailText = findViewById(R.id.example);
-
-        mPhoneNumberField = findViewById(R.id.fieldPhoneNumber);
-        mVerificationField = findViewById(R.id.fieldVerificationCode);
-
-        mStartButton = findViewById(R.id.buttonStartVerification);
-        mVerifyButton = findViewById(R.id.buttonVerifyPhone);
-        mResendButton = findViewById(R.id.buttonResend);
-        mSignOutButton = findViewById(R.id.signOutButton);
-
-        // Assign click listeners
-        mStartButton.setOnClickListener(this);
-        mVerifyButton.setOnClickListener(this);
-        mResendButton.setOnClickListener(this);
-        mSignOutButton.setOnClickListener(this);
-
-        mAuth = FirebaseAuth.getInstance();
-
-//        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-//        startPhoneNumberVerification(telephonyManager.getLine1Number());
-
-        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-            @Override
-            public void onVerificationCompleted(PhoneAuthCredential credential) {
-                Log.d(TAG, "onVerificationCompleted:" + credential);
-                mVerificationInProgress = false;
-                updateUI(STATE_VERIFY_SUCCESS, credential);
-                signInWithPhoneAuthCredential(credential);
-            }
-
-            @Override
-            public void onVerificationFailed(FirebaseException e) {
-                Log.w(TAG, "onVerificationFailed", e);
-                mVerificationInProgress = false;
-
-                if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                    mPhoneNumberField.setError("Invalid phone number.");
-                } else if (e instanceof FirebaseTooManyRequestsException) {
-                    Snackbar.make(findViewById(android.R.id.content), "Quota exceeded.", Snackbar.LENGTH_SHORT).show();
-                }
-                updateUI(STATE_VERIFY_FAILED);
-            }
-
-            @Override
-            public void onCodeSent(@NonNull String verificationId,
-                                   @NonNull PhoneAuthProvider.ForceResendingToken token) {
-                Log.d(TAG, "onCodeSent:" + verificationId);
-                mVerificationId = verificationId;
-                mResendToken = token;
-                updateUI(STATE_CODE_SENT);
-            }
-        };
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-        mAuth.setLanguageCode("ru");
-    }
+//    private void onCreateAuth() {
+//        setContentView(R.layout.activity_phone_auth);
+//
+//        if (mVerificationInProgress && validatePhoneNumber()) {
+//            startGoogleVerification(mPhoneNumberField.getText().toString());
+//        }
+//
+//        // Assign views
+//        mPhoneNumberViews = findViewById(R.id.phoneAuthFields);
+//        mSignedInViews = findViewById(R.id.signedInButtons);
+//
+//        mStatusText = findViewById(R.id.status);
+//        mDetailText = findViewById(R.id.example);
+//
+//        mPhoneNumberField = findViewById(R.id.fieldPhoneNumber);
+//        mVerificationField = findViewById(R.id.fieldVerificationCode);
+//
+//        mStartButton = findViewById(R.id.buttonStartVerification);
+//        mVerifyButton = findViewById(R.id.buttonVerifyPhone);
+//        mResendButton = findViewById(R.id.buttonResend);
+//        mSignOutButton = findViewById(R.id.signOutButton);
+//
+//        // Assign click listeners
+//        mStartButton.setOnClickListener(this);
+//        mVerifyButton.setOnClickListener(this);
+//        mResendButton.setOnClickListener(this);
+//        mSignOutButton.setOnClickListener(this);
+//
+//        mAuth = FirebaseAuth.getInstance();
+//
+////        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+////        startPhoneNumberVerification(telephonyManager.getLine1Number());
+//
+//        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+//
+//            @Override
+//            public void onVerificationCompleted(PhoneAuthCredential credential) {
+//                Log.d(TAG, "onVerificationCompleted:" + credential);
+//                mVerificationInProgress = false;
+//                updateUI(STATE_VERIFY_SUCCESS, credential);
+//                signInWithPhoneAuthCredential(credential);
+//            }
+//
+//            @Override
+//            public void onVerificationFailed(FirebaseException e) {
+//                Log.w(TAG, "onVerificationFailed", e);
+//                mVerificationInProgress = false;
+//
+//                if (e instanceof FirebaseAuthInvalidCredentialsException) {
+//                    mPhoneNumberField.setError("Invalid phone number.");
+//                } else if (e instanceof FirebaseTooManyRequestsException) {
+//                    Snackbar.make(findViewById(android.R.id.content), "Quota exceeded.", Snackbar.LENGTH_SHORT).show();
+//                }
+//                updateUI(STATE_VERIFY_FAILED);
+//            }
+//
+//            @Override
+//            public void onCodeSent(@NonNull String verificationId,
+//                                   @NonNull PhoneAuthProvider.ForceResendingToken token) {
+//                Log.d(TAG, "onCodeSent:" + verificationId);
+//                mVerificationId = verificationId;
+//                mResendToken = token;
+//                updateUI(STATE_CODE_SENT);
+//            }
+//        };
+//
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        updateUI(currentUser);
+//        mAuth.setLanguageCode("ru");
+//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -373,38 +382,88 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    private void startPhoneNumberVerification(String phoneNumber) {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,60, TimeUnit.SECONDS, this, mCallbacks);
+    private void startGoogleVerification() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
         mVerificationInProgress = true;
     }
+//    private void signIn() {
+//        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//        startActivityForResult(signInIntent, RC_SIGN_IN);
+//    }
 
-    private void verifyPhoneNumberWithCode(String verificationId, String code) {
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
-        signInWithPhoneAuthCredential(credential);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                firebaseAuthWithGoogle(account.getIdToken());
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+                // ...
+            }
+        }
     }
 
-    private void resendVerificationCode(String phoneNumber,
-                                        PhoneAuthProvider.ForceResendingToken token) {
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,60, TimeUnit.SECONDS,this, mCallbacks, token);
-    }
+//    private void verifyPhoneNumberWithCode(String verificationId, String code) {
+//        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
+//        signInWithPhoneAuthCredential(credential);
+//    }
 
-    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+//    private void resendVerificationCode(String phoneNumber,
+//                                        PhoneAuthProvider.ForceResendingToken token) {
+//        PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,60, TimeUnit.SECONDS,this, mCallbacks, token);
+//    }
+
+//    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+//        mAuth.signInWithCredential(credential)
+//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<AuthResult> task) {
+//                        if (task.isSuccessful()) {
+//                            Log.d(TAG, "signInWithCredential:success");
+//
+//                            FirebaseUser user = task.getResult().getUser();
+//                            updateUI(STATE_SIGNIN_SUCCESS, user);
+//                        } else {
+//                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+//                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+//                                mVerificationField.setError("Invalid code.");
+//                            }
+//                            updateUI(STATE_SIGNIN_FAILED);
+//                        }
+//                    }
+//                });
+//    }
+
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-
-                            FirebaseUser user = task.getResult().getUser();
-                            updateUI(STATE_SIGNIN_SUCCESS, user);
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
                         } else {
+                            // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                mVerificationField.setError("Invalid code.");
-                            }
-                            updateUI(STATE_SIGNIN_FAILED);
+//                            Snackbar.make(mBinding.mainLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            updateUI(null);
                         }
+
+                        // ...
                     }
                 });
     }
@@ -481,15 +540,14 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private boolean validatePhoneNumber() {
-        String phoneNumber = mPhoneNumberField.getText().toString();
-        if (TextUtils.isEmpty(phoneNumber)) {
-            mPhoneNumberField.setError("Invalid phone number.");
-            return false;
-        }
-
-        return true;
-    }
+//    private boolean validatePhoneNumber() {
+//        String phoneNumber = mPhoneNumberField.getText().toString();
+//        if (TextUtils.isEmpty(phoneNumber)) {
+//            mPhoneNumberField.setError("Invalid phone number.");
+//            return false;
+//        }
+//        return true;
+//    }
 
     private void enableViews(View... views) {
         for (View v : views) {
@@ -504,28 +562,36 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.buttonStartVerification:
-                if (!validatePhoneNumber()) {
-                    return;
-                }
-                startPhoneNumberVerification(mPhoneNumberField.getText().toString());
-                break;
-            case R.id.buttonVerifyPhone:
-                String code = mVerificationField.getText().toString();
-                if (TextUtils.isEmpty(code)) {
-                    mVerificationField.setError("Cannot be empty.");
-                    return;
-                }
-                verifyPhoneNumberWithCode(mVerificationId, code);
-                break;
-            case R.id.buttonResend:
-                resendVerificationCode(mPhoneNumberField.getText().toString(), mResendToken);
-                break;
-            case R.id.signOutButton:
-                FirebaseAuth.getInstance().signOut();
-                break;
-        }
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
     }
+
+//    @Override
+//    public void onClick(View view) {
+//        switch (view.getId()) {
+//            case R.id.buttonStartVerification:
+//                if (!validatePhoneNumber()) {
+//                    return;
+//                }
+//                startGoogleVerification(mPhoneNumberField.getText().toString());
+//                break;
+//            case R.id.buttonVerifyPhone:
+//                String code = mVerificationField.getText().toString();
+//                if (TextUtils.isEmpty(code)) {
+//                    mVerificationField.setError("Cannot be empty.");
+//                    return;
+//                }
+//                verifyPhoneNumberWithCode(mVerificationId, code);
+//                break;
+//            case R.id.buttonResend:
+//                resendVerificationCode(mPhoneNumberField.getText().toString(), mResendToken);
+//                break;
+//            case R.id.signOutButton:
+//                FirebaseAuth.getInstance().signOut();
+//                break;
+//        }
+//    }
 }

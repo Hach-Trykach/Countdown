@@ -10,4 +10,10 @@
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="grey">#303030</color>
+
+    <color name="turquoise">#0D887B</color>
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_300">#E0E0E0</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="darkGrey">#404040</color>
 </resources>
