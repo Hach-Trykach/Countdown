@@ -1,4 +1,4 @@
-package by.ddrvld.countdowndeathapp;
+ package by.ddrvld.countdowndeathapp;
 
 import android.app.AlarmManager;
 import android.content.ComponentName;
