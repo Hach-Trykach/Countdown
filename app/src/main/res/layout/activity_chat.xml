@@ -2,9 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/activity_chat"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".ChatActivity">
 
     <include
@@ -29,7 +30,7 @@
         android:layout_marginBottom="6dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:src="@drawable/ic_action_send_now" />
+        android:src="@drawable/ic_send_now" />
 
     <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
         android:id="@+id/textField"
@@ -44,7 +45,7 @@
         android:hint="@string/type_message"
         app:emojiconSize="30sp"
         android:textCursorDrawable="@drawable/cursor_color"
-        android:backgroundTint="@color/turquoise" />
+        android:backgroundTint="@color/darkGrey" />
 
     <ListView
         android:id="@+id/list_of_messages"

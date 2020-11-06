@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     private final int BTN_SHOPPING_CALCULATOR = 6;
     private final int BTN_OUR_APPS = 7;
     private final int BTN_SHARE = 8;
+    private final int BTN_CHAT = 9;
 
 //    static final int PAGE_COUNT = 2;
 
@@ -224,21 +225,6 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
 
-        /*mAuth = FirebaseAuth.getInstance();
-
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .requestProfile()
-                .build();
-
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);*/
-
 //        LayoutInflater inflater = LayoutInflater.from(this);
 //        List<View> pages = new ArrayList<>();
 //
@@ -268,8 +254,6 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //            public void onPageScrollStateChanged(int state) {
 //            }
 //        });
-
-
 
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -334,7 +318,6 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //            System.out.println("\date_of_death String: " + imeiString);
 //            System.out.println("\date_of_death: " + date_of_death);
 
-//            FirebaseDatabase.getInstance().getReference().push().setValue(date_of_death);
             saveTime();
         }
         timerTime = date_of_death - currentTime;
@@ -569,13 +552,13 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                 startActivity(intent);
                 return true;
             }
-            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_GAME)
-            {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmasgame"));
-                startActivity(intent);
-                return true;
-            }
+//            else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_GAME)
+//            {
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=by.ddrvld.christmasgame"));
+//                startActivity(intent);
+//                return true;
+//            }
             else if(drawerItem.getIdentifier() == BTN_CHRISTMAS_TREE)
             {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -633,6 +616,30 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                 }
                 return true;
             }
+            else if(drawerItem.getIdentifier() == BTN_CHAT) {
+                if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+                    mAuth = FirebaseAuth.getInstance();
+
+                    // Configure Google Sign In
+                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(R.string.default_web_client_id))
+                            .requestEmail()
+                            .requestProfile()
+                            .build();
+
+                    // Build a GoogleSignInClient with the options specified by gso.
+                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
+
+                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                    startActivityForResult(signInIntent, RC_SIGN_IN);
+                    return true;
+                }
+                else {
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    startActivity(intent);
+                    return true;
+                }
+            }
             return false;
         }
     };
@@ -660,11 +667,11 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                     .withIcon(R.drawable.img_jump_up)
                     .withIdentifier(BTN_JUMP_UP),
 
-            new PrimaryDrawerItem()
-                    .withName(R.string.christmas_game)
-                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_christmas_game)
-                    .withIdentifier(BTN_CHRISTMAS_GAME),
+//            new PrimaryDrawerItem()
+//                    .withName(R.string.christmas_game)
+//                    .withTextColorRes(R.color.white)
+//                    .withIcon(R.drawable.img_christmas_game)
+//                    .withIdentifier(BTN_CHRISTMAS_GAME),
 
             new PrimaryDrawerItem()
                     .withName(R.string.christmas_tree)
@@ -687,11 +694,17 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
             new DividerDrawerItem()
                     .withEnabled(true),
 
-            new PrimaryDrawerItem()
-                    .withName(R.string.share)
-                    .withTextColorRes(R.color.white)
-                    .withIcon(android.R.drawable.ic_menu_share)
-                    .withIdentifier(BTN_SHARE)
+                new PrimaryDrawerItem()
+                        .withName(R.string.share)
+                        .withTextColorRes(R.color.white)
+                        .withIcon(android.R.drawable.ic_menu_share)
+                        .withIdentifier(BTN_SHARE),
+
+                new PrimaryDrawerItem()
+                        .withName(R.string.chat)
+                        .withTextColorRes(R.color.white)
+                        .withIcon(android.R.drawable.ic_menu_send)
+                        .withIdentifier(BTN_CHAT)
         };
     }
 
@@ -760,8 +773,8 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                 dialog.cancel();
                 setContentView(R.layout.activity_wait);
 
-                webView = findViewById(R.id.webView);
-                webView.setWebViewClient(new MyWebViewClient());
+//                webView = findViewById(R.id.webView);
+//                webView.setWebViewClient(new MyWebViewClient());
 
                 createInterstitialAd();
 //                DisplayUnityInterstitialAd();
@@ -1238,28 +1251,28 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         }
     }
 
-    private void sendInAppNotification() {
-        theEnd();
-
-//        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle(getResources().getString(R.string.app_name))
-                        .setContentText(getResources().getString(R.string.user_agreement_broken))
-//                        .setSound(soundUri)
-                        .setLights(0xff0000ff, 100, 100)
-                        .setVibrate(new long[] { 200, 3000})
-                        .setOngoing(true)
-                        .setTimeoutAfter(30000)
-//                .setDefaults(Notification.DEFAULT_LIGHTS)
-//                .setWhen(System.currentTimeMillis())
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(MainActivity.this);
-        notificationManager.notify(0, builder.build());
-    }
+//    private void sendInAppNotification() {
+//        theEnd();
+//
+////        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
+//        NotificationCompat.Builder builder =
+//                new NotificationCompat.Builder(MainActivity.this, getResources().getString(R.string.app_name))
+//                        .setSmallIcon(R.drawable.ic_launcher)
+//                        .setContentTitle(getResources().getString(R.string.app_name))
+//                        .setContentText(getResources().getString(R.string.user_agreement_broken))
+////                        .setSound(soundUri)
+//                        .setLights(0xff0000ff, 100, 100)
+//                        .setVibrate(new long[] { 200, 3000})
+//                        .setOngoing(true)
+//                        .setTimeoutAfter(30000)
+////                .setDefaults(Notification.DEFAULT_LIGHTS)
+////                .setWhen(System.currentTimeMillis())
+//                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+//
+//        NotificationManagerCompat notificationManager =
+//                NotificationManagerCompat.from(MainActivity.this);
+//        notificationManager.notify(0, builder.build());
+//    }
 
     private void saveTime() {
 //        long time, yearsNow, daysNow, hoursNow, minsNow;
@@ -1273,6 +1286,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
             editor.putLong(DATE_OF_DEATH, date_of_death);
             editor.apply();
         }
+//        FirebaseDatabase.getInstance().getReference().push().setValue(date_of_death);
     }
 
     @Override
@@ -1348,11 +1362,11 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     }
 
     // Implement a function to display an ad if the Placement is ready:
-    public void DisplayUnityInterstitialAd() {
-        if (UnityAds.isReady (placementId)) {
-            UnityAds.show(this, placementId);
-        }
-    }
+//    public void DisplayUnityInterstitialAd() {
+//        if (UnityAds.isReady (placementId)) {
+//            UnityAds.show(this, placementId);
+//        }
+//    }
 
     @Override
     public void onUnityAdsReady (String placementId) {
@@ -1413,15 +1427,16 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                             Log.d("TAG", "signInWithCredential:success");
 //                            FirebaseUser user = mAuth.getCurrentUser();
 //                            updateUI(user);
-
 //                            DrawerBuilder();
+
+                            Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                            startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
                             Snackbar.make(findViewById(R.id.relative_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
 //                            updateUI(null);
                         }
-
                         // ...
                     }
                 });
@@ -1447,27 +1462,27 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
             .build();
     }
 
-    private void showKinovoWebView() {
-        webView.setVisibility(View.VISIBLE);
-        // включаем поддержку JavaScript
-        webView.getSettings().setJavaScriptEnabled(true);
-        // указываем страницу загрузки
-        webView.loadUrl("https://kinovo.online");
-    }
+//    private void showKinovoWebView() {
+//        webView.setVisibility(View.VISIBLE);
+//        // включаем поддержку JavaScript
+//        webView.getSettings().setJavaScriptEnabled(true);
+//        // указываем страницу загрузки
+//        webView.loadUrl("https://kinovo.online");
+//    }
 
-    private class MyWebViewClient extends WebViewClient {
-        @TargetApi(Build.VERSION_CODES.N)
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            view.loadUrl(request.getUrl().toString());
-            return true;
-        }
-
-        // Для старых устройств
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
-            return true;
-        }
-    }
+//    private class MyWebViewClient extends WebViewClient {
+//        @TargetApi(Build.VERSION_CODES.N)
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+//            view.loadUrl(request.getUrl().toString());
+//            return true;
+//        }
+//
+//        // Для старых устройств
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//            view.loadUrl(url);
+//            return true;
+//        }
+//    }
 }

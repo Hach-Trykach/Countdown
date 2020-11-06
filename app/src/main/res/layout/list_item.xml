@@ -37,7 +37,7 @@
         app:arrowHeight="10dp"
         app:arrowPosition="10dp"
         app:arrowLocation="left"
-        app:bubbleColor="@color/turquoise"
+        app:bubbleColor="@color/darkGrey"
         app:arrowCenter="false"/>
 
 </RelativeLayout>

@@ -38,6 +38,7 @@
     <string name="verify_code_help_message">Enter your phone number along with the country code</string>
     <string name="phone_number_for_example">Example: +375291234567</string>
     <string name="type_message">Type message...</string>
+    <string name="chat">Chat</string>
 
     <string name="cross_text_1">+LICENSE++++++++++++++++++++++++++</string>
     <string name="cross_text_2">+DISTRIBUTION+++++++++++++++++++++</string>

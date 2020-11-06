@@ -50,6 +50,7 @@
     <string name="share_text_2">А сколько осталось тебе? Проверь!</string>
     <string name="our_apps">Наши приложения</string>
     <string name="share">Поделиться</string>
+    <string name="chat">Чат</string>
 
     <string name="hint_phone_number">Телефон</string>
     <string name="hint_verification_code">Проверочный код</string>

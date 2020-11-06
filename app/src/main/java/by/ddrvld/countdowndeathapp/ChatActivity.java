@@ -2,7 +2,6 @@ package by.ddrvld.countdowndeathapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -28,12 +27,9 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -43,6 +39,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.Nullable;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -53,8 +50,6 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
-import java.util.concurrent.TimeUnit;
-
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
@@ -63,7 +58,7 @@ import static com.firebase.ui.auth.ui.AcquireEmailHelper.RC_SIGN_IN;
 public class ChatActivity extends AppCompatActivity {
 
 //    private static int SIGN_IN_CODE = 1;
-    private RelativeLayout activity_main;
+    private RelativeLayout activity_chat;
     private FirebaseListAdapter<Message> adapter;
     private EmojiconEditText emojiconEditText;
     ImageView emojiButton, submitButton;
@@ -81,6 +76,8 @@ public class ChatActivity extends AppCompatActivity {
     final int STATE_VERIFY_SUCCESS = 4;
     final int STATE_SIGNIN_FAILED = 5;
     final int STATE_SIGNIN_SUCCESS = 6;
+
+    final int SIGN_IN_CODE = 7;
 
     final int BTN_EXIT = 10;
 
@@ -113,11 +110,11 @@ public class ChatActivity extends AppCompatActivity {
 //        super.onActivityResult(requestCode, resultCode, data);
 //        if(requestCode == SIGN_IN_CODE) {
 //            if(resultCode == RESULT_OK) {
-//                Snackbar.make(activity_main, "Вы уже авторизованы", Snackbar.LENGTH_LONG).show();
+//                Snackbar.make(activity_chat, "Вы уже авторизованы", Snackbar.LENGTH_LONG).show();
 //                displayAllMessages();
 //            }
 //            else {
-//                Snackbar.make(activity_main, "Вы не авторизованы", Snackbar.LENGTH_LONG).show();
+//                Snackbar.make(activity_chat, "Вы не авторизованы", Snackbar.LENGTH_LONG).show();
 //                finish();
 //            }
 //        }
@@ -129,7 +126,7 @@ public class ChatActivity extends AppCompatActivity {
 
         if(FirebaseAuth.getInstance().getCurrentUser() == null) {
 //            onCreateAuth();
-            startGoogleVerification();
+            Snackbar.make(activity_chat, "Вы не авторизованы 2", Snackbar.LENGTH_LONG).show();
         }
         else {
             onCreateChat();
@@ -153,7 +150,7 @@ public class ChatActivity extends AppCompatActivity {
 //    }
 
     private void onCreateChat() {
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_chat);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -161,11 +158,11 @@ public class ChatActivity extends AppCompatActivity {
         }
         initializeDrawer(toolbar);
 
-        activity_main = findViewById(R.id.activity_main);
+        activity_chat = findViewById(R.id.activity_chat);
         submitButton = findViewById(R.id.submit_button);
         emojiButton = findViewById(R.id.emoji_button);
         emojiconEditText = findViewById(R.id.textField);
-        emojIconActions = new EmojIconActions(getApplicationContext(), activity_main, emojiconEditText, emojiButton);
+        emojIconActions = new EmojIconActions(getApplicationContext(), activity_chat, emojiconEditText, emojiButton);
         emojIconActions.ShowEmojIcon();
 
         listOfMessages = findViewById(R.id.list_of_messages);
@@ -276,279 +273,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId())
-//        {
-//            case R.id.menu_item_logout:
-//                FirebaseAuth.getInstance().signOut();
-//                finish();
-//                Intent intent = new Intent(this, PhoneAuthActivity.class);
-//                startActivity(intent);
-//                break;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//        return true;
-//    }
-
-//    private void onCreateAuth() {
-//        setContentView(R.layout.activity_phone_auth);
-//
-//        if (mVerificationInProgress && validatePhoneNumber()) {
-//            startGoogleVerification(mPhoneNumberField.getText().toString());
-//        }
-//
-//        // Assign views
-//        mPhoneNumberViews = findViewById(R.id.phoneAuthFields);
-//        mSignedInViews = findViewById(R.id.signedInButtons);
-//
-//        mStatusText = findViewById(R.id.status);
-//        mDetailText = findViewById(R.id.example);
-//
-//        mPhoneNumberField = findViewById(R.id.fieldPhoneNumber);
-//        mVerificationField = findViewById(R.id.fieldVerificationCode);
-//
-//        mStartButton = findViewById(R.id.buttonStartVerification);
-//        mVerifyButton = findViewById(R.id.buttonVerifyPhone);
-//        mResendButton = findViewById(R.id.buttonResend);
-//        mSignOutButton = findViewById(R.id.signOutButton);
-//
-//        // Assign click listeners
-//        mStartButton.setOnClickListener(this);
-//        mVerifyButton.setOnClickListener(this);
-//        mResendButton.setOnClickListener(this);
-//        mSignOutButton.setOnClickListener(this);
-//
-//        mAuth = FirebaseAuth.getInstance();
-//
-////        TelephonyManager telephonyManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-////        startPhoneNumberVerification(telephonyManager.getLine1Number());
-//
-//        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-//
-//            @Override
-//            public void onVerificationCompleted(PhoneAuthCredential credential) {
-//                Log.d(TAG, "onVerificationCompleted:" + credential);
-//                mVerificationInProgress = false;
-//                updateUI(STATE_VERIFY_SUCCESS, credential);
-//                signInWithPhoneAuthCredential(credential);
-//            }
-//
-//            @Override
-//            public void onVerificationFailed(FirebaseException e) {
-//                Log.w(TAG, "onVerificationFailed", e);
-//                mVerificationInProgress = false;
-//
-//                if (e instanceof FirebaseAuthInvalidCredentialsException) {
-//                    mPhoneNumberField.setError("Invalid phone number.");
-//                } else if (e instanceof FirebaseTooManyRequestsException) {
-//                    Snackbar.make(findViewById(android.R.id.content), "Quota exceeded.", Snackbar.LENGTH_SHORT).show();
-//                }
-//                updateUI(STATE_VERIFY_FAILED);
-//            }
-//
-//            @Override
-//            public void onCodeSent(@NonNull String verificationId,
-//                                   @NonNull PhoneAuthProvider.ForceResendingToken token) {
-//                Log.d(TAG, "onCodeSent:" + verificationId);
-//                mVerificationId = verificationId;
-//                mResendToken = token;
-//                updateUI(STATE_CODE_SENT);
-//            }
-//        };
-//
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        updateUI(currentUser);
-//        mAuth.setLanguageCode("ru");
-//    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(KEY_VERIFY_IN_PROGRESS, mVerificationInProgress);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        mVerificationInProgress = savedInstanceState.getBoolean(KEY_VERIFY_IN_PROGRESS);
-    }
-
-
-    private void startGoogleVerification() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mVerificationInProgress = true;
-    }
-//    private void signIn() {
-//        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-//        startActivityForResult(signInIntent, RC_SIGN_IN);
-//    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
-                // ...
-            }
-        }
-    }
-
-//    private void verifyPhoneNumberWithCode(String verificationId, String code) {
-//        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
-//        signInWithPhoneAuthCredential(credential);
-//    }
-
-//    private void resendVerificationCode(String phoneNumber,
-//                                        PhoneAuthProvider.ForceResendingToken token) {
-//        PhoneAuthProvider.getInstance().verifyPhoneNumber(phoneNumber,60, TimeUnit.SECONDS,this, mCallbacks, token);
-//    }
-
-//    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-//        mAuth.signInWithCredential(credential)
-//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        if (task.isSuccessful()) {
-//                            Log.d(TAG, "signInWithCredential:success");
-//
-//                            FirebaseUser user = task.getResult().getUser();
-//                            updateUI(STATE_SIGNIN_SUCCESS, user);
-//                        } else {
-//                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-//                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-//                                mVerificationField.setError("Invalid code.");
-//                            }
-//                            updateUI(STATE_SIGNIN_FAILED);
-//                        }
-//                    }
-//                });
-//    }
-
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-//                            Snackbar.make(mBinding.mainLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            updateUI(null);
-                        }
-
-                        // ...
-                    }
-                });
-    }
-
-    public void signOut() {
-        mAuth.signOut();
-        updateUI(STATE_INITIALIZED);
-    }
-
-    private void updateUI(int uiState) {
-        updateUI(uiState, mAuth.getCurrentUser(), null);
-    }
-
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            updateUI(STATE_SIGNIN_SUCCESS, user);
-        } else {
-            updateUI(STATE_INITIALIZED);
-        }
-    }
-
-    private void updateUI(int uiState, FirebaseUser user) {
-        updateUI(uiState, user, null);
-    }
-
-    private void updateUI(int uiState, PhoneAuthCredential cred) {
-        updateUI(uiState, null, cred);
-    }
-
-    private void updateUI(int uiState, FirebaseUser user, PhoneAuthCredential cred) {
-        switch (uiState) {
-            case STATE_INITIALIZED:
-                enableViews(mStartButton, mPhoneNumberField);
-                disableViews(mVerifyButton, mResendButton, mVerificationField);
-//                mDetailText.setText(null);
-                break;
-            case STATE_CODE_SENT:
-                enableViews(mVerifyButton, mResendButton, mPhoneNumberField, mVerificationField);
-                disableViews(mStartButton);
-//                mDetailText.setText(R.string.status_code_sent);
-                break;
-            case STATE_VERIFY_FAILED:
-                enableViews(mStartButton, mVerifyButton, mResendButton, mPhoneNumberField, mVerificationField);
-//                mDetailText.setText(R.string.status_verification_failed);
-                break;
-            case STATE_VERIFY_SUCCESS:
-                onCreateChat();
-                Snackbar.make(activity_main, "Добро пожаловать!", Snackbar.LENGTH_LONG).show();
-                break;
-            case STATE_SIGNIN_FAILED:
-//                mDetailText.setText(R.string.status_sign_in_failed);
-                break;
-            case STATE_SIGNIN_SUCCESS:
-                break;
-        }
-        if (user == null) { // Signed out
-            mPhoneNumberViews.setVisibility(View.VISIBLE);
-            mSignedInViews.setVisibility(View.GONE);
-//            mStatusText.setText(R.string.signed_out);
-        } else { // Signed in
-//            mPhoneNumberViews.setVisibility(View.GONE);
-//            mSignedInViews.setVisibility(View.VISIBLE);
-//
-//            enableViews(mPhoneNumberField, mVerificationField);
-//            mPhoneNumberField.setText(null);
-//            mVerificationField.setText(null);
-//
-//            mStatusText.setText(R.string.signed_in);
-//            mDetailText.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-
-//            finish();
-//            Intent intent = new Intent(this, MainActivity.class);
-//            startActivity(intent);
-        }
-    }
-
-//    private boolean validatePhoneNumber() {
-//        String phoneNumber = mPhoneNumberField.getText().toString();
-//        if (TextUtils.isEmpty(phoneNumber)) {
-//            mPhoneNumberField.setError("Invalid phone number.");
-//            return false;
-//        }
-//        return true;
-//    }
-
     private void enableViews(View... views) {
         for (View v : views) {
             v.setEnabled(true);
@@ -560,38 +284,4 @@ public class ChatActivity extends AppCompatActivity {
             v.setEnabled(false);
         }
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
-    }
-
-//    @Override
-//    public void onClick(View view) {
-//        switch (view.getId()) {
-//            case R.id.buttonStartVerification:
-//                if (!validatePhoneNumber()) {
-//                    return;
-//                }
-//                startGoogleVerification(mPhoneNumberField.getText().toString());
-//                break;
-//            case R.id.buttonVerifyPhone:
-//                String code = mVerificationField.getText().toString();
-//                if (TextUtils.isEmpty(code)) {
-//                    mVerificationField.setError("Cannot be empty.");
-//                    return;
-//                }
-//                verifyPhoneNumberWithCode(mVerificationId, code);
-//                break;
-//            case R.id.buttonResend:
-//                resendVerificationCode(mPhoneNumberField.getText().toString(), mResendToken);
-//                break;
-//            case R.id.signOutButton:
-//                FirebaseAuth.getInstance().signOut();
-//                break;
-//        }
-//    }
 }
