@@ -8,9 +8,9 @@
     android:background="@color/black"
     tools:context=".ChatActivity">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
+<!--    <include-->
+<!--        android:id="@+id/toolbar"-->
+<!--        layout="@layout/toolbar" />-->
 
     <ImageView
         android:id="@+id/emoji_button"
@@ -59,8 +59,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll"
-        android:layout_marginTop="?attr/actionBarSize" />
+        android:transcriptMode="alwaysScroll" />
+<!--        android:layout_marginTop="?attr/actionBarSize"-->
 
     <ProgressBar
         android:id="@+id/circular_progress"

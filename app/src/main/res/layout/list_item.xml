@@ -19,7 +19,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:id="@+id/item_message_time"
-        android:textAlignment="viewEnd"/>
+        android:textAlignment="viewEnd"
+        android:paddingTop="25dp"/>
 
     <com.github.library.bubbleview.BubbleTextView
         android:layout_width="wrap_content"
@@ -32,6 +33,7 @@
         android:textSize="18sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:padding="10dp"
+        android:maxWidth="250dp"
         app:angle="8dp"
         app:arrowWidth="8dp"
         app:arrowHeight="10dp"
