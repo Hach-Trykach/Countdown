@@ -219,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //        public int getCount() {
 //            return PAGE_COUNT;
 //        }
-//
 //    }
 
     private void onCreateActivityDate() {
@@ -1351,7 +1350,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
             editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
             editor.apply();
 
-            FirebaseDatabase.getInstance().getReference().push().setValue(timerTime);
+//            FirebaseDatabase.getInstance().getReference().push().setValue(timerTime);
 
             Intent intent = new Intent(this, Receiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
