@@ -12,6 +12,13 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
 
+    <RelativeLayout
+        android:id="@+id/RLTextField"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/darkGrey"
+        android:layout_alignParentBottom="true">
+
     <ImageView
         android:id="@+id/emoji_button"
         android:layout_width="40dp"
@@ -47,11 +54,13 @@
         android:textCursorDrawable="@drawable/cursor_color"
         android:backgroundTint="@color/darkGrey" />
 
+    </RelativeLayout>
+
     <ListView
         android:id="@+id/list_of_messages"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/textField"
+        android:layout_above="@+id/RLTextField"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:divider="@android:color/transparent"
@@ -60,7 +69,8 @@
         android:layout_marginRight="10dp"
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll"
-        android:layout_marginTop="?attr/actionBarSize" />
+        android:layout_marginTop="?attr/actionBarSize"
+        android:choiceMode="multipleChoice" />
 
     <ProgressBar
         android:id="@+id/circular_progress"

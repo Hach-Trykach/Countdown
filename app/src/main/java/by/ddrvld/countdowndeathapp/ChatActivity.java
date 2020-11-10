@@ -28,6 +28,7 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.github.library.bubbleview.BubbleTextView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -63,14 +64,16 @@ public class ChatActivity extends AppCompatActivity {
     private ListView listOfMessages;
     private ProgressBar circular_progress;
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
-        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+        if(user == null) {
             Snackbar.make(activity_chat, "Вы не авторизованы..", Snackbar.LENGTH_LONG).show();
         }
         else {
@@ -177,13 +180,12 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 else {
                     FirebaseDatabase.getInstance().getReference().push().setValue(
-                            new Message(FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), text));
+                            new Message(user.getDisplayName(), text));
                     emojiconEditText.setText("");
                 }
             }
         });
         displayAllMessages();
-
 
         circular_progress = findViewById(R.id.circular_progress);
         listOfMessages = findViewById(R.id.list_of_messages);
@@ -314,7 +316,7 @@ public class ChatActivity extends AppCompatActivity {
 //        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
 //            if(drawerItem.getIdentifier() == BTN_EXIT)
 //            {
-//                FirebaseAuth.getInstance().signOut();
+//                mAuth.signOut();
 ////                onCreateAuth();
 //                return true;
 //            }
@@ -343,10 +345,10 @@ public class ChatActivity extends AppCompatActivity {
 //                .build();
 //    }
 
-    //        connectedRef.child("users").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
     private void displayAllMessages() {
         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-        connectedRef.addValueEventListener(new ValueEventListener() {
+            connectedRef.child("OOC").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
+//        connectedRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 

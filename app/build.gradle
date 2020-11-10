@@ -49,7 +49,7 @@ dependencies {
     implementation 'com.github.lguipeng:BubbleView:1.0.1'
     implementation 'com.github.hani-momanii:SuperNova-Emoji:1.1'
 
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
