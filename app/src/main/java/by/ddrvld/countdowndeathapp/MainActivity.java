@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     private String placementId = "video";
 
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
     private int RC_SIGN_IN = 1101;
     private GoogleSignInClient mGoogleSignInClient;
 
@@ -223,6 +224,9 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
+
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
 //        LayoutInflater inflater = LayoutInflater.from(this);
 //        List<View> pages = new ArrayList<>();
@@ -611,13 +615,12 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                 try {
                     startActivity(Intent.createChooser(intent, getResources().getString(R.string.app_name)));
                 } catch (android.content.ActivityNotFoundException ex) {
-//            Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.some_error), Snackbar.LENGTH_SHORT).show();
+//                  Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.some_error), Snackbar.LENGTH_SHORT).show();
                 }
                 return true;
             }
             else if(drawerItem.getIdentifier() == BTN_CHAT) {
-                if(FirebaseAuth.getInstance().getCurrentUser() == null) {
-                    mAuth = FirebaseAuth.getInstance();
+                if(user == null) {
 
                     // Configure Google Sign In
                     GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
