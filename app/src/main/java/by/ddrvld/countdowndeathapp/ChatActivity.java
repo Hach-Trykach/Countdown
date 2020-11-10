@@ -347,8 +347,8 @@ public class ChatActivity extends AppCompatActivity {
 
     private void displayAllMessages() {
         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-            connectedRef.child("OOC").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
-//        connectedRef.addValueEventListener(new ValueEventListener() {
+//            connectedRef.child("OOC").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
+        connectedRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
