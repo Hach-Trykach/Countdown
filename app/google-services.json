@@ -61,6 +61,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "331604710303-al4t3uiutppfnvveunoi6ldr2aem2p2p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "by.ddrvld.countdowndeathapp",
+            "certificate_hash": "b7d63a2ab6ff132156a942581ca28d13ca653bb6"
+          }
+        },
+        {
           "client_id": "331604710303-36gebmpqsmrds3tq9g3m4hr948i817un.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

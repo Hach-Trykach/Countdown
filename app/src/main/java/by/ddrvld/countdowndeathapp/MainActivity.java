@@ -611,7 +611,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                                 getResources().getString(R.string.text_min2),
                                 getResources().getString(R.string.text_min3)) : "") +
                         ".\n" + getResources().getString(R.string.share_text_2) +
-                        "\nhttps://play.google.com/store/apps/details?id=by.ddrvld.countdowndeathapp");
+                        "\nhttps://play.google.com/store/apps/details?id=" + getPackageName());
                 try {
                     startActivity(Intent.createChooser(intent, getResources().getString(R.string.app_name)));
                 } catch (android.content.ActivityNotFoundException ex) {
@@ -1314,8 +1314,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        updateUI(currentUser);
+//        updateUI(user);
     }
 
     @Override
@@ -1427,7 +1426,6 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
-//                            FirebaseUser user = mAuth.getCurrentUser();
 //                            updateUI(user);
 //                            DrawerBuilder();
 

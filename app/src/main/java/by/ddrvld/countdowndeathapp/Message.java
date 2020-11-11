@@ -3,12 +3,14 @@ package by.ddrvld.countdowndeathapp;
 import java.util.Date;
 
 public class Message {
+    public String email;
     public  String userName;
     public String textMessage;
     private long messageTime;
 
     public Message() {}
-    public Message(String userName, String textMessage) {
+    public Message(String email, String userName, String textMessage) {
+        this.email = email;
         this.userName = userName;
         this.textMessage = textMessage;
         this.messageTime = new Date().getTime();
@@ -36,5 +38,9 @@ public class Message {
 
     public void setMessageTime(long messageTime) {
         this.messageTime = messageTime;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }

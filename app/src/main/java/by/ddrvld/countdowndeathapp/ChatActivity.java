@@ -9,6 +9,7 @@ import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,6 +54,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private Message selectedListItem; //hold selected item
     private boolean selectMode = false;
+    private SparseBooleanArray chosen;
     private int selectItemSize;
     private Toolbar toolbar;
 
@@ -65,6 +67,8 @@ public class ChatActivity extends AppCompatActivity {
     private ProgressBar circular_progress;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,11 @@ public class ChatActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+        //получаем точку входа для базы данных
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        //получаем ссылку для работы с базой данных
+        mDatabaseReference = mFirebaseDatabase.getReference();
 
         if(user == null) {
             Snackbar.make(activity_chat, "Вы не авторизованы..", Snackbar.LENGTH_LONG).show();
@@ -180,8 +189,8 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 else {
                     FirebaseDatabase.getInstance().getReference().push().setValue(
-                            new Message(user.getDisplayName(), text));
-                    emojiconEditText.setText("");
+                            new Message(user.getEmail(), user.getDisplayName(), text));
+                    clearEditText();
                 }
             }
         });
@@ -220,7 +229,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
                 else {
-                    Message message = (Message) adapterView.getItemAtPosition(i);
+//                    Message message = (Message) adapterView.getItemAtPosition(i);
 //                    openInWindow(message);
                     listOfMessages.setItemChecked(i, false);
                 }
@@ -244,23 +253,58 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
+    private void createMessage() {
+        //создаем элемент класса Notes
+        Message message = new Message(user.getEmail(), String.valueOf(System.currentTimeMillis() / 1000), emojiconEditText.getText().toString());
+        mDatabaseReference.child("users")
+//                .child(mAuth.getUid() != null ? mAuth.getUid() : "CgPHNky1EFRqBSCvpp1HgJNZ3U")
+                .child(mAuth.getUid())
+                .child(message.getEmail())
+                .setValue(message);
+        //очищаем поля ввода
+        clearEditText();
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
+    private void updateMessage(Message selectedListItem) {
+        mDatabaseReference.child("users")
+                .child(mAuth.getUid())
+                .child(selectedListItem.getEmail())
+                .child("message")
+                .setValue(selectedListItem.getTextMessage());
+//        selectedListItem = null;
+        //очищаем поля ввода
+        clearEditText();
+    }
 
-        getMenuInflater().inflate(R.menu.context_menu, menu);
+    private void deleteMessage() {
+        if(selectedListItem != null) {
+            chosen = listOfMessages.getCheckedItemPositions();
+            for (int i = 0; i < chosen.size(); i++) {
+                // если пользователь выбрал пункт списка,
+                // то выводим его в TextView.
+                Message message = (Message) listOfMessages.getItemAtPosition(chosen.keyAt(i));
+                selectedListItem = message;
+                if (chosen.valueAt(i)) {
+                    mDatabaseReference.child("users")
+                            .child(mAuth.getUid())
+                            .child(selectedListItem.getEmail())
+                            .removeValue();
+                }
+            }
+            deselectAllItems();
+        }
+        else Snackbar.make(findViewById(android.R.id.content), "Выберите сообщение", Snackbar.LENGTH_SHORT).show();
+    }
+
+    void clearEditText() {
+        emojiconEditText.setText("");
     }
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.option_1:
+                deleteMessage();
                 Snackbar.make(findViewById(android.R.id.content), "Выбран Option_1", Snackbar.LENGTH_SHORT).show();
                 return true;
             default:
@@ -377,6 +421,18 @@ public class ChatActivity extends AppCompatActivity {
                 Log.w(TAG, "Listener was cancelled");
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu, menu);
     }
 
 //    private void enableViews(View... views) {
