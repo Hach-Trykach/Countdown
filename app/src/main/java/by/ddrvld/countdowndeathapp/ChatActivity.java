@@ -151,6 +151,7 @@ public class ChatActivity extends AppCompatActivity {
 //                };
 //
 //                emojiconEditText.setFilters(new InputFilter[]{filter});
+//                createMessage();
 
                 String text = emojiconEditText.getText().toString();
 
@@ -256,7 +257,7 @@ public class ChatActivity extends AppCompatActivity {
     private void createMessage() {
         //создаем элемент класса Notes
         Message message = new Message(user.getEmail(), String.valueOf(System.currentTimeMillis() / 1000), emojiconEditText.getText().toString());
-        mDatabaseReference.child("users")
+        mDatabaseReference.child("chat")
 //                .child(mAuth.getUid() != null ? mAuth.getUid() : "CgPHNky1EFRqBSCvpp1HgJNZ3U")
                 .child(mAuth.getUid())
                 .child(message.getEmail())
@@ -266,7 +267,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void updateMessage(Message selectedListItem) {
-        mDatabaseReference.child("users")
+        mDatabaseReference.child("chat")
                 .child(mAuth.getUid())
                 .child(selectedListItem.getEmail())
                 .child("message")
@@ -391,7 +392,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void displayAllMessages() {
         DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-//            connectedRef.child("OOC").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
+//            connectedRef.child("chat").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
         connectedRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

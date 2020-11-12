@@ -1,67 +1,29 @@
 {
   "project_info": {
-    "project_number": "331604710303",
-    "firebase_url": "https://countdown-death-app.firebaseio.com",
-    "project_id": "countdown-death-app",
-    "storage_bucket": "countdown-death-app.appspot.com"
+    "project_number": "1095365003542",
+    "firebase_url": "https://countdown-d0657.firebaseio.com",
+    "project_id": "countdown-d0657",
+    "storage_bucket": "countdown-d0657.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:331604710303:android:3a6a820586494b2d36e3aa",
-        "android_client_info": {
-          "package_name": "by.ddrvld.countdownapp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "331604710303-dvgfg17fjqghaaaq3qfunu6pb9b52joj.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "by.ddrvld.countdownapp",
-            "certificate_hash": "aa9b4a3f47be82318b6498f62857c31339c4dbf1"
-          }
-        },
-        {
-          "client_id": "331604710303-5hq14uvn7h79a6cf95suarotdvsq9ecs.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "by.ddrvld.countdownapp",
-            "certificate_hash": "9f10bf03a80f8be8b58d57c080f142b6acbd2bcd"
-          }
-        },
-        {
-          "client_id": "331604710303-vcue7q0gn6881up8lnteo63tts61itne.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBqzk-cK3b7DI4zr4pZTlTwOVTap2bWSdQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "331604710303-vcue7q0gn6881up8lnteo63tts61itne.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      },
-      "admob_app_id": "ca-app-pub-7528412641056592~7106062078"
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:331604710303:android:f6688c686ac956d636e3aa",
+        "mobilesdk_app_id": "1:1095365003542:android:81344e09984abb1d342837",
         "android_client_info": {
           "package_name": "by.ddrvld.countdowndeathapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "331604710303-al4t3uiutppfnvveunoi6ldr2aem2p2p.apps.googleusercontent.com",
+          "client_id": "1095365003542-3uuf9bbjrcoo2rf4mnrme9367a8ui9i0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "by.ddrvld.countdowndeathapp",
+            "certificate_hash": "c4871b54e908ee7f0118e854a52d3dcc63870afc"
+          }
+        },
+        {
+          "client_id": "1095365003542-9e7jl44b56jnnoprqflajcut62de8rdf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "by.ddrvld.countdowndeathapp",
@@ -69,50 +31,25 @@
           }
         },
         {
-          "client_id": "331604710303-36gebmpqsmrds3tq9g3m4hr948i817un.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "by.ddrvld.countdowndeathapp",
-            "certificate_hash": "cbe80b396788fcfbb79133020124725a9c1e93a8"
-          }
-        },
-        {
-          "client_id": "331604710303-73oaqj3nlkgo7k3orne890ofjt6drutf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "by.ddrvld.countdowndeathapp",
-            "certificate_hash": "aa9b4a3f47be82318b6498f62857c31339c4dbf1"
-          }
-        },
-        {
-          "client_id": "331604710303-lk8kh46bvdun1kj5jt8rtnainhvjo7db.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "by.ddrvld.countdowndeathapp",
-            "certificate_hash": "9f10bf03a80f8be8b58d57c080f142b6acbd2bcd"
-          }
-        },
-        {
-          "client_id": "331604710303-vcue7q0gn6881up8lnteo63tts61itne.apps.googleusercontent.com",
+          "client_id": "1095365003542-1faq1mkjras8chml9vol00tk2dtpodn8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBqzk-cK3b7DI4zr4pZTlTwOVTap2bWSdQ"
+          "current_key": "AIzaSyBIebRSnxaOlGw3vqqP9L-X9H5Js6iLr6A"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "331604710303-vcue7q0gn6881up8lnteo63tts61itne.apps.googleusercontent.com",
+              "client_id": "1095365003542-1faq1mkjras8chml9vol00tk2dtpodn8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
         }
-      },
-      "admob_app_id": "ca-app-pub-7528412641056592~6477182127"
+      }
     }
   ],
   "configuration_version": "1"
