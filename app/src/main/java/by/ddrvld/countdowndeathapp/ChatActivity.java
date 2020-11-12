@@ -176,7 +176,6 @@ public class ChatActivity extends AppCompatActivity {
                 while (text.contains("\n\n\n")) {
                     try {
                         text = text.replaceAll("\n\n\n", "\n\n");
-//                        Snackbar.make(findViewById(android.R.id.content), "Слишком много отступов", Snackbar.LENGTH_SHORT).show();
                     }
                     catch (Exception e) {
                         e.printStackTrace();
@@ -189,9 +188,7 @@ public class ChatActivity extends AppCompatActivity {
                 if(text.isEmpty()) {
                 }
                 else {
-                    FirebaseDatabase.getInstance().getReference().push().setValue(
-                            new Message(user.getEmail(), user.getDisplayName(), text));
-                    clearEditText();
+                    createMessage(text);
                 }
             }
         });
@@ -254,48 +251,48 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void createMessage() {
-        //создаем элемент класса Notes
-        Message message = new Message(user.getEmail(), String.valueOf(System.currentTimeMillis() / 1000), emojiconEditText.getText().toString());
-        mDatabaseReference.child("chat")
-//                .child(mAuth.getUid() != null ? mAuth.getUid() : "CgPHNky1EFRqBSCvpp1HgJNZ3U")
-                .child(mAuth.getUid())
-                .child(message.getEmail())
+    private void createMessage(String text) {
+        Message message = new Message(user.getEmail(), user.getDisplayName(), text);
+        mDatabaseReference.child("chats")
+                .child("general")
+                .push()
                 .setValue(message);
-        //очищаем поля ввода
         clearEditText();
     }
 
-    private void updateMessage(Message selectedListItem) {
-        mDatabaseReference.child("chat")
-                .child(mAuth.getUid())
-                .child(selectedListItem.getEmail())
-                .child("message")
-                .setValue(selectedListItem.getTextMessage());
-//        selectedListItem = null;
-        //очищаем поля ввода
-        clearEditText();
-    }
+//    private void updateMessage(Message selectedListItem) {
+//        mDatabaseReference.child("chats")
+//                .child("general")
+//                .push()
+//                .child(mAuth.getUid())
+//                .child(selectedListItem.getEmail())
+//                .child("message")
+//                .setValue(selectedListItem.getTextMessage());
+////        selectedListItem = null;
+//        clearEditText();
+//    }
 
-    private void deleteMessage() {
-        if(selectedListItem != null) {
-            chosen = listOfMessages.getCheckedItemPositions();
-            for (int i = 0; i < chosen.size(); i++) {
-                // если пользователь выбрал пункт списка,
-                // то выводим его в TextView.
-                Message message = (Message) listOfMessages.getItemAtPosition(chosen.keyAt(i));
-                selectedListItem = message;
-                if (chosen.valueAt(i)) {
-                    mDatabaseReference.child("users")
-                            .child(mAuth.getUid())
-                            .child(selectedListItem.getEmail())
-                            .removeValue();
-                }
-            }
-            deselectAllItems();
-        }
-        else Snackbar.make(findViewById(android.R.id.content), "Выберите сообщение", Snackbar.LENGTH_SHORT).show();
-    }
+//    private void deleteMessage() {
+//        if(selectedListItem != null) {
+//            chosen = listOfMessages.getCheckedItemPositions();
+//            for (int i = 0; i < chosen.size(); i++) {
+//                // если пользователь выбрал пункт списка,
+//                // то выводим его в TextView.
+//                Message message = (Message) listOfMessages.getItemAtPosition(chosen.keyAt(i));
+//                selectedListItem = message;
+//                if (chosen.valueAt(i)) {
+//                    mDatabaseReference.child("chats")
+//                            .child("general")
+//                            .push()
+//                            .child(mAuth.getUid())
+//                            .child(selectedListItem.getEmail())
+//                            .removeValue();
+//                }
+//            }
+//            deselectAllItems();
+//        }
+//        else Snackbar.make(findViewById(android.R.id.content), "Выберите сообщение", Snackbar.LENGTH_SHORT).show();
+//    }
 
     void clearEditText() {
         emojiconEditText.setText("");
@@ -305,7 +302,7 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.option_1:
-                deleteMessage();
+//                deleteMessage();
                 Snackbar.make(findViewById(android.R.id.content), "Выбран Option_1", Snackbar.LENGTH_SHORT).show();
                 return true;
             default:
@@ -391,24 +388,24 @@ public class ChatActivity extends AppCompatActivity {
 //    }
 
     private void displayAllMessages() {
-        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-//            connectedRef.child("chat").child(mAuth.getUid()).addValueEventListener(new ValueEventListener() {
-        connectedRef.addValueEventListener(new ValueEventListener() {
+//        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+//        connectedRef.addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.child("chats").child("general").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                adapter = new FirebaseListAdapter<Message>(ChatActivity.this, Message.class, R.layout.list_item, FirebaseDatabase.getInstance().getReference()) {
+                adapter = new FirebaseListAdapter<Message>(ChatActivity.this, Message.class, R.layout.list_item, mDatabaseReference) {
                     @Override
-                    protected void populateView(View v, Message model, int position) {
+                    protected void populateView(View v, Message messageModel, int position) {
                         TextView mess_user, mess_time;
                         BubbleTextView mess_text;
                         mess_user = v.findViewById(R.id.item_message_user);
                         mess_time = v.findViewById(R.id.item_message_time);
                         mess_text = v.findViewById(R.id.item_message_text);
 
-                        mess_user.setText(model.getUserName());
-                        mess_time.setText(DateFormat.format("dd.MM.yyy\nHH:mm:ss", model.getMessageTime()));
-                        mess_text.setText(model.getTextMessage());
+                        mess_user.setText(messageModel.getUserName());
+                        mess_time.setText(DateFormat.format("dd.MM.yyy\nHH:mm:ss", messageModel.getMessageTime()));
+                        mess_text.setText(messageModel.getTextMessage());
                     }
                 };
                 listOfMessages.setAdapter(adapter);

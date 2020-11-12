@@ -16,6 +16,10 @@ public class Message {
         this.messageTime = new Date().getTime();
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -38,9 +42,5 @@ public class Message {
 
     public void setMessageTime(long messageTime) {
         this.messageTime = messageTime;
-    }
-
-    public String getEmail() {
-        return email;
     }
 }
