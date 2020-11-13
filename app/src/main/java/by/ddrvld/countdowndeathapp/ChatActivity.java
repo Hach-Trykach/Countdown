@@ -36,6 +36,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +48,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private RelativeLayout activity_chat;
     private FirebaseListAdapter<Message> adapter;
+    private List<Message> list_notes = new ArrayList<>();
     private EmojiconEditText emojiconEditText;
     ImageView emojiButton, submitButton;
     EmojIconActions emojIconActions;
@@ -388,13 +391,14 @@ public class ChatActivity extends AppCompatActivity {
 //    }
 
     private void displayAllMessages() {
-//        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
 //        connectedRef.addValueEventListener(new ValueEventListener() {
-        mDatabaseReference.child("chats").child("general").addValueEventListener(new ValueEventListener() {
+        connectedRef.child("chats").child("general").addValueEventListener(new ValueEventListener() {
+//        mDatabaseReference.child("chats").child("general").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                adapter = new FirebaseListAdapter<Message>(ChatActivity.this, Message.class, R.layout.list_item, mDatabaseReference) {
+                adapter = new FirebaseListAdapter<Message>(ChatActivity.this, Message.class, R.layout.list_item, FirebaseDatabase.getInstance().getReference()) {
                     @Override
                     protected void populateView(View v, Message messageModel, int position) {
                         TextView mess_user, mess_time;
@@ -408,6 +412,11 @@ public class ChatActivity extends AppCompatActivity {
                         mess_text.setText(messageModel.getTextMessage());
                     }
                 };
+                //проходим по всем записям и помещаем их в list_users в виде класса Notes
+//                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+//                    Message user = postSnapshot.getValue(Message.class);
+//                    list_notes.add(user);
+//                }
                 listOfMessages.setAdapter(adapter);
 
                 //убираем View загрузки
