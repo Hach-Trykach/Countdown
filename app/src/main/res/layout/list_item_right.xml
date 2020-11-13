@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.github.library.bubbleview.BubbleLinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentEnd="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:maxWidth="300dp"
+        app:angle="8dp"
+        app:arrowWidth="8dp"
+        app:arrowHeight="10dp"
+        app:arrowPosition="20dp"
+        app:arrowLocation="right"
+        app:bubbleColor="@color/darkGrey"
+        app:arrowCenter="false"
+        android:layout_marginBottom="6dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_message_user"
+            android:text="User Name"
+            android:paddingTop="8dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="22dp"
+            android:textColor="@color/baranColor"
+            android:textStyle="normal|bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_message_text"
+            android:padding="4dp"
+            android:paddingStart="14dp"
+            android:layout_gravity="end"
+            android:paddingEnd="22dp"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/item_message_time"
+            android:layout_gravity="end"
+            android:gravity="end"
+            android:paddingStart="14dp"
+            android:paddingEnd="22dp"
+            android:paddingBottom="4dp"
+            android:text="19:00:30"
+            android:textColor="@color/grey_500"
+            android:textSize="12sp"/>
+
+    </com.github.library.bubbleview.BubbleLinearLayout>
+
+</RelativeLayout>

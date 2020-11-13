@@ -4,9 +4,6 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorPrimaryDark"
-    android:layout_alignParentTop="true"
-    app:titleTextColor="@color/black"
-    app:subtitleTextColor="@color/black" >
+    android:layout_alignParentTop="true" >
 
 </androidx.appcompat.widget.Toolbar>

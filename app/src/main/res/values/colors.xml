@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">#B8CFF4</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="dialogColor">#E2F1FC</color>
@@ -16,4 +16,5 @@
     <color name="grey_300">#E0E0E0</color>
     <color name="grey_500">#9E9E9E</color>
     <color name="darkGrey">#404040</color>
+    <color name="baranColor">#B8CFF4</color>
 </resources>

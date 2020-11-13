@@ -261,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(null);
         }
 
         if (settings.contains(LAST_RATING_DAY)) {
