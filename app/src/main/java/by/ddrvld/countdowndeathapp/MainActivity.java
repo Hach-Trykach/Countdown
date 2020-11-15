@@ -799,10 +799,10 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
             public void onClick(View v) {
                 dialog.cancel();
 
-                lastRatingDay = 1000;
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putInt(LAST_RATING_DAY, lastRatingDay);
-                editor.apply();
+//                lastRatingDay = 1000;
+//                SharedPreferences.Editor editor = settings.edit();
+//                editor.putInt(LAST_RATING_DAY, lastRatingDay);
+//                editor.apply();
 //
 //                Intent intent = new Intent(Intent.ACTION_VIEW);
 //                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
@@ -810,6 +810,12 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //
                 com.google.android.play.core.tasks.Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
                 flow.addOnCompleteListener(task -> {
+                    if(task.isSuccessful()) {
+                        lastRatingDay = 1000;
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putInt(LAST_RATING_DAY, lastRatingDay);
+                        editor.apply();
+                    }
                     // The flow has finished. The API does not indicate whether the user
                     // reviewed or not, or even whether the review dialog was shown. Thus, no
                     // matter the result, we continue our app flow.
