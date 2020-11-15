@@ -1,8 +1,6 @@
 package by.ddrvld.countdowndeathapp;
 
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.NotificationChannel;
@@ -13,12 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -31,25 +24,15 @@ import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -58,34 +41,25 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.FirebaseDatabase;
-
-import com.mikepenz.materialdrawer.AccountHeader;
-import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
-import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.unity3d.ads.IUnityAdsListener;
 import com.unity3d.ads.UnityAds;
 
@@ -93,7 +67,8 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.google.android.gms.auth.api.Auth.GoogleSignInApi;
+//import com.google.android.gms.tasks.OnCompleteListener;
+//import com.google.android.gms.tasks.Task;
 
 public class MainActivity extends AppCompatActivity implements IUnityAdsListener {
     static SharedPreferences settings;
@@ -161,6 +136,10 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 
     private WebView webView;
 
+//    private FakeReviewManager manager;
+    private ReviewManager manager;
+    private ReviewInfo reviewInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,6 +182,18 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                 }
             });
         }
+
+//        manager = new FakeReviewManager(this);
+        manager = ReviewManagerFactory.create(this);
+        com.google.android.play.core.tasks.Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // We can get the ReviewInfo object
+                reviewInfo = task.getResult();
+            } else {
+                // There was some problem, continue regardless of the result.
+            }
+        });
     }
 
 //    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
@@ -812,24 +803,28 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putInt(LAST_RATING_DAY, lastRatingDay);
                 editor.apply();
-
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
-                startActivity(intent);
+//
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
+//                startActivity(intent);
+//
+                com.google.android.play.core.tasks.Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
+                flow.addOnCompleteListener(task -> {
+                    // The flow has finished. The API does not indicate whether the user
+                    // reviewed or not, or even whether the review dialog was shown. Thus, no
+                    // matter the result, we continue our app flow.
+                });
             }
         });
-        dialogButtonNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
+        dialogButtonNo.setOnClickListener(v -> {
+            dialog.cancel();
 
-                Calendar cal = Calendar.getInstance();
-                lastRatingDay = cal.get(Calendar.DAY_OF_MONTH);
+            Calendar cal = Calendar.getInstance();
+            lastRatingDay = cal.get(Calendar.DAY_OF_MONTH);
 
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putInt(LAST_RATING_DAY, lastRatingDay);
-                editor.apply();
-            }
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putInt(LAST_RATING_DAY, lastRatingDay);
+            editor.apply();
         });
         dialog.setCancelable(false);
         dialog.show();
@@ -1025,7 +1020,9 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            DialogRating();
+                            if(reviewInfo != null) {
+                                DialogRating();
+                            }
                         }
                     });
                 } catch (InterruptedException e) {
@@ -1066,6 +1063,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         playStartSound(R.raw.krik);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private long getIMEI() {
         long imei;
         switch (android.os.Build.VERSION.SDK_INT) {
@@ -1421,25 +1419,22 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("TAG", "signInWithCredential:success");
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d("TAG", "signInWithCredential:success");
 //                            updateUI(user);
 //                            DrawerBuilder();
 
-                            Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                            startActivity(intent);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("TAG", "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.relative_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                        startActivity(intent);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("TAG", "signInWithCredential:failure", task.getException());
+                        Snackbar.make(findViewById(R.id.relative_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
 //                            updateUI(null);
-                        }
-                        // ...
                     }
+                    // ...
                 });
     }
 
