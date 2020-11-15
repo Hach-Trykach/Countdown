@@ -10,16 +10,16 @@
         android:title="Add"
         app:showAsAction="ifRoom" />
 
-<!--    <item-->
-<!--        android:id="@+id/menu_edit"-->
-<!--        android:icon="@android:drawable/ic_menu_edit"-->
-<!--        android:title="Edit"-->
-<!--        app:showAsAction="ifRoom" />-->
-
     <item
         android:id="@+id/menu_remove"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="Remove"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_share"
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="Share"
         app:showAsAction="ifRoom" />
 
 </menu>

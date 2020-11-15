@@ -36,6 +36,11 @@ import java.util.List;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
+import static by.ddrvld.countdowndeathapp.MainActivity.days;
+import static by.ddrvld.countdowndeathapp.MainActivity.hours;
+import static by.ddrvld.countdowndeathapp.MainActivity.mins;
+import static by.ddrvld.countdowndeathapp.MainActivity.years;
+
 public class ChatActivity extends AppCompatActivity {
 
     private RelativeLayout activity_chat;
@@ -64,6 +69,8 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseUser user;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
+
+    long lastShareTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -415,6 +422,56 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case  R.id.menu_add:
+                createVibration(50);
+                return true;
+            case R.id.menu_remove:
+                createVibration(70);
+                return true;
+            case R.id.menu_share:
+                if(System.currentTimeMillis() > lastShareTime) {
+                    createMessage(getResources().getString(R.string.share_text_1) +
+                            (years > 0 ? " " + years + " " + GetWord(years,
+                                    getResources().getString(R.string.text_yrs1),
+                                    getResources().getString(R.string.text_yrs2),
+                                    getResources().getString(R.string.text_yrs3)) : "") +
+                            (days > 0 ? " " + days + " " + GetWord(days,
+                                    getResources().getString(R.string.text_day1),
+                                    getResources().getString(R.string.text_day2),
+                                    getResources().getString(R.string.text_day3)) : "") +
+                            (hours > 0 ? " " + hours + " " + GetWord(hours,
+                                    getResources().getString(R.string.text_hrs1),
+                                    getResources().getString(R.string.text_hrs2),
+                                    getResources().getString(R.string.text_hrs3)) : "") +
+                            (mins > 0 ? " " + mins + " " + GetWord(mins,
+                                    getResources().getString(R.string.text_min1),
+                                    getResources().getString(R.string.text_min2),
+                                    getResources().getString(R.string.text_min3)) : ""));
+                    lastShareTime = System.currentTimeMillis() + 60 * 1000;
+                }
+//                else Snackbar.make(findViewById(android.R.id.content), (int) (lastShareTime-System.currentTimeMillis()), Snackbar.LENGTH_SHORT).show();
+                return true;
+        }
+        return true;
+    }
+
+    private String GetWord(Long value, String one, String before_five, String after_five)
+    {
+        value %= 100;
+        if(10 < value && value < 20) return after_five;
+        switch(Integer.parseInt(value.toString())%10)
+        {
+            case 1: return one;
+            case 2:
+            case 3:
+            case 4: return before_five;
+            default: return after_five;
+        }
     }
 
     @Override

@@ -67,9 +67,6 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-//import com.google.android.gms.tasks.OnCompleteListener;
-//import com.google.android.gms.tasks.Task;
-
 public class MainActivity extends AppCompatActivity implements IUnityAdsListener {
     static SharedPreferences settings;
     static final String APP_PREFERENCES = "settings";
@@ -87,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     long currentTime = System.currentTimeMillis() / 1000;
 
     long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
-    long years, days, hours, mins, secs;
+    static long years, days, hours, mins, secs;
 
     TextView tvYrs, tvDay, tvHrs, tvMin, tvSec;
     TextView textYrs, textDay, textHrs, textMin, textSec;
