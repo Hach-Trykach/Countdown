@@ -40,6 +40,7 @@ import static by.ddrvld.countdowndeathapp.MainActivity.days;
 import static by.ddrvld.countdowndeathapp.MainActivity.hours;
 import static by.ddrvld.countdowndeathapp.MainActivity.mins;
 import static by.ddrvld.countdowndeathapp.MainActivity.years;
+import static by.ddrvld.countdowndeathapp.MainActivity.lastShareTime;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -70,8 +71,6 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
 
-    long lastShareTime = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +91,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-//    public boolean ConnectingToInternet(){
+//    public boolean ConnectingToInternet() {
 //        ConnectivityManager connectivity = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 //        if (connectivity != null)
 //        {
@@ -130,7 +129,7 @@ public class ChatActivity extends AppCompatActivity {
         circular_progress.setVisibility(View.VISIBLE);
         listOfMessages.setVisibility(View.INVISIBLE);
 
-        registerForContextMenu(listOfMessages);
+//        registerForContextMenu(listOfMessages);
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +142,7 @@ public class ChatActivity extends AppCompatActivity {
 //                            Pattern pattern = Pattern.compile("[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789_абвгдеёжзийклмнопрстуфхцчшщьыъэюя. ]*");
 //                            Matcher matcher = pattern.matcher(checkMe);
 //                            boolean valid = matcher.matches();
-//                            if(!valid){
+//                            if(!valid) {
 //                                Log.d("", "invalid");
 //                                return "";
 //                            }
@@ -206,7 +205,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if(selectMode) {
                     if(listOfMessages.isItemChecked(i) /*&& itemOldClickId != i*/) {
-                        view.setBackground(getResources().getDrawable(R.drawable.yes_no_buttons));
+                        view.setBackgroundColor(getResources().getColor(R.color.white));
 
                         view.setSelected(true);
                         selectItemSize++;
@@ -217,19 +216,19 @@ public class ChatActivity extends AppCompatActivity {
                         toolbar.setTitle("" + selectItemSize);
                     }
                     else {
-                        view.setBackground(getResources().getDrawable(R.drawable.yes_no_buttons));
+                        view.setBackgroundColor(getResources().getColor(R.color.black));
                         view.setSelected(false);
                         if(selectItemSize > 0) {
                             selectItemSize--;
                             toolbar.setTitle("" + selectItemSize);
                         }
-                        if (selectItemSize == 0){
+                        if (selectItemSize == 0) {
                             deselectAllItems();
                         }
                     }
                 }
                 else {
-//                    Message message = (Message) adapterView.getItemAtPosition(i);
+                    Message message = (Message) adapterView.getItemAtPosition(i);
 //                    openInWindow(message);
                     listOfMessages.setItemChecked(i, false);
                 }
@@ -254,11 +253,16 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void createMessage(String text) {
+        if(System.currentTimeMillis() < lastShareTime) {
+            Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.new_message_after) + " " + (lastShareTime-System.currentTimeMillis())/1000 + " " + getResources().getString(R.string.seconds), Snackbar.LENGTH_SHORT).show();
+            return;
+        }
         Message message = new Message(user.getEmail(), user.getDisplayName(), text);
         mDatabaseReference.child("chats")
                 .child("general")
                 .push()
                 .setValue(message);
+        lastShareTime = System.currentTimeMillis() + 60 * 1000;
         clearEditText();
     }
 
@@ -274,43 +278,45 @@ public class ChatActivity extends AppCompatActivity {
 //        clearEditText();
 //    }
 
-//    private void deleteMessage() {
-//        if(selectedListItem != null) {
-//            chosen = listOfMessages.getCheckedItemPositions();
-//            for (int i = 0; i < chosen.size(); i++) {
-//                // если пользователь выбрал пункт списка,
-//                // то выводим его в TextView.
-//                Message message = (Message) listOfMessages.getItemAtPosition(chosen.keyAt(i));
-//                selectedListItem = message;
-//                if (chosen.valueAt(i)) {
-//                    mDatabaseReference.child("chats")
-//                            .child("general")
-//                            .push()
-//                            .child(mAuth.getUid())
-//                            .child(selectedListItem.getEmail())
-//                            .removeValue();
-//                }
-//            }
-//            deselectAllItems();
-//        }
-//        else Snackbar.make(findViewById(android.R.id.content), "Выберите сообщение", Snackbar.LENGTH_SHORT).show();
-//    }
+    private void deleteMessage() {
+        if(selectedListItem != null) {
+            chosen = listOfMessages.getCheckedItemPositions();
+            for (int i = 0; i < chosen.size(); i++) {
+                // если пользователь выбрал пункт списка,
+                // то выводим его в TextView.
+                Message message = (Message) listOfMessages.getItemAtPosition(chosen.keyAt(i));
+                selectedListItem = message;
+                if (chosen.valueAt(i)) {
+                    mDatabaseReference.child("chats")
+                            .child("general")
+//                            .child(String.valueOf(selectedListItem.getMessageTime()))
+                            .removeValue();
+                    Snackbar.make(findViewById(android.R.id.content), String.valueOf(mDatabaseReference.child("chats")
+                            .child("general")
+//                            .child(String.valueOf(selectedListItem.getMessageTime()))
+                    ), Snackbar.LENGTH_SHORT).show();
+                }
+            }
+            deselectAllItems();
+        }
+        else Snackbar.make(findViewById(android.R.id.content), "Выберите сообщение", Snackbar.LENGTH_SHORT).show();
+    }
 
     void clearEditText() {
         emojiconEditText.setText("");
     }
 
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.option_1:
-//                deleteMessage();
-                Snackbar.make(findViewById(android.R.id.content), "Выбран Option_1", Snackbar.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onContextItemSelected(@NonNull MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.option_1:
+////                deleteMessage();
+//                Snackbar.make(findViewById(android.R.id.content), "Выбран Option_1", Snackbar.LENGTH_SHORT).show();
+//                return true;
+//            default:
+//                return super.onContextItemSelected(item);
+//        }
+//    }
 
     private void deselectAllItems() {
         createVibration(15);
@@ -431,7 +437,7 @@ public class ChatActivity extends AppCompatActivity {
                 createVibration(50);
                 return true;
             case R.id.menu_remove:
-                createVibration(70);
+                deleteMessage();
                 return true;
             case R.id.menu_share:
                 if(System.currentTimeMillis() > lastShareTime) {
@@ -454,7 +460,9 @@ public class ChatActivity extends AppCompatActivity {
                                     getResources().getString(R.string.text_min3)) : ""));
                     lastShareTime = System.currentTimeMillis() + 60 * 1000;
                 }
-//                else Snackbar.make(findViewById(android.R.id.content), (int) (lastShareTime-System.currentTimeMillis()), Snackbar.LENGTH_SHORT).show();
+                else {
+                    Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.new_message_after) + " " + (lastShareTime-System.currentTimeMillis())/1000 + " " + getResources().getString(R.string.seconds), Snackbar.LENGTH_SHORT).show();
+                }
                 return true;
         }
         return true;
@@ -474,11 +482,11 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        getMenuInflater().inflate(R.menu.context_menu, menu);
-    }
+//    @Override
+//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//        super.onCreateContextMenu(menu, v, menuInfo);
+//        getMenuInflater().inflate(R.menu.context_menu, menu);
+//    }
 
 //    private void enableViews(View... views) {
 //        for (View v : views) {

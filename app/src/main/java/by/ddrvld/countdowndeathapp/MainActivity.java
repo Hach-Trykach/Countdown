@@ -34,6 +34,19 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -110,6 +123,8 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     private final int BTN_OUR_APPS = 7;
     private final int BTN_SHARE = 8;
     private final int BTN_CHAT = 9;
+
+    public static long lastShareTime = 0;
 
 //    static final int PAGE_COUNT = 2;
 
@@ -517,6 +532,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
                 .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
+                .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
                 .build();
         mAdView.loadAd(adRequest);
 
@@ -841,6 +857,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         AdRequest adRequesti = new AdRequest.Builder()
                 .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
                 .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
+                .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
                 .build();
         interstitial.loadAd(adRequesti);
         interstitial.setAdListener(new AdListener() {
@@ -889,6 +906,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
         AdRequest adRequesti = new AdRequest.Builder()
                 .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
                 .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
+                .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
                 .build();
         interstitial.loadAd(adRequesti);
         interstitial.setAdListener(new AdListener() {

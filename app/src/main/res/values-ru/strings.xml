@@ -50,20 +50,10 @@
     <string name="share_text_2">А сколько осталось тебе? Проверь!</string>
     <string name="our_apps">Наши приложения</string>
     <string name="share">Поделиться</string>
-    <string name="chat">Чат</string>
 
-    <string name="hint_phone_number">Телефон</string>
-    <string name="hint_verification_code">Проверочный код</string>
-    <string name="menu_item_logout">Выйти</string>
-    <string name="phone_title_text">Телефон</string>
-    <string name="resend_phone_auth">Отправить ещё раз</string>
     <string name="sign_out">Выйти</string>
-    <string name="start_phone_auth">Далее</string>
-    <string name="status_code_sent">Отправить</string>
-    <string name="status_sign_in_failed">Ошибка входа</string>
-    <string name="status_verification_failed">Ошибка подтверждения кода</string>
-    <string name="verify_phone_auth">Проверить код</string>
-    <string name="verify_code_help_message">Введите свой номер телефона вместе с кодом страны</string>
-    <string name="phone_number_for_example">Пример: +375291234567</string>
     <string name="type_message">Введите сообщение...</string>
+    <string name="chat">Чат</string>
+    <string name="new_message_after">Новое сообщение через</string>
+    <string name="seconds">секунд.</string>
 </resources>
