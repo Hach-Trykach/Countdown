@@ -7,7 +7,6 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,9 +37,9 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 
 import static by.ddrvld.countdowndeathapp.MainActivity.days;
 import static by.ddrvld.countdowndeathapp.MainActivity.hours;
+import static by.ddrvld.countdowndeathapp.MainActivity.lastShareTime;
 import static by.ddrvld.countdowndeathapp.MainActivity.mins;
 import static by.ddrvld.countdowndeathapp.MainActivity.years;
-import static by.ddrvld.countdowndeathapp.MainActivity.lastShareTime;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -69,7 +68,7 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
+    public static DatabaseReference mDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,7 +239,7 @@ public class ChatActivity extends AppCompatActivity {
                 if(!selectMode) {
                     createVibration(30);
 //                    Message message = (Message) adapterView.getItemAtPosition(i);
-//                    selectedListItem = note;
+//                    selectedListItem = message;
 //                    adapterView.setSelected(true);
                     selectMode = true;
 //                    view.setSelected(true);
@@ -251,16 +250,17 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
-
+    String messageID;
     private void createMessage(String text) {
         if(System.currentTimeMillis() < lastShareTime) {
             Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.new_message_after) + " " + (lastShareTime-System.currentTimeMillis())/1000 + " " + getResources().getString(R.string.seconds), Snackbar.LENGTH_SHORT).show();
             return;
         }
-        Message message = new Message(user.getEmail(), user.getDisplayName(), text);
+        messageID = mDatabaseReference.child("chats").child("general").push().getKey();
+        Message message = new Message(user.getEmail(), user.getDisplayName(), text, messageID);
         mDatabaseReference.child("chats")
                 .child("general")
-                .push()
+                .child(messageID)
                 .setValue(message);
         lastShareTime = System.currentTimeMillis() + 60 * 1000;
         clearEditText();
@@ -289,15 +289,16 @@ public class ChatActivity extends AppCompatActivity {
                 if (chosen.valueAt(i)) {
                     mDatabaseReference.child("chats")
                             .child("general")
-//                            .child(String.valueOf(selectedListItem.getMessageTime()))
+                            .child(selectedListItem.getMessageID())
                             .removeValue();
-                    Snackbar.make(findViewById(android.R.id.content), String.valueOf(mDatabaseReference.child("chats")
-                            .child("general")
-//                            .child(String.valueOf(selectedListItem.getMessageTime()))
-                    ), Snackbar.LENGTH_SHORT).show();
+//                    Snackbar.make(findViewById(android.R.id.content), String.valueOf(mDatabaseReference.child("chats")
+//                            .child("general")
+//                            .child(messageID)
+//                    ), Snackbar.LENGTH_SHORT).show();
                 }
             }
             deselectAllItems();
+            displayAllMessages();
         }
         else Snackbar.make(findViewById(android.R.id.content), "Выберите сообщение", Snackbar.LENGTH_SHORT).show();
     }

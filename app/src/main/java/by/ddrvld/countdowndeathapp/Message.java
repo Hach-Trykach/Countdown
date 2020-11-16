@@ -6,14 +6,16 @@ public class Message {
     public String email;
     public  String userName;
     public String textMessage;
-    private long messageTime;
+    public long messageTime;
+    public String messageID;
 
     public Message() {}
-    public Message(String email, String userName, String textMessage) {
+    public Message(String email, String userName, String textMessage, String messageID) {
         this.email = email;
         this.userName = userName;
         this.textMessage = textMessage;
         this.messageTime = new Date().getTime();
+        this.messageID = messageID;
     }
 
     public String getEmail() {
@@ -42,5 +44,9 @@ public class Message {
 
     public void setMessageTime(long messageTime) {
         this.messageTime = messageTime;
+    }
+
+    public String getMessageID() {
+        return messageID;
     }
 }
