@@ -52,8 +52,9 @@
     <string name="share">Падзеліцца</string>
 
     <string name="sign_out">Выйсцi</string>
-    <string name="type_message">Набярыце паведамленне...</string>
+    <string name="type_message">Набярыце паведамленне…</string>
     <string name="chat">Чат</string>
     <string name="new_message_after">Новае паведамленне праз</string>
     <string name="seconds">секунд.</string>
+    <string name="coming_soon">Хутка з\'явіцца…</string>
 </resources>

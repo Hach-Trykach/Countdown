@@ -155,41 +155,36 @@ public class ChatActivity extends AppCompatActivity {
 
                 String text = emojiconEditText.getText().toString();
 
-                while (text.charAt(0) == ' ' || text.charAt(0) == '\n') {
-                    try {
-                        text = text.substring(1); // Удаляем первый символ
-                        Log.d("", "SUBSTRING");
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                while (text.charAt(text.length() -1) == ' ' || text.charAt(text.length() -1) == '\n') {
-                    try {
-                        text = text.substring(0, text.length() -1); // Удаляем последний символ
-                        Log.d("", "SUBSTRING");
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                while (text.contains("\n\n\n")) {
-                    try {
-                        text = text.replaceAll("\n\n\n", "\n\n");
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-//                if(text.equals(" ")) return;
-//                if(text.equals("\n")) return;
 //                if(text.length() < 2) return;
-                if(text.isEmpty()) {
-                }
+                if(text.equals(" ")) return;
+                if(text.equals("\n")) return;
+                if(text.isEmpty()) return;
                 else {
-                    createMessage(text);
+                    while (text.charAt(0) == ' ' || text.charAt(0) == '\n') {
+                        try {
+                            text = text.substring(1); // Удаляем первый символ
+                            Log.d("", "SUBSTRING");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    while (text.charAt(text.length() - 1) == ' ' || text.charAt(text.length() - 1) == '\n') {
+                        try {
+                            text = text.substring(0, text.length() - 1); // Удаляем последний символ
+                            Log.d("", "SUBSTRING");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    while (text.contains("\n\n\n")) {
+                        try {
+                            text = text.replaceAll("\n\n\n", "\n\n");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+                createMessage(text);
             }
         });
         displayAllMessages();

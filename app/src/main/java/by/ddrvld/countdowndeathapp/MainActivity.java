@@ -612,27 +612,26 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                 return true;
             }
             else if(drawerItem.getIdentifier() == BTN_CHAT) {
-                if(user == null) {
-
-                    // Configure Google Sign In
-                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(getString(R.string.default_web_client_id))
-                            .requestEmail()
-                            .requestProfile()
-                            .build();
-
-                    // Build a GoogleSignInClient with the options specified by gso.
-                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
-
-                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                    startActivityForResult(signInIntent, RC_SIGN_IN);
-                    return true;
-                }
-                else {
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    startActivity(intent);
-                    return true;
-                }
+//                if(user == null) {
+//                    // Configure Google Sign In
+//                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                            .requestIdToken(getString(R.string.default_web_client_id))
+//                            .requestEmail()
+//                            .requestProfile()
+//                            .build();
+//
+//                    // Build a GoogleSignInClient with the options specified by gso.
+//                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
+//
+//                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//                    startActivityForResult(signInIntent, RC_SIGN_IN);
+//                }
+//                else {
+//                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+//                    startActivity(intent);
+//                }
+                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
+                return true;
             }
             return false;
         }
@@ -798,16 +797,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
             @Override
             public void onClick(View v) {
                 dialog.cancel();
-
-//                lastRatingDay = 1000;
-//                SharedPreferences.Editor editor = settings.edit();
-//                editor.putInt(LAST_RATING_DAY, lastRatingDay);
-//                editor.apply();
-//
-//                Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
-//                startActivity(intent);
-//
+                
                 com.google.android.play.core.tasks.Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
                 flow.addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
@@ -815,6 +805,16 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
                         SharedPreferences.Editor editor = settings.edit();
                         editor.putInt(LAST_RATING_DAY, lastRatingDay);
                         editor.apply();
+                    }
+                    else {
+                        lastRatingDay = 1000;
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putInt(LAST_RATING_DAY, lastRatingDay);
+                        editor.apply();
+
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
+                        startActivity(intent);
                     }
                     // The flow has finished. The API does not indicate whether the user
                     // reviewed or not, or even whether the review dialog was shown. Thus, no

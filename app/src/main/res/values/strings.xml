@@ -25,10 +25,11 @@
     <string name="text_yrs1">YRS</string>
 
     <string name="sign_out">Sign Out</string>
-    <string name="type_message">Type message...</string>
+    <string name="type_message">Type message…</string>
     <string name="chat">Chat</string>
     <string name="new_message_after">New message after</string>
     <string name="seconds">seconds</string>
+    <string name="coming_soon">Coming soon…</string>
 
     <string name="cross_text_1">+LICENSE++++++++++++++++++++++++++</string>
     <string name="cross_text_2">+DISTRIBUTION+++++++++++++++++++++</string>
