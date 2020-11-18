@@ -129,6 +129,7 @@ public class ChatActivity extends AppCompatActivity {
         listOfMessages.setVisibility(View.INVISIBLE);
 
 //        registerForContextMenu(listOfMessages);
+        displayAllMessages();
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,9 +150,7 @@ public class ChatActivity extends AppCompatActivity {
 //                        return null;
 //                    }
 //                };
-//
 //                emojiconEditText.setFilters(new InputFilter[]{filter});
-//                createMessage();
 
                 String text = emojiconEditText.getText().toString();
 
@@ -187,12 +186,6 @@ public class ChatActivity extends AppCompatActivity {
                 createMessage(text);
             }
         });
-        displayAllMessages();
-
-        circular_progress = findViewById(R.id.circular_progress);
-        listOfMessages = findViewById(R.id.list_of_messages);
-
-//        initFirebase();
 
         listOfMessages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -222,7 +215,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
                 else {
-                    Message message = (Message) adapterView.getItemAtPosition(i);
+//                    Message message = (Message) adapterView.getItemAtPosition(i);
 //                    openInWindow(message);
                     listOfMessages.setItemChecked(i, false);
                 }
@@ -248,8 +241,8 @@ public class ChatActivity extends AppCompatActivity {
     String messageID;
     private void createMessage(String text) {
         if(System.currentTimeMillis() < lastShareTime) {
-            Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.new_message_after) + " " + (lastShareTime-System.currentTimeMillis())/1000 + " " + getResources().getString(R.string.seconds), Snackbar.LENGTH_SHORT).show();
-            return;
+//            Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.new_message_after) + " " + (lastShareTime-System.currentTimeMillis())/1000 + " " + getResources().getString(R.string.seconds), Snackbar.LENGTH_SHORT).show();
+//            return;
         }
         messageID = mDatabaseReference.child("chats").child("general").push().getKey();
         Message message = new Message(user.getEmail(), user.getDisplayName(), text, messageID);
@@ -433,6 +426,7 @@ public class ChatActivity extends AppCompatActivity {
                 createVibration(50);
                 return true;
             case R.id.menu_remove:
+                createVibration(50);
                 deleteMessage();
                 return true;
             case R.id.menu_share:

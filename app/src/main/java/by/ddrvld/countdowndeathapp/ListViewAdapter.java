@@ -17,24 +17,24 @@ import java.util.Objects;
 public class ListViewAdapter extends BaseAdapter {
 
     Activity activity;
-    List<Message> listMessage;
+    List<Message> list_message;
     LayoutInflater inflater;
     FirebaseAuth mAuth;
 
-    public ListViewAdapter(Activity activity, List<Message> listMessage, FirebaseAuth mAuth) {
+    public ListViewAdapter(Activity activity, List<Message> list_message, FirebaseAuth mAuth) {
         this.activity = activity;
-        this.listMessage = listMessage;
+        this.list_message = list_message;
         this.mAuth = mAuth;
     }
 
     @Override
     public int getCount() {
-        return listMessage.size();
+        return list_message.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return listMessage.get(i);
+        return list_message.get(i);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ListViewAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View itemView;
-        if(listMessage.get(i).getEmail().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getEmail())) {
+        if(list_message.get(i).getEmail().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getEmail())) {
             itemView = inflater.inflate(R.layout.list_item_right, null);
         }
         else {
@@ -62,10 +62,10 @@ public class ListViewAdapter extends BaseAdapter {
         mess_time = itemView.findViewById(R.id.item_message_time);
         mess_text = itemView.findViewById(R.id.item_message_text);
 
-        mess_user.setText(listMessage.get(i).getUserName());
+        mess_user.setText(list_message.get(i).getUserName());
 //        mess_time.setText(DateFormat.format("dd.MM.yyy\nHH:mm:ss", listMessage.get(i).getMessageTime()));
-        mess_time.setText(DateFormat.format("HH:mm", listMessage.get(i).getMessageTime()));
-        mess_text.setText(listMessage.get(i).getTextMessage());
+        mess_time.setText(DateFormat.format("HH:mm", list_message.get(i).getMessageTime()));
+        mess_text.setText(list_message.get(i).getTextMessage());
 
         return  itemView;
     }
