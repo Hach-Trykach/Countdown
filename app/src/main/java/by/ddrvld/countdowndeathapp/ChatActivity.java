@@ -7,6 +7,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -128,7 +129,7 @@ public class ChatActivity extends AppCompatActivity {
         circular_progress.setVisibility(View.VISIBLE);
         listOfMessages.setVisibility(View.INVISIBLE);
 
-//        registerForContextMenu(listOfMessages);
+        registerForContextMenu(listOfMessages);
         displayAllMessages();
 
         submitButton.setOnClickListener(new View.OnClickListener() {
@@ -192,18 +193,17 @@ public class ChatActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if(selectMode) {
                     if(listOfMessages.isItemChecked(i) /*&& itemOldClickId != i*/) {
-                        view.setBackgroundColor(getResources().getColor(R.color.white));
+                        view.setBackgroundResource(R.color.white);
 
                         view.setSelected(true);
                         selectItemSize++;
 
-                        Message message = (Message) adapterView.getItemAtPosition(i);
-                        selectedListItem = message;
+                        selectedListItem = (Message) adapterView.getItemAtPosition(i);
 
                         toolbar.setTitle("" + selectItemSize);
                     }
                     else {
-                        view.setBackgroundColor(getResources().getColor(R.color.black));
+                        view.setBackgroundResource(R.color.black);
                         view.setSelected(false);
                         if(selectItemSize > 0) {
                             selectItemSize--;
@@ -237,7 +237,9 @@ public class ChatActivity extends AppCompatActivity {
                 return true;
             }
         });
+        listOfMessages.setOnCreateContextMenuListener(this);
     }
+
     String messageID;
     private void createMessage(String text) {
         if(System.currentTimeMillis() < lastShareTime) {
@@ -272,17 +274,16 @@ public class ChatActivity extends AppCompatActivity {
             for (int i = 0; i < chosen.size(); i++) {
                 // если пользователь выбрал пункт списка,
                 // то выводим его в TextView.
-                Message message = (Message) listOfMessages.getItemAtPosition(chosen.keyAt(i));
-                selectedListItem = message;
+                selectedListItem = (Message) listOfMessages.getItemAtPosition(chosen.keyAt(i));
                 if (chosen.valueAt(i)) {
                     mDatabaseReference.child("chats")
                             .child("general")
                             .child(selectedListItem.getMessageID())
                             .removeValue();
-//                    Snackbar.make(findViewById(android.R.id.content), String.valueOf(mDatabaseReference.child("chats")
-//                            .child("general")
-//                            .child(messageID)
-//                    ), Snackbar.LENGTH_SHORT).show();
+//                    list_message.remove(selectedListItem);
+                    Snackbar deleteMesSnackbar = Snackbar.make(findViewById(android.R.id.content), "Сообщение удалено", Snackbar.LENGTH_LONG);
+                    deleteMesSnackbar.setAction(R.string.undo, new MyUndoListener());
+                    deleteMesSnackbar.show();
                 }
             }
             deselectAllItems();
@@ -291,21 +292,29 @@ public class ChatActivity extends AppCompatActivity {
         else Snackbar.make(findViewById(android.R.id.content), "Выберите сообщение", Snackbar.LENGTH_SHORT).show();
     }
 
+    public class MyUndoListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            // Code to undo the user's last action
+            list_message.add(selectedListItem);
+        }
+    }
+
     void clearEditText() {
         emojiconEditText.setText("");
     }
 
-//    @Override
-//    public boolean onContextItemSelected(@NonNull MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.option_1:
-////                deleteMessage();
-//                Snackbar.make(findViewById(android.R.id.content), "Выбран Option_1", Snackbar.LENGTH_SHORT).show();
-//                return true;
-//            default:
-//                return super.onContextItemSelected(item);
-//        }
-//    }
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.option_1:
+                deleteMessage();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
 
     private void deselectAllItems() {
         createVibration(15);
@@ -393,6 +402,8 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+                if (list_message.size() > 0)
+                    list_message.clear();
 //                проходим по всем записям и помещаем их в list_users в виде класса Message
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     Message uMessage = postSnapshot.getValue(Message.class);
@@ -472,21 +483,21 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-//    @Override
-//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//        super.onCreateContextMenu(menu, v, menuInfo);
-//        getMenuInflater().inflate(R.menu.context_menu, menu);
-//    }
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+    }
 
-//    private void enableViews(View... views) {
-//        for (View v : views) {
-//            v.setEnabled(true);
-//        }
-//    }
-//
-//    private void disableViews(View... views) {
-//        for (View v : views) {
-//            v.setEnabled(false);
-//        }
-//    }
+    private void enableViews(View... views) {
+        for (View v : views) {
+            v.setEnabled(true);
+        }
+    }
+
+    private void disableViews(View... views) {
+        for (View v : views) {
+            v.setEnabled(false);
+        }
+    }
 }
