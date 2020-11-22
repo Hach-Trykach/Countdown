@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/item_message_user"
             android:text="User Name"
+            android:maxWidth="300dp"
             android:paddingTop="8dp"
             android:paddingEnd="14dp"
             android:paddingStart="22dp"
@@ -36,6 +37,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/item_message_text"
+            android:text="@string/countdown_text_2"
+            android:maxWidth="300dp"
             android:padding="4dp"
             android:paddingStart="22dp"
             android:paddingEnd="14dp"
@@ -53,6 +56,7 @@
             android:paddingEnd="14dp"
             android:paddingBottom="4dp"
             android:text="19:00:30"
+            android:maxWidth="300dp"
             android:textColor="@color/grey_500"
             android:textSize="12sp"/>
 

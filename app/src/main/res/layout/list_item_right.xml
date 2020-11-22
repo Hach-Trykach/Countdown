@@ -11,7 +11,6 @@
         android:orientation="vertical"
         android:layout_alignParentEnd="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:maxWidth="300dp"
         app:angle="8dp"
         app:arrowWidth="8dp"
         app:arrowHeight="10dp"
@@ -26,6 +25,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/item_message_user"
             android:text="User Name"
+            android:maxWidth="300dp"
             android:paddingTop="8dp"
             android:paddingStart="14dp"
             android:paddingEnd="22dp"
@@ -36,6 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/item_message_text"
+            android:maxWidth="300dp"
             android:padding="4dp"
             android:paddingStart="14dp"
             android:layout_gravity="end"
@@ -53,6 +54,7 @@
             android:paddingEnd="22dp"
             android:paddingBottom="4dp"
             android:text="19:00:30"
+            android:maxWidth="300dp"
             android:textColor="@color/grey_500"
             android:textSize="12sp"/>
 

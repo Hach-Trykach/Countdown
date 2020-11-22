@@ -69,4 +69,9 @@ public class ListViewAdapter extends BaseAdapter {
 
         return  itemView;
     }
+
+    public void removeItem(int position) {
+        list_message.remove(position);
+        notifyDataSetChanged();
+    }
 }

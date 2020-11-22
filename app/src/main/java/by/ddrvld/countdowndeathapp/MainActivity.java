@@ -51,6 +51,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,14 +61,12 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.unity3d.ads.IUnityAdsListener;
-import com.unity3d.ads.UnityAds;
 
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity implements IUnityAdsListener {
+public class MainActivity extends AppCompatActivity /*implements IUnityAdsListener*/ {
     static SharedPreferences settings;
     static final String APP_PREFERENCES = "settings";
     private final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
@@ -76,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     static final String PERIOD_SETTINGS = "period";
     static final String LAST_RATING_DAY = "last_rating_day";
     static final String ADS_STATUS_FOR_SOON_DYING = "AdsStatusForSoonDying";
+    private FirebaseAnalytics mFirebaseAnalytics;
 //    private ImageView moreAppsBtn;
 
     int lastRatingDay;
@@ -143,9 +143,8 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.terms_of_use);
-
         // Initialize the SDK:
-        UnityAds.initialize (this, unityGameID, this, testMode);
+//        UnityAds.initialize (this, unityGameID, this, testMode);
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (settings.contains(DATE_OF_DEATH)) {
@@ -1375,28 +1374,28 @@ public class MainActivity extends AppCompatActivity implements IUnityAdsListener
 //            UnityAds.show(this, placementId);
 //        }
 //    }
-
-    @Override
-    public void onUnityAdsReady (String placementId) {
-        // Implement functionality for an ad being ready to show.
-        System.out.println("onUnityAdsReady");
-    }
-
-    @Override
-    public void onUnityAdsStart (String placementId) {
-        // Implement functionality for a user starting to watch an ad.
-        System.out.println("onUnityAdsStart");
-    }
-
-    @Override
-    public void onUnityAdsFinish (String placementId, UnityAds.FinishState finishState) {
-        PermissionRequest();
-    }
-
-    @Override
-    public void onUnityAdsError (UnityAds.UnityAdsError error, String message) {
-        PermissionRequest();
-    }
+//
+//    @Override
+//    public void onUnityAdsReady (String placementId) {
+//        // Implement functionality for an ad being ready to show.
+//        System.out.println("onUnityAdsReady");
+//    }
+//
+//    @Override
+//    public void onUnityAdsStart (String placementId) {
+//        // Implement functionality for a user starting to watch an ad.
+//        System.out.println("onUnityAdsStart");
+//    }
+//
+//    @Override
+//    public void onUnityAdsFinish (String placementId, UnityAds.FinishState finishState) {
+//        PermissionRequest();
+//    }
+//
+//    @Override
+//    public void onUnityAdsError (UnityAds.UnityAdsError error, String message) {
+//        PermissionRequest();
+//    }
 
 //    private void signIn() {
 //        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
