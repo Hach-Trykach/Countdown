@@ -41,21 +41,12 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -122,10 +113,10 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
     private Boolean testMode = true;
     private String placementId = "video";
 
-    private FirebaseAuth mAuth;
-    private FirebaseUser user;
-    private int RC_SIGN_IN = 1101;
-    private GoogleSignInClient mGoogleSignInClient;
+//    private FirebaseAuth mAuth;
+//    private FirebaseUser user;
+//    private int RC_SIGN_IN = 1101;
+//    private GoogleSignInClient mGoogleSignInClient;
 
     private String accountName = "";
     private String accountEmail = "";
@@ -214,8 +205,8 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
 
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+//        mAuth = FirebaseAuth.getInstance();
+//        user = mAuth.getCurrentUser();
 
 //        LayoutInflater inflater = LayoutInflater.from(this);
 //        List<View> pages = new ArrayList<>();
@@ -247,7 +238,7 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 //            }
 //        });
 
-        toolbar = findViewById(R.id.toolbar);
+//        toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setTitle(null);
@@ -611,25 +602,25 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
                 return true;
             }
             else if(drawerItem.getIdentifier() == BTN_CHAT) {
-                if(user == null) {
-                    // Configure Google Sign In
-                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(getString(R.string.default_web_client_id))
-                            .requestEmail()
-                            .requestProfile()
-                            .build();
-
-                    // Build a GoogleSignInClient with the options specified by gso.
-                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
-
-                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                    startActivityForResult(signInIntent, RC_SIGN_IN);
-                }
-                else {
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    startActivity(intent);
-                }
-//                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
+//                if(user == null) {
+//                    // Configure Google Sign In
+//                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                            .requestIdToken(getString(R.string.default_web_client_id))
+//                            .requestEmail()
+//                            .requestProfile()
+//                            .build();
+//
+//                    // Build a GoogleSignInClient with the options specified by gso.
+//                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
+//
+//                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//                    startActivityForResult(signInIntent, RC_SIGN_IN);
+//                }
+//                else {
+//                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+//                    startActivity(intent);
+//                }
+                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
                 return true;
             }
             return false;
@@ -1402,48 +1393,48 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 //        startActivityForResult(signInIntent, RC_SIGN_IN);
 //    }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+//        if (requestCode == RC_SIGN_IN) {
+//            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+//            try {
+//                // Google Sign In was successful, authenticate with Firebase
+//                GoogleSignInAccount account = task.getResult(ApiException.class);
+//                firebaseAuthWithGoogle(account);
+//            } catch (ApiException e) {
+//                // Google Sign In failed, update UI appropriately
+//                Log.w("TAG", "Google sign in failed", e);
+//                // ...
+//            }
+//        }
+//    }
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w("TAG", "Google sign in failed", e);
-                // ...
-            }
-        }
-    }
-
-    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
-        Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId());
-
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d("TAG", "signInWithCredential:success");
-//                            updateUI(user);
-//                            DrawerBuilder();
-
-                        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                        startActivity(intent);
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("TAG", "signInWithCredential:failure", task.getException());
-                        Snackbar.make(findViewById(R.id.relative_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-//                            updateUI(null);
-                    }
-                    // ...
-                });
-    }
+//    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
+//        Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId());
+//
+//        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+//        mAuth.signInWithCredential(credential)
+//                .addOnCompleteListener(this, task -> {
+//                    if (task.isSuccessful()) {
+//                        // Sign in success, update UI with the signed-in user's information
+//                        Log.d("TAG", "signInWithCredential:success");
+////                            updateUI(user);
+////                            DrawerBuilder();
+//
+//                        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+//                        startActivity(intent);
+//                    } else {
+//                        // If sign in fails, display a message to the user.
+//                        Log.w("TAG", "signInWithCredential:failure", task.getException());
+//                        Snackbar.make(findViewById(R.id.relative_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+////                            updateUI(null);
+//                    }
+//                    // ...
+//                });
+//    }
 
     private void DrawerBuilder() {
 //        accountName = acct.getDisplayName();
