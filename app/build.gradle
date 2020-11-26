@@ -8,8 +8,8 @@ android {
         applicationId "by.ddrvld.countdowndeathapp"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 10
-        versionName "1.6.1"
+        versionCode 11
+        versionName "1.6.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -26,9 +26,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.multidex:multidex:2.0.1'
+//    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+//    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.android.gms:play-services-ads:19.5.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'com.google.firebase:firebase-analytics:18.0.0'
@@ -54,7 +54,8 @@ dependencies {
 //    implementation 'com.github.lguipeng:BubbleView:1.0.1'
 //    implementation 'com.github.hani-momanii:SuperNova-Emoji:1.1'
 
-//    implementation 'com.android.billingclient:billing:3.0.1'
+//    implementation 'com.android.billingclient:billing:3.0.2'
+    implementation 'com.anjlab.android.iab.v3:library:1.0.44'
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

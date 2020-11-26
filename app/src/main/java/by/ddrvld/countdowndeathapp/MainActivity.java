@@ -27,6 +27,7 @@ import android.view.Window;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +35,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.PurchaseInfo;
+import com.anjlab.android.iab.v3.SkuDetails;
+import com.anjlab.android.iab.v3.TransactionDetails;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -41,12 +46,9 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -54,10 +56,13 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.Calendar;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity /*implements IUnityAdsListener*/ {
+import static by.ddrvld.countdowndeathapp.Update.GetWord;
+
+public class MainActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler /*implements IUnityAdsListener*/ {
     static SharedPreferences settings;
     static final String APP_PREFERENCES = "settings";
     private final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
@@ -66,12 +71,14 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
     static final String PERIOD_SETTINGS = "period";
     static final String LAST_RATING_DAY = "last_rating_day";
     static final String ADS_STATUS_FOR_SOON_DYING = "AdsStatusForSoonDying";
-    private FirebaseAnalytics mFirebaseAnalytics;
+    static final String NO_ADS = "no_ads";
+    static Boolean noAds = false;
+//    private FirebaseAnalytics mFirebaseAnalytics;
 //    private ImageView moreAppsBtn;
 
     int lastRatingDay;
 
-    long timerTime, date_of_death;
+    public static long timerTime, date_of_death;
     long currentTime = System.currentTimeMillis() / 1000;
 
     long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
@@ -100,7 +107,7 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
     private final int BTN_SHOPPING_CALCULATOR = 6;
     private final int BTN_OUR_APPS = 7;
     private final int BTN_SHARE = 8;
-    private final int BTN_CHAT = 9;
+    private final int BTN_CHANGE_U_FATE = 9;
 
     public static long lastShareTime = 0;
 
@@ -109,18 +116,18 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 //    ViewPager pager;
 //    PagerAdapter pagerAdapter;
 
-    private String unityGameID = "3523564";
-    private Boolean testMode = true;
-    private String placementId = "video";
+//    private String unityGameID = "3523564";
+//    private Boolean testMode = true;
+//    private String placementId = "video";
 
 //    private FirebaseAuth mAuth;
 //    private FirebaseUser user;
 //    private int RC_SIGN_IN = 1101;
 //    private GoogleSignInClient mGoogleSignInClient;
 
-    private String accountName = "";
-    private String accountEmail = "";
-    private Uri photoUrl;
+//    private String accountName = "";
+//    private String accountEmail = "";
+//    private Uri photoUrl;
 
     private Toolbar toolbar;
 
@@ -130,12 +137,28 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
     private ReviewManager manager;
     private ReviewInfo reviewInfo;
 
+    BillingProcessor mBillingProcessor;
+    private final static String CHANGE_YOUR_FATE = "change_your_fate";
+    private final static String GPLAY_LICENSE = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlh3IXfvwhrH43ZO3anu7x7mbf3oT9JqAOD+3bTKocpYtvBexKwCiKhv9CrhAkZNaY48sfM80PtnVFAlqljPAcj9UthtHR94YCOSWL/F1SJB8FWxGa94d/JHc4ivuOLw0aNkoh6EdJX+0MH61FFI444bwmMYSKEjZLCkVcoddxq0CMdFcZTb3j4UsWhpgf2OMDLvEPn+qKqYVtrdKnoMd/vK9RTcC6iHvNNssAtBbQUEiA2SPA45shVgxK/jfxshNt96/jzhQUyvGiwYgwOVWrd6gXqkj5oiafzDGZkc6QTknMU2fYovy5FI1h8rKj3PfXaxR1sG5l+CavTj2s1F+QwIDAQAB";
+
+    public MainActivity() {
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.terms_of_use);
         // Initialize the SDK:
 //        UnityAds.initialize (this, unityGameID, this, testMode);
+
+        mBillingProcessor = new BillingProcessor(this, GPLAY_LICENSE, this);
+        boolean isAvailable = BillingProcessor.isIabServiceAvailable(this);
+        if (!isAvailable) {
+//            mProgress.setVisibility(View.GONE);
+//            showMsg(getString(R.string.billing_not_available));
+        } else {
+            mBillingProcessor.initialize();
+        }
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (settings.contains(DATE_OF_DEATH)) {
@@ -151,7 +174,8 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
                 AdsStatusForSoonDying = settings.getBoolean(ADS_STATUS_FOR_SOON_DYING, false);
                 if(AdsStatusForSoonDying) {
                     onCreateActivityDate();
-                    createInterstitialAd_For_Soon_Dying();
+                    if(!noAds)
+                        createInterstitialAd_For_Soon_Dying();
                     SharedPreferences.Editor editor = settings.edit();
                     AdsStatusForSoonDying = false;
                     editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
@@ -238,7 +262,7 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 //            }
 //        });
 
-//        toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setTitle(null);
@@ -261,7 +285,7 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 //        Long lll = 352662060043475L;
 //        final Long date_of_death = Long.parseLong(lll.toString());
 
-        playStartSound(R.raw.countdown);
+        mAdView = findViewById(R.id.adView);
 
         tvYrs = findViewById(R.id.yrs);
         tvDay = findViewById(R.id.day);
@@ -304,17 +328,18 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 
             saveTime();
         }
-        timerTime = date_of_death - currentTime;
 
-        years = timerTime / 31536000;
-        days = timerTime / 86400 % 365;
-        hours = timerTime / 3600 % 24;
-        mins = timerTime / 60 % 60;
-        secs = timerTime % 60;
-
+        countDateOfDeath();
         setValues();
 
-        adsInitialization();
+        if (settings.contains(NO_ADS)) {
+            noAds = settings.getBoolean(NO_ADS, false);
+        }
+        if (!noAds)
+            adsInitialization();
+        else {
+            noAds();
+        }
 
 //        relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
 //            public void onSwipeTop() {
@@ -480,6 +505,41 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
         DrawerBuilder();
     }
 
+    private void changeDateOfDeath() {
+        if(years > 0) {
+            date_of_death = getRandomNumberInRange(600000, 17280000);
+        }
+        else {
+            date_of_death = getRandomNumberInRange(34560000, 1382400000);
+        }
+        date_of_death += currentTime;
+        saveTime();
+
+        countDateOfDeath();
+    }
+
+    public Long countDateOfDeath() {
+        timerTime = date_of_death - currentTime;
+
+        years = timerTime / 31536000;
+        days = timerTime / 86400 % 365;
+        hours = timerTime / 3600 % 24;
+        mins = timerTime / 60 % 60;
+        secs = timerTime % 60;
+
+        playStartSound(R.raw.countdown);
+
+        return timerTime;
+    }
+
+    private static int getRandomNumberInRange(int min, int max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+    }
+
     private void playStartSound(int soundID) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
             // Permission is granted
@@ -505,7 +565,6 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
     }
 
     private void adsInitialization() {
-        mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
                 .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
@@ -601,7 +660,7 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
                 }
                 return true;
             }
-            else if(drawerItem.getIdentifier() == BTN_CHAT) {
+            else if(drawerItem.getIdentifier() == BTN_CHANGE_U_FATE) {
 //                if(user == null) {
 //                    // Configure Google Sign In
 //                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -620,7 +679,8 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 //                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
 //                    startActivity(intent);
 //                }
-                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
+//                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
+                mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
                 return true;
             }
             return false;
@@ -674,20 +734,23 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
                     .withIcon(R.drawable.img_shopping_calculator)
                     .withIdentifier(BTN_SHOPPING_CALCULATOR),
 
-            new DividerDrawerItem()
-                    .withEnabled(true),
+                new DividerDrawerItem()
+                        .withEnabled(true),
 
-                new PrimaryDrawerItem()
-                        .withName(R.string.share)
-                        .withTextColorRes(R.color.white)
-                        .withIcon(android.R.drawable.ic_menu_share)
-                        .withIdentifier(BTN_SHARE),
+                new DividerDrawerItem()
+                        .withEnabled(true),
 
-                new PrimaryDrawerItem()
-                        .withName(R.string.chat)
-                        .withTextColorRes(R.color.white)
-                        .withIcon(android.R.drawable.ic_menu_send)
-                        .withIdentifier(BTN_CHAT)
+            new PrimaryDrawerItem()
+                    .withName(R.string.change_your_fate)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.icon_filled)
+                    .withIdentifier(BTN_CHANGE_U_FATE),
+
+            new PrimaryDrawerItem()
+                    .withName(R.string.share)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(android.R.drawable.ic_menu_share)
+                    .withIdentifier(BTN_SHARE)
         };
     }
 
@@ -759,8 +822,9 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 //                webView = findViewById(R.id.webView);
 //                webView.setWebViewClient(new MyWebViewClient());
 
-                createInterstitialAd();
-//                DisplayUnityInterstitialAd();
+                if(!noAds)
+                    createInterstitialAd();
+//                    DisplayUnityInterstitialAd();
             }
         });
         dialogButtonNo.setOnClickListener(new View.OnClickListener() {
@@ -1025,7 +1089,6 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
                     });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } finally {
                 }
             }
         };
@@ -1050,7 +1113,6 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
                     });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } finally {
                 }
             }
         };
@@ -1141,19 +1203,19 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 //        return imei;
 //    }
 
-    private String GetWord(Long value, String one, String before_five, String after_five)
-    {
-        value %= 100;
-        if(10 < value && value < 20) return after_five;
-        switch(Integer.parseInt(value.toString())%10)
-        {
-            case 1: return one;
-            case 2:
-            case 3:
-            case 4: return before_five;
-            default: return after_five;
-        }
-    }
+//    private String GetWord(Long value, String one, String before_five, String after_five)
+//    {
+//        value %= 100;
+//        if(10 < value && value < 20) return after_five;
+//        switch(Integer.parseInt(value.toString())%10)
+//        {
+//            case 1: return one;
+//            case 2:
+//            case 3:
+//            case 4: return before_five;
+//            default: return after_five;
+//        }
+//    }
 
     private void setValues() {
         final Timer timer = new Timer();
@@ -1228,25 +1290,40 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
         textMin.setText(GetWord(mins, getResources().getString(R.string.text_min1), getResources().getString(R.string.text_min2), getResources().getString(R.string.text_min3)));
         textSec.setText(GetWord(secs, getResources().getString(R.string.text_sec1), getResources().getString(R.string.text_sec2), getResources().getString(R.string.text_sec3)));
 
-        if(years == 0) {
+        if (years == 0) {
             tvYrs.setTextColor(getResources().getColor(R.color.red));
             textYrs.setTextColor(getResources().getColor(R.color.red));
-            if(days == 0) {
+            if (days == 0) {
                 tvDay.setTextColor(getResources().getColor(R.color.red));
                 textDay.setTextColor(getResources().getColor(R.color.red));
-                if(hours == 0) {
+                if (hours == 0) {
                     tvHrs.setTextColor(getResources().getColor(R.color.red));
                     textHrs.setTextColor(getResources().getColor(R.color.red));
-                    if(mins == 0) {
+                    if (mins == 0) {
                         tvMin.setTextColor(getResources().getColor(R.color.red));
                         textMin.setTextColor(getResources().getColor(R.color.red));
-                        if(secs == 0) {
+                        if (secs == 0) {
                             tvSec.setTextColor(getResources().getColor(R.color.red));
                             textSec.setTextColor(getResources().getColor(R.color.red));
+                        } else {
+                            tvSec.setTextColor(getResources().getColor(R.color.white));
+                            textSec.setTextColor(getResources().getColor(R.color.white));
                         }
+                    } else {
+                        tvMin.setTextColor(getResources().getColor(R.color.white));
+                        textMin.setTextColor(getResources().getColor(R.color.white));
                     }
+                } else {
+                    tvHrs.setTextColor(getResources().getColor(R.color.white));
+                    textHrs.setTextColor(getResources().getColor(R.color.white));
                 }
+            } else {
+                tvDay.setTextColor(getResources().getColor(R.color.white));
+                textDay.setTextColor(getResources().getColor(R.color.white));
             }
+        } else {
+            tvYrs.setTextColor(getResources().getColor(R.color.white));
+            textYrs.setTextColor(getResources().getColor(R.color.white));
         }
     }
 
@@ -1479,4 +1556,116 @@ public class MainActivity extends AppCompatActivity /*implements IUnityAdsListen
 //            return true;
 //        }
 //    }
+
+    public void onBillingInitialized() {
+        /*
+         * Called when BillingProcessor was initialized and it's ready to purchase
+         */
+        showMsg("onBillingInitialized");
+        if (mBillingProcessor.loadOwnedPurchasesFromGoogle()) {
+            handleLoadedItems();
+        }
+    }
+
+    public void onPurchaseHistoryRestored() {
+        /*
+         * Called when purchase history was restored and the list of all owned PRODUCT ID's
+         * was loaded from Google Play
+         */
+        showMsg("onPurchaseHistoryRestored");
+        handleLoadedItems();
+    }
+
+    @Override
+    public void onBillingError(int errorCode, Throwable error) {
+        /*
+         * Called when some error occurred. See Constants class for more details
+         *
+         * Note - this includes handling the case where the user canceled the buy dialog:
+         * errorCode = Constants.BILLING_RESPONSE_RESULT_USER_CANCELED
+         */
+        showMsg("onBillingError");
+    }
+
+    public void onProductPurchased(String productId, TransactionDetails details) {
+        /*
+         * Called when requested PRODUCT ID was successfully purchased
+         */
+        showMsg("onProductPurchased");
+        if (checkIfPurchaseIsValid(details.purchaseInfo)) {
+            showMsg("purchase: " + productId + " COMPLETED");
+            switch (productId) {
+                case CHANGE_YOUR_FATE:
+                    changeFate(true);
+                    noAds();
+                    break;
+            }
+        } else {
+            showMsg("fakePayment");
+        }
+    }
+
+    private void noAds() {
+        if(!noAds) {
+            noAds = true;
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean(NO_ADS, noAds);
+            editor.apply();
+        }
+        if(mAdView.getVisibility() != View.GONE)
+            mAdView.setVisibility(View.GONE);
+    }
+
+    private boolean checkIfPurchaseIsValid(PurchaseInfo purchaseInfo) {
+        // TODO as of now we assume that all purchases are valid
+        return true;
+    }
+
+    private void handleLoadedItems() {
+//        mProgress.setVisibility(View.GONE);
+
+        boolean isOneTimePurchaseSupported = mBillingProcessor.isOneTimePurchaseSupported();
+        if (isOneTimePurchaseSupported) {
+//            mSingleTimePaymentButton.setVisibility(View.VISIBLE);
+//            mConsumabelButton.setVisibility(View.VISIBLE);
+        } else {
+            showMsg("one_time_payment_not_supported");
+        }
+
+        boolean isSubsUpdateSupported = mBillingProcessor.isSubscriptionUpdateSupported();
+        if (isSubsUpdateSupported) {
+//            mSubscriptionButton.setVisibility(View.VISIBLE);
+        } else {
+            showMsg("subscription_not_supported");
+        }
+
+        changeFate(mBillingProcessor.listOwnedProducts().contains(CHANGE_YOUR_FATE));
+    }
+
+    private void changeFate(boolean isPurchased) {
+//        mConsumabelButton.setEnabled(isPurchased);
+//        mSingleTimePaymentButton.setEnabled(!isPurchased);
+        if (isPurchased) {
+//            mSingleTimePaymentButton.setText(R.string.already_bought);
+//            mConsumabelButton.setText(R.string.consume_one_time);
+            mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
+            changeDateOfDeath();
+        } else {
+            SkuDetails details = mBillingProcessor.getPurchaseListingDetails(CHANGE_YOUR_FATE);
+//            mSingleTimePaymentButton.setText(getString(R.string.one_time_payment_value, details.priceText));
+//            mConsumabelButton.setText(R.string.not_bought_yet);
+        }
+    }
+
+    private void showMsg(String text) {
+//        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+        Log.d("TAG", text);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!mBillingProcessor.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 }

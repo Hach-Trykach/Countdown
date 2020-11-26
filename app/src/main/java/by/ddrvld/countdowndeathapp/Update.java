@@ -1,29 +1,21 @@
  package by.ddrvld.countdowndeathapp;
 
 import android.app.AlarmManager;
-import android.content.ComponentName;
-import android.content.SharedPreferences;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
-
-import java.security.Provider;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+
+import static by.ddrvld.countdowndeathapp.MainActivity.date_of_death;
 
 public class Update extends AppWidgetProvider {
 
@@ -81,8 +73,8 @@ public class Update extends AppWidgetProvider {
         currentWidgetId = appWidgetId;
         settings = context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 
-        DateFormat format = SimpleDateFormat.getTimeInstance(SimpleDateFormat.MEDIUM, Locale.getDefault());
-        CharSequence text = format.format(new Date());
+//        DateFormat format = SimpleDateFormat.getTimeInstance(SimpleDateFormat.MEDIUM, Locale.getDefault());
+//        CharSequence text = format.format(new Date());
 
         Intent intent = new Intent(context, Update.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
@@ -90,12 +82,14 @@ public class Update extends AppWidgetProvider {
         remoteViews = new RemoteViews(context.getPackageName(), R.layout.appwidget_provider_layout);
         remoteViews.setOnClickPendingIntent(R.id.linear_layout, pendingIntent);
 
-        long date_of_death = 0;
         long currentTime = System.currentTimeMillis() / 1000;
         if (settings.contains(DATE_OF_DEATH)) {
             date_of_death = settings.getLong(DATE_OF_DEATH, 0);
         }
         long timerTime = date_of_death - currentTime;
+
+//        MainActivity mainActivity = new MainActivity();
+//        mainActivity.countDateOfDeath();
 
         years = timerTime / 31536000;
         days = timerTime / 86400 % 365;
@@ -146,9 +140,7 @@ public class Update extends AppWidgetProvider {
 
         final Intent i = new Intent(context, WidgetUpdateService.class);
         if (service == null)
-        {
             service = PendingIntent.getService(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-        }
         manager.setRepeating(AlarmManager.RTC,startTime.getTime().getTime(),1000,service);
     }
 
@@ -229,14 +221,29 @@ public class Update extends AppWidgetProvider {
                         if(secs == 0) {
                             remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.red));
                             remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.red));
+                        } else {
+                            remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.white));
+                            remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.white));
                         }
+                    } else {
+                        remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.white));
+                        remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.white));
                     }
+                } else {
+                    remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.white));
+                    remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.white));
                 }
+            } else {
+                remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.white));
+                remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.white));
             }
+        } else {
+            remoteViews.setTextColor(R.id.count, context.getResources().getColor(R.color.white));
+            remoteViews.setTextColor(R.id.text_count, context.getResources().getColor(R.color.white));
         }
     }
 
-    private static String GetWord(Long value, String one, String before_five, String after_five)
+    public static String GetWord(Long value, String one, String before_five, String after_five)
     {
         value %= 100;
         if(10 < value && value < 20) return after_five;
