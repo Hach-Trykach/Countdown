@@ -26,9 +26,10 @@ import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -46,9 +47,18 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.review.testing.FakeReviewManager;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -56,6 +66,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -73,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     static final String ADS_STATUS_FOR_SOON_DYING = "AdsStatusForSoonDying";
     static final String NO_ADS = "no_ads";
     static Boolean noAds = false;
-//    private FirebaseAnalytics mFirebaseAnalytics;
 //    private ImageView moreAppsBtn;
 
     int lastRatingDay;
@@ -87,12 +97,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     TextView tvYrs, tvDay, tvHrs, tvMin, tvSec;
     TextView textYrs, textDay, textHrs, textMin, textSec;
 
-    private AdView mAdView;
+    private RelativeLayout relative_layout_ads;
     private Drawer drawerResult;
 
-//    private RelativeLayout relativeLayout;
 //    private LinearLayout linearLayout;
-//    private RelativeLayout floatingMenu;
+    private RelativeLayout relativeLayout;
 
     public static int PERIOD;
 
@@ -107,14 +116,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private final int BTN_SHOPPING_CALCULATOR = 6;
     private final int BTN_OUR_APPS = 7;
     private final int BTN_SHARE = 8;
-    private final int BTN_CHANGE_U_FATE = 9;
+    private final int BTN_CHANGE_UR_FATE = 9;
 
-    public static long lastShareTime = 0;
-
-//    static final int PAGE_COUNT = 2;
+//    public static long lastShareTime = 0;
 
 //    ViewPager pager;
 //    PagerAdapter pagerAdapter;
+//    static final int PAGE_COUNT = 2;
 
 //    private String unityGameID = "3523564";
 //    private Boolean testMode = true;
@@ -141,13 +149,37 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private final static String CHANGE_YOUR_FATE = "change_your_fate";
     private final static String GPLAY_LICENSE = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlh3IXfvwhrH43ZO3anu7x7mbf3oT9JqAOD+3bTKocpYtvBexKwCiKhv9CrhAkZNaY48sfM80PtnVFAlqljPAcj9UthtHR94YCOSWL/F1SJB8FWxGa94d/JHc4ivuOLw0aNkoh6EdJX+0MH61FFI444bwmMYSKEjZLCkVcoddxq0CMdFcZTb3j4UsWhpgf2OMDLvEPn+qKqYVtrdKnoMd/vK9RTcC6iHvNNssAtBbQUEiA2SPA45shVgxK/jfxshNt96/jzhQUyvGiwYgwOVWrd6gXqkj5oiafzDGZkc6QTknMU2fYovy5FI1h8rKj3PfXaxR1sG5l+CavTj2s1F+QwIDAQAB";
 
-    public MainActivity() {
-    }
+    FirebaseAnalytics firebaseAnalytics;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference myReference;
+    int clicks_on_date = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.terms_of_use);
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        myReference = firebaseDatabase.getReference();
+        // Read from the database
+
+        myReference.child("users").child(Long.toString(getIMEI())).child("dateOfDeath").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                Long value = dataSnapshot.getValue(Long.class);
+                Log.d("TAG", "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Failed to read value
+                Log.w("TAG", "Failed to read value.", error.toException());
+            }
+        });
+
         // Initialize the SDK:
 //        UnityAds.initialize (this, unityGameID, this, testMode);
 
@@ -188,12 +220,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         Button accept_and_continue_Btn = findViewById(R.id.accept_and_continue);
         if (accept_and_continue_Btn != null) {
-            accept_and_continue_Btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    DialogAcceptAndContinue();
-                }
-            });
+            accept_and_continue_Btn.setOnClickListener(view -> DialogAcceptAndContinue());
         }
 
 //        manager = new FakeReviewManager(this);
@@ -207,9 +234,45 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 // There was some problem, continue regardless of the result.
             }
         });
+
+        relativeLayout.setOnClickListener(view -> {
+            clicks_on_date++;
+            if(clicks_on_date >= 3) {
+                clicks_on_date = 0;
+                showChangeYourFateDialog();
+            }
+        });
     }
 
-//    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+    private void showChangeYourFateDialog() {
+        final Context context = this;
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.change_your_fate);
+
+        Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
+        Button dialogButtonNo = dialog.findViewById(R.id.dialogButtonNo);
+
+        dialogButtonYes.setOnClickListener(v -> {
+            dialog.cancel();
+            mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_yes");
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        });
+        dialogButtonNo.setOnClickListener(v -> {
+            dialog.cancel();
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_no");
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+        });
+//        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+//    public static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 //
 //        public MyFragmentPagerAdapter(FragmentManager fm) {
 //            super(fm);
@@ -225,9 +288,48 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //            return PAGE_COUNT;
 //        }
 //    }
+//
+//    public static class LeftFragment extends Fragment {
+//
+//        public static LeftFragment newInstance(int page) {
+//            LeftFragment leftFragment = new LeftFragment();
+////            Bundle arguments = new Bundle();
+////            arguments.putInt(ARGUMENT_PAGE_NUMBER, page);
+////            pageFragment.setArguments(arguments);
+//            return leftFragment;
+//        }
+//
+//        @Override
+//        public void onCreate(Bundle savedInstanceState) {
+//            super.onCreate(savedInstanceState);
+////            pageNumber = getArguments().getInt(ARGUMENT_PAGE_NUMBER);
+//
+////            Random rnd = new Random();
+////            backColor = Color.argb(40, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+//        }
+//
+//        @Override
+//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                                 Bundle savedInstanceState) {
+//            View view = inflater.inflate(R.layout.activity_date, null);
+//
+//            TextView tvPage = (TextView) view.findViewById(R.id.tv);
+////            tvPage.setText("Page " + pageNumber);
+////            tvPage.setBackgroundColor(backColor);
+//
+//            return view;
+//        }
+//    }
 
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "clicks_on_date0");
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+        bundle.putString("clicks_on_date1", "clicks_on_date2");
+        firebaseAnalytics.logEvent("clicks_on_date3", bundle);
 
 //        mAuth = FirebaseAuth.getInstance();
 //        user = mAuth.getCurrentUser();
@@ -238,9 +340,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //        View page = inflater.inflate(R.layout.activity_date, null);
 //        pages.add(page);
 //
-//        page = inflater.inflate(R.layout.activity_date, null);
+//        page = inflater.inflate(R.layout.left_fragment, null);
 //        pages.add(page);
-
+//
 //        pager = findViewById(R.id.pager);
 //        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 //        pager.setAdapter(pagerAdapter);
@@ -265,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            getSupportActionBar().setTitle(null);
+            Objects.requireNonNull(getSupportActionBar()).setTitle(null);
         }
 
         if (settings.contains(LAST_RATING_DAY)) {
@@ -285,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //        Long lll = 352662060043475L;
 //        final Long date_of_death = Long.parseLong(lll.toString());
 
-        mAdView = findViewById(R.id.adView);
+        relative_layout_ads = findViewById(R.id.relative_layout_ads);
 
         tvYrs = findViewById(R.id.yrs);
         tvDay = findViewById(R.id.day);
@@ -300,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         textSec = findViewById(R.id.text_sec);
 
 //        moreAppsBtn = findViewById(R.id.more_apps_button);
-//        relativeLayout = findViewById(R.id.relative_layout);
+        relativeLayout = findViewById(R.id.relative_layout);
 //        linearLayout = findViewById(R.id.linear_layout);
 //        floatingMenu = findViewById(R.id.floatingMenu);
 
@@ -518,7 +620,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         countDateOfDeath();
     }
 
-    public Long countDateOfDeath() {
+    public void countDateOfDeath() {
         timerTime = date_of_death - currentTime;
 
         years = timerTime / 31536000;
@@ -529,7 +631,18 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         playStartSound(R.raw.countdown);
 
-        return timerTime;
+        myReference
+                .child("users")
+                .child(String.valueOf(getIMEI()))
+                .child("imei")
+                .setValue(getIMEI());
+        myReference
+                .child("users")
+                .child(String.valueOf(getIMEI()))
+                .child("dateOfDeath")
+                .setValue(date_of_death);
+
+//        return timerTime;
     }
 
     private static int getRandomNumberInRange(int min, int max) {
@@ -565,6 +678,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     private void adsInitialization() {
+        AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
                 .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
@@ -572,10 +686,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 .build();
         mAdView.loadAd(adRequest);
 
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
+        MobileAds.initialize(this, initializationStatus -> {
         });
     }
 
@@ -660,7 +771,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 }
                 return true;
             }
-            else if(drawerItem.getIdentifier() == BTN_CHANGE_U_FATE) {
+            else if(drawerItem.getIdentifier() == BTN_CHANGE_UR_FATE) {
 //                if(user == null) {
 //                    // Configure Google Sign In
 //                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -744,7 +855,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                     .withName(R.string.change_your_fate)
                     .withTextColorRes(R.color.white)
                     .withIcon(R.drawable.icon_filled)
-                    .withIdentifier(BTN_CHANGE_U_FATE),
+                    .withIdentifier(BTN_CHANGE_UR_FATE),
 
             new PrimaryDrawerItem()
                     .withName(R.string.share)
@@ -813,26 +924,28 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
         Button dialogButtonNo = dialog.findViewById(R.id.dialogButtonNo);
 
-        dialogButtonYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-                setContentView(R.layout.activity_wait);
+        dialogButtonYes.setOnClickListener(v -> {
+            dialog.cancel();
+            setContentView(R.layout.activity_wait);
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_accept_and_continue_click_yes");
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
 //                webView = findViewById(R.id.webView);
 //                webView.setWebViewClient(new MyWebViewClient());
 
-                if(!noAds)
-                    createInterstitialAd();
+            if(!noAds)
+                createInterstitialAd();
 //                    DisplayUnityInterstitialAd();
-            }
         });
-        dialogButtonNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-                finish();
-            }
+        dialogButtonNo.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_accept_and_continue_click_no");
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+            dialog.cancel();
+            finish();
         });
         dialog.setCancelable(false);
         dialog.show();
@@ -847,37 +960,39 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
         Button dialogButtonNo = dialog.findViewById(R.id.dialogButtonNo);
 
-        dialogButtonYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
+        dialogButtonYes.setOnClickListener(v -> {
+            dialog.cancel();
 
-                com.google.android.play.core.tasks.Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
-                flow.addOnCompleteListener(task -> {
-                    if(task.isSuccessful()) {
-                        lastRatingDay = 1000;
-                        SharedPreferences.Editor editor = settings.edit();
-                        editor.putInt(LAST_RATING_DAY, lastRatingDay);
-                        editor.apply();
-                    }
-                    else {
-                        lastRatingDay = 1000;
-                        SharedPreferences.Editor editor = settings.edit();
-                        editor.putInt(LAST_RATING_DAY, lastRatingDay);
-                        editor.apply();
+            com.google.android.play.core.tasks.Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
+            flow.addOnCompleteListener(task -> {
 
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
-                        startActivity(intent);
-                    }
-                    // The flow has finished. The API does not indicate whether the user
-                    // reviewed or not, or even whether the review dialog was shown. Thus, no
-                    // matter the result, we continue our app flow.
-                });
-            }
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_rating_click_yes");
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+                lastRatingDay = 1000;
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putInt(LAST_RATING_DAY, lastRatingDay);
+                editor.apply();
+                if(task.isSuccessful()) {
+                    Log.d("TAG", "inAppReview isSuccessful");
+                }
+                else {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
+                    startActivity(intent);
+                }
+                // The flow has finished. The API does not indicate whether the user
+                // reviewed or not, or even whether the review dialog was shown. Thus, no
+                // matter the result, we continue our app flow.
+            });
         });
         dialogButtonNo.setOnClickListener(v -> {
             dialog.cancel();
+
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_rating_click_no");
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
             Calendar cal = Calendar.getInstance();
             lastRatingDay = cal.get(Calendar.DAY_OF_MONTH);
@@ -992,12 +1107,17 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                     != PackageManager.PERMISSION_GRANTED) {
                 // Permission is not granted
                 // Should we show an explanation?
+
                 if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                         Manifest.permission.READ_PHONE_STATE)) {
                     // Show an explanation to the user *asynchronously* -- don't block
                     // this thread waiting for the user's response! After the user
                     // sees the explanation, try again to request the permission.
                     ErrorReadPhoneStateDialog();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_cancel");
+                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 } else {
                     // No explanation needed; request the permission
                     ActivityCompat.requestPermissions(MainActivity.this,
@@ -1011,6 +1131,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             } else {
                 // Permission has already been granted
                 Timer();
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
+                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }
         } else Timer();
     }
@@ -1058,6 +1182,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     Timer();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
+                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -1079,13 +1207,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                         sleep(1000);
                         logoTimer += 1000;
                     }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(reviewInfo != null) {
-                                DialogRating();
-                            }
-                        }
+                    runOnUiThread(() -> {
+//                            if(reviewInfo != null) {
+                            DialogRating();
+//                            }
                     });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -1105,12 +1230,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                         sleep(100);
                         logoTimer += 1000;
                     }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            onCreateActivityDate();
-                        }
-                    });
+                    runOnUiThread(() -> onCreateActivityDate());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -1244,12 +1364,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                         }
                     }
                 }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateUI();
-                    }
-                });
+                runOnUiThread(() -> updateUI());
             }
         }, 0, PERIOD);
     }
@@ -1572,6 +1687,19 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          * Called when purchase history was restored and the list of all owned PRODUCT ID's
          * was loaded from Google Play
          */
+
+        String dateFromDataBase;
+        dateFromDataBase = myReference
+                .child("users")
+                .child(String.valueOf(getIMEI()))
+                .child("dateOfDeath")
+                .getKey();
+
+        if(dateFromDataBase != null) {
+            date_of_death = Long.parseLong(dateFromDataBase);
+            countDateOfDeath();
+        }
+
         showMsg("onPurchaseHistoryRestored");
         handleLoadedItems();
     }
@@ -1612,8 +1740,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             editor.putBoolean(NO_ADS, noAds);
             editor.apply();
         }
-        if(mAdView.getVisibility() != View.GONE)
-            mAdView.setVisibility(View.GONE);
+        if(relative_layout_ads.getVisibility() != View.GONE)
+            relative_layout_ads.setVisibility(View.GONE);
     }
 
     private boolean checkIfPurchaseIsValid(PurchaseInfo purchaseInfo) {
