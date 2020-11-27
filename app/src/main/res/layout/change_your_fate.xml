@@ -96,6 +96,7 @@
                 android:minWidth="120dp"
                 android:layout_height="wrap_content"
                 android:text="@string/key_yes"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:background="@color/grey"
                 android:textColor="@color/white"

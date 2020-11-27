@@ -57,6 +57,6 @@
     <string name="new_message_after">Новое сообщение через</string>
     <string name="seconds">секунд.</string>
     <string name="coming_soon">Скоро появится…</string>
-    <string name="do_you_want_change_your_fate">Вы хотите изменить свою судьбу?</string>
+    <string name="do_you_want_change_your_fate">Хотите изменить свою судьбу?</string>
     <string name="undo">Отмена</string>
 </resources>

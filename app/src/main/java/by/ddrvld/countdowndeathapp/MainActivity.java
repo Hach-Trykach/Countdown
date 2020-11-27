@@ -28,6 +28,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -38,21 +39,15 @@ import androidx.core.content.ContextCompat;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.PurchaseInfo;
-import com.anjlab.android.iab.v3.SkuDetails;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
-import com.google.android.play.core.review.testing.FakeReviewManager;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -234,14 +229,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 // There was some problem, continue regardless of the result.
             }
         });
-
-        relativeLayout.setOnClickListener(view -> {
-            clicks_on_date++;
-            if(clicks_on_date >= 3) {
-                clicks_on_date = 0;
-                showChangeYourFateDialog();
-            }
-        });
     }
 
     private void showChangeYourFateDialog() {
@@ -324,12 +311,12 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
 
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "clicks_on_date0");
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
-        bundle.putString("clicks_on_date1", "clicks_on_date2");
-        firebaseAnalytics.logEvent("clicks_on_date3", bundle);
+//        Bundle bundle = new Bundle();
+//        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "clicks_on_date0");
+//        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//
+//        bundle.putString("clicks_on_date1", "clicks_on_date2");
+//        firebaseAnalytics.logEvent("clicks_on_date3", bundle);
 
 //        mAuth = FirebaseAuth.getInstance();
 //        user = mAuth.getCurrentUser();
@@ -402,7 +389,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         textSec = findViewById(R.id.text_sec);
 
 //        moreAppsBtn = findViewById(R.id.more_apps_button);
-        relativeLayout = findViewById(R.id.relative_layout);
 //        linearLayout = findViewById(R.id.linear_layout);
 //        floatingMenu = findViewById(R.id.floatingMenu);
 
@@ -441,6 +427,17 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             adsInitialization();
         else {
             noAds();
+        }
+
+        relativeLayout = findViewById(R.id.relative_layout);
+        if(relativeLayout != null) {
+            relativeLayout.setOnClickListener(view -> {
+                clicks_on_date++;
+                if (clicks_on_date >= 3) {
+                    clicks_on_date = 0;
+                    showChangeYourFateDialog();
+                }
+            });
         }
 
 //        relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
@@ -607,7 +604,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         DrawerBuilder();
     }
 
+    boolean pokupkaKuplena = false;
     private void changeDateOfDeath() {
+        if(pokupkaKuplena) {
+            mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
+        }
         if(years > 0) {
             date_of_death = getRandomNumberInRange(600000, 17280000);
         }
@@ -963,29 +964,30 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         dialogButtonYes.setOnClickListener(v -> {
             dialog.cancel();
 
-            com.google.android.play.core.tasks.Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
-            flow.addOnCompleteListener(task -> {
+            lastRatingDay = 1000;
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putInt(LAST_RATING_DAY, lastRatingDay);
+            editor.apply();
 
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_rating_click_yes");
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_rating_click_yes");
+            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
-                lastRatingDay = 1000;
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putInt(LAST_RATING_DAY, lastRatingDay);
-                editor.apply();
-                if(task.isSuccessful()) {
-                    Log.d("TAG", "inAppReview isSuccessful");
-                }
-                else {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
-                    startActivity(intent);
-                }
-                // The flow has finished. The API does not indicate whether the user
-                // reviewed or not, or even whether the review dialog was shown. Thus, no
-                // matter the result, we continue our app flow.
-            });
+            if(reviewInfo != null) {
+                com.google.android.play.core.tasks.Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
+                flow.addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("TAG", "inAppReview isSuccessful");
+                    }
+                    // The flow has finished. The API does not indicate whether the user
+                    // reviewed or not, or even whether the review dialog was shown. Thus, no
+                    // matter the result, we continue our app flow.
+                });
+            } else {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()));
+                startActivity(intent);
+            }
         });
         dialogButtonNo.setOnClickListener(v -> {
             dialog.cancel();
@@ -1208,9 +1210,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                         logoTimer += 1000;
                     }
                     runOnUiThread(() -> {
-//                            if(reviewInfo != null) {
-                            DialogRating();
-//                            }
+                        DialogRating();
                     });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -1687,6 +1687,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          * Called when purchase history was restored and the list of all owned PRODUCT ID's
          * was loaded from Google Play
          */
+        pokupkaKuplena = true;
 
         String dateFromDataBase;
         dateFromDataBase = myReference
@@ -1695,9 +1696,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 .child("dateOfDeath")
                 .getKey();
 
+        showMsg(dateFromDataBase);
+
         if(dateFromDataBase != null) {
             date_of_death = Long.parseLong(dateFromDataBase);
+            saveTime();
             countDateOfDeath();
+        } else {
         }
 
         showMsg("onPurchaseHistoryRestored");
@@ -1776,18 +1781,18 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         if (isPurchased) {
 //            mSingleTimePaymentButton.setText(R.string.already_bought);
 //            mConsumabelButton.setText(R.string.consume_one_time);
-            mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
+            pokupkaKuplena = true;
             changeDateOfDeath();
         } else {
-            SkuDetails details = mBillingProcessor.getPurchaseListingDetails(CHANGE_YOUR_FATE);
+//            SkuDetails details = mBillingProcessor.getPurchaseListingDetails(CHANGE_YOUR_FATE);
 //            mSingleTimePaymentButton.setText(getString(R.string.one_time_payment_value, details.priceText));
 //            mConsumabelButton.setText(R.string.not_bought_yet);
         }
     }
 
     private void showMsg(String text) {
-//        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-        Log.d("TAG", text);
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+//        Log.d("TAG", text);
     }
 
     @Override
