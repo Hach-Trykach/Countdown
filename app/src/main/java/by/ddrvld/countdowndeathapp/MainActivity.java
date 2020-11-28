@@ -33,7 +33,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -86,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     public static long timerTime, date_of_death;
     long currentTime = System.currentTimeMillis() / 1000;
 
-    long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
     static long years, days, hours, mins, secs;
 
     TextView tvYrs, tvDay, tvHrs, tvMin, tvSec;
@@ -149,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     DatabaseReference myReference;
     int clicks_on_date = 0;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -241,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         setContentView(R.layout.terms_of_use);
         allInitializing();
     }
-    @RequiresApi(api = Build.VERSION_CODES.M)
+
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
         allInitializing();
@@ -349,6 +346,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
                 if (clicks_on_date >= 3) {
                     clicks_on_date = 0;
+                    mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
                     showChangeYourFateDialog();
                 }
             });
@@ -516,10 +514,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     boolean pokupkaKuplena = false;
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void changeDateOfDeath() {
 //        if(pokupkaKuplena) {
-        mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
+//        mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
 //        }
         if(years > 0) {
             date_of_death = getRandomNumberInRange(600000, 17280000);
@@ -545,7 +542,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         playStartSound(R.raw.countdown);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void updateValueInDatabase() {
         User user = new User(getIMEI(), date_of_death);
         myReference
@@ -1159,7 +1155,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         playStartSound(R.raw.krik);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private long getIMEI() {
         long imei;
         switch (android.os.Build.VERSION.SDK_INT) {
@@ -1210,6 +1205,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         @Override
         public void onTick(long millisUntilFinished) {
+            updateUI();
+            long fullDays = 364L, fullHours = 23L, fullMins = 59L, fullSecs = 59L;
             if (secs > 0) secs--;
             else {
                 secs = fullSecs;
@@ -1225,23 +1222,24 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                             if (years > 0) years--;
                             else {
                                 theEnd();
-                                return;
+                                if(mainTimer != null)
+                                    mainTimer.cancel();
                             }
                         }
                     }
                 }
             }
-            updateUI();
         }
     }
 
 //    Thread mainTimer;
     private MalibuCountDownTimer mainTimer;
     private void startMainTimer() {
-        if(mainTimer == null) {
+        if(mainTimer == null && date_of_death > currentTime) {
             mainTimer = new MalibuCountDownTimer(1000000000, 1000);
             mainTimer.start();
         }
+        else updateUI();
 
 //        if (mainTimer == null) {
 //            mainTimer = new Thread() {
@@ -1333,7 +1331,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         if (secs >= 10) tvSec.setText("" + secs);
         else tvSec.setText("0" + secs);
 
-        if (years == 0 && days == 0 && hours == 0 && mins == 0 && secs == 0) {
+        if (years <= 0 && days <= 0 && hours <= 0 && mins <= 0 && secs <= 0) {
             tvYrs.setText("B");
             tvDay.setText("O");
             tvHrs.setText("O");
@@ -1346,7 +1344,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             textMin.setVisibility(View.INVISIBLE);
             textSec.setVisibility(View.INVISIBLE);
 
-            mainTimer.cancel();
+            if(mainTimer != null)
+                mainTimer.cancel();
+            theEnd();
         }
 
         textYrs.setText(GetWord(years, getResources().getString(R.string.text_yrs1), getResources().getString(R.string.text_yrs2), getResources().getString(R.string.text_yrs3)));
@@ -1472,13 +1472,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             minsNow = mins * 60;
             timeToNotifi = yearsNow + daysNow + hoursNow + minsNow + secs;
 
-            if(timerTime > 36000)
-                timeToNotifi = timeToNotifi / 3;
-            else if(timerTime > 160)
-                timeToNotifi = timerTime - 160L;
-            else if(timerTime > 3)
-                timeToNotifi = timerTime;
-            else return;
+//            if(timerTime > 36000)
+//                timeToNotifi /= 3;
+//            else if(timerTime > 160)
+//                timeToNotifi = timerTime - 160L;
+//            else if(timerTime > 3)
+//                timeToNotifi = timerTime;
+//            else return;
 
             SharedPreferences.Editor editor = settings.edit();
             AdsStatusForSoonDying = true;
@@ -1739,7 +1739,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void readFromDatabase() {
         // Read from the database
         myReference.child("users").child(Long.toString(getIMEI())).child("dateOfDeath").addValueEventListener(new ValueEventListener() {
