@@ -15,9 +15,12 @@ import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.Html;
@@ -45,6 +48,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
@@ -63,8 +67,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import java.util.Calendar;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static by.ddrvld.countdowndeathapp.Update.GetWord;
 
@@ -152,30 +154,29 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.terms_of_use);
+        setContentView(R.layout.activity_wait);
 
+        if(mainTimer == null) {
+            settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+
+            allInitializing();
+
+            if (hasConnection(getApplicationContext())) {
+                readFromDatabase();
+                showMsg("hasConnection true");
+            }
+            else {
+                onCreateActivityDate();
+                showMsg("hasConnection false");
+            }
+        }
+    }
+
+    private void allInitializing() {
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         myReference = firebaseDatabase.getReference();
-        // Read from the database
 
-        myReference.child("users").child(Long.toString(getIMEI())).child("dateOfDeath").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                Long value = dataSnapshot.getValue(Long.class);
-                Log.d("TAG", "Value is: " + value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Failed to read value
-                Log.w("TAG", "Failed to read value.", error.toException());
-            }
-        });
-
-        // Initialize the SDK:
 //        UnityAds.initialize (this, unityGameID, this, testMode);
 
         mBillingProcessor = new BillingProcessor(this, GPLAY_LICENSE, this);
@@ -186,32 +187,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         } else {
             mBillingProcessor.initialize();
         }
-
-        settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-        if (settings.contains(DATE_OF_DEATH)) {
-
-//            //////////For Test/////////
-//            SharedPreferences.Editor editor = settings.edit();
-//            AdsStatusForSoonDying = true;
-//            editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
-//            editor.apply();
-//            ///////////////////////////
-
-            if (settings.contains(ADS_STATUS_FOR_SOON_DYING)) {
-                AdsStatusForSoonDying = settings.getBoolean(ADS_STATUS_FOR_SOON_DYING, false);
-                if(AdsStatusForSoonDying) {
-                    onCreateActivityDate();
-                    if(!noAds)
-                        createInterstitialAd_For_Soon_Dying();
-                    SharedPreferences.Editor editor = settings.edit();
-                    AdsStatusForSoonDying = false;
-                    editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
-                    editor.apply();
-                }
-                else onCreateActivityDate();
-            }
-            else onCreateActivityDate();
-        } else setContentView(R.layout.terms_of_use);
 
         Button accept_and_continue_Btn = findViewById(R.id.accept_and_continue);
         if (accept_and_continue_Btn != null) {
@@ -259,57 +234,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         dialog.show();
     }
 
-//    public static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-//
-//        public MyFragmentPagerAdapter(FragmentManager fm) {
-//            super(fm);
-//        }
-//
-//        @Override
-//        public Fragment getItem(int position) {
-//            return LeftFragment.newInstance(position);
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            return PAGE_COUNT;
-//        }
-//    }
-//
-//    public static class LeftFragment extends Fragment {
-//
-//        public static LeftFragment newInstance(int page) {
-//            LeftFragment leftFragment = new LeftFragment();
-////            Bundle arguments = new Bundle();
-////            arguments.putInt(ARGUMENT_PAGE_NUMBER, page);
-////            pageFragment.setArguments(arguments);
-//            return leftFragment;
-//        }
-//
-//        @Override
-//        public void onCreate(Bundle savedInstanceState) {
-//            super.onCreate(savedInstanceState);
-////            pageNumber = getArguments().getInt(ARGUMENT_PAGE_NUMBER);
-//
-////            Random rnd = new Random();
-////            backColor = Color.argb(40, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-//        }
-//
-//        @Override
-//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                                 Bundle savedInstanceState) {
-//            View view = inflater.inflate(R.layout.activity_date, null);
-//
-//            TextView tvPage = (TextView) view.findViewById(R.id.tv);
-////            tvPage.setText("Page " + pageNumber);
-////            tvPage.setBackgroundColor(backColor);
-//
-//            return view;
-//        }
-//    }
-
+    private void onCreateActivityTermOfUse() {
+        setContentView(R.layout.terms_of_use);
+        allInitializing();
+    }
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
+        allInitializing();
 
 //        Bundle bundle = new Bundle();
 //        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "clicks_on_date0");
@@ -318,45 +249,25 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //        bundle.putString("clicks_on_date1", "clicks_on_date2");
 //        firebaseAnalytics.logEvent("clicks_on_date3", bundle);
 
-//        mAuth = FirebaseAuth.getInstance();
-//        user = mAuth.getCurrentUser();
-
-//        LayoutInflater inflater = LayoutInflater.from(this);
-//        List<View> pages = new ArrayList<>();
-//
-//        View page = inflater.inflate(R.layout.activity_date, null);
-//        pages.add(page);
-//
-//        page = inflater.inflate(R.layout.left_fragment, null);
-//        pages.add(page);
-//
-//        pager = findViewById(R.id.pager);
-//        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
-//        pager.setAdapter(pagerAdapter);
-//        pager.setCurrentItem(1);
-////        setContentView(pager);
-//
-//        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//            }
-//
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//            }
-//        });
-
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             Objects.requireNonNull(getSupportActionBar()).setTitle(null);
         }
 
+        if (settings.contains(DATE_OF_DEATH)) {
+            if (settings.contains(ADS_STATUS_FOR_SOON_DYING)) {
+                AdsStatusForSoonDying = settings.getBoolean(ADS_STATUS_FOR_SOON_DYING, false);
+                if(AdsStatusForSoonDying) {
+                    if(!noAds)
+                        createInterstitialAd_For_Soon_Dying();
+                    SharedPreferences.Editor editor = settings.edit();
+                    AdsStatusForSoonDying = false;
+                    editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
+                    editor.apply();
+                }
+            }
+        }
         if (settings.contains(LAST_RATING_DAY)) {
             lastRatingDay = settings.getInt(LAST_RATING_DAY, 0);
 
@@ -373,8 +284,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
 //        Long lll = 352662060043475L;
 //        final Long date_of_death = Long.parseLong(lll.toString());
-
-        relative_layout_ads = findViewById(R.id.relative_layout_ads);
 
         tvYrs = findViewById(R.id.yrs);
         tvDay = findViewById(R.id.day);
@@ -418,7 +327,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
 
         countDateOfDeath();
-        setValues();
+        startMainTimer();
+        updateValueInDatabase();
 
         if (settings.contains(NO_ADS)) {
             noAds = settings.getBoolean(NO_ADS, false);
@@ -590,15 +500,12 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
 
 //        FirebaseMessaging.getInstance().subscribeToTopic("general")
-//            .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                @Override
-//                public void onComplete(@NonNull Task<Void> task) {
-//                    String msg = "Successfull";
-//                    if(!task.isSuccessful()) {
-//                        msg = "Failed";
-//                    }
-//                    Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT).show();
+//            .addOnCompleteListener(task -> {
+//                String msg = "Successfull";
+//                if(!task.isSuccessful()) {
+//                    msg = "Failed";
 //                }
+//                Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT).show();
 //            });
         
         DrawerBuilder();
@@ -606,9 +513,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     boolean pokupkaKuplena = false;
     private void changeDateOfDeath() {
-        if(pokupkaKuplena) {
-            mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
-        }
+//        if(pokupkaKuplena) {
+        mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
+//        }
         if(years > 0) {
             date_of_death = getRandomNumberInRange(600000, 17280000);
         }
@@ -618,7 +525,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         date_of_death += currentTime;
         saveTime();
 
-        countDateOfDeath();
+        updateValueInDatabase();
     }
 
     public void countDateOfDeath() {
@@ -631,19 +538,14 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         secs = timerTime % 60;
 
         playStartSound(R.raw.countdown);
+    }
 
+    private void updateValueInDatabase() {
+        User user = new User(getIMEI(), date_of_death);
         myReference
                 .child("users")
                 .child(String.valueOf(getIMEI()))
-                .child("imei")
-                .setValue(getIMEI());
-        myReference
-                .child("users")
-                .child(String.valueOf(getIMEI()))
-                .child("dateOfDeath")
-                .setValue(date_of_death);
-
-//        return timerTime;
+                .setValue(user);
     }
 
     private static int getRandomNumberInRange(int min, int max) {
@@ -664,12 +566,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
             mp = MediaPlayer.create(this, soundID);
             mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
-                }
-            });
+            mp.setOnCompletionListener(mp1 -> mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0));
         } else {
             MediaPlayer mp = new MediaPlayer();
             mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
@@ -938,7 +835,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
             if(!noAds)
                 createInterstitialAd();
-//                    DisplayUnityInterstitialAd();
+//                DisplayUnityInterstitialAd();
         });
         dialogButtonNo.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
@@ -1003,11 +900,16 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             editor.putInt(LAST_RATING_DAY, lastRatingDay);
             editor.apply();
         });
-        dialog.setCancelable(false);
-        dialog.show();
+        try {
+            dialog.setCancelable(false);
+            dialog.show();
+        }
+        catch (Exception ignored) {
+        }
     }
 
-    private void createInterstitialAd() { //Создаём межстраничное объявление
+    private void createInterstitialAd() {
+        //Создаём межстраничное объявление
         final InterstitialAd interstitial;
 
         interstitial = new InterstitialAd(MainActivity.this);
@@ -1132,13 +1034,17 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 }
             } else {
                 // Permission has already been granted
-                Timer();
+//                if(activityDateTimer == null)
+                    TimerToActivityDate();
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
                 firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }
-        } else Timer();
+        } else {
+//            if(activityDateTimer == null)
+                TimerToActivityDate();
+        }
     }
 
     public void ErrorReadPhoneStateDialog() {
@@ -1183,7 +1089,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    Timer();
+//                    if(activityDateTimer == null)
+                        TimerToActivityDate();
 
                     Bundle bundle = new Bundle();
                     bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
@@ -1220,23 +1127,26 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         logoTimer.start();
     }
 
-    public void Timer() {
-        final Thread logoTimer = new Thread() {
+    Thread activityDateTimer;
+    public void TimerToActivityDate() {
+        activityDateTimer = new Thread() {
             int logoTimer = 0;
 
             public void run() {
                 try {
-                    while (logoTimer < 5000) {
-                        sleep(100);
-                        logoTimer += 1000;
+                    while (logoTimer < 2) {
+                        sleep(1000);
+                        logoTimer ++;
                     }
-                    runOnUiThread(() -> onCreateActivityDate());
+                    runOnUiThread(() -> {
+                        onCreateActivityDate();
+                    });
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         };
-        logoTimer.start();
+        activityDateTimer.start();
     }
 
     public void theEnd() {
@@ -1280,94 +1190,126 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
     }
 
-//    private long getIMEI2() {
-//        long imei;
-//        switch (Build.VERSION.SDK_INT) {
-//            case Build.VERSION_CODES.M:
-//            case Build.VERSION_CODES.N:
-//            case Build.VERSION_CODES.N_MR1:
-//            case Build.VERSION_CODES.O:
-//            case Build.VERSION_CODES.O_MR1:
-//            case Build.VERSION_CODES.P: {
-//                TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-//                if(manager != null) {
-//                    if (manager.getDeviceId(1) != null) {
-//                        imei = Long.parseLong(manager.getImei(1));
-//                    } else if (manager.getDeviceId(0) != null) {
-//                        imei = Long.parseLong(manager.getImei(0));
-//                    } else if (manager.getImei(1) != null) {
-//                        imei = Long.parseLong(manager.getDeviceId(1));
-//                    } else if (manager.getImei(0) != null) {
-//                        imei = Long.parseLong(manager.getDeviceId(0));
-//                    }
-//                }
-//            }
-//            case Build.VERSION_CODES.KITKAT: {
-//                imei = 352662063043475L;
-//                break;
-//            }
-//            case Build.VERSION_CODES.LOLLIPOP: {
-//                imei = 352662062043475L;
-//                break;
-//            }
-//            case Build.VERSION_CODES.LOLLIPOP_MR1: {
-//                imei = 352662061043475L;
-//                break;
-//            }
-//            case Build.VERSION_CODES.Q: {
-//                imei = 852662062543475L;
-//                break;
-//            }
-//            default: imei = 352662064043475L;
-//        }
-//        return imei;
-//    }
+    // CountDownTimer class
+    public class MalibuCountDownTimer extends CountDownTimer {
 
-//    private String GetWord(Long value, String one, String before_five, String after_five)
-//    {
-//        value %= 100;
-//        if(10 < value && value < 20) return after_five;
-//        switch(Integer.parseInt(value.toString())%10)
-//        {
-//            case 1: return one;
-//            case 2:
-//            case 3:
-//            case 4: return before_five;
-//            default: return after_five;
-//        }
-//    }
+        public MalibuCountDownTimer(long startTime, long interval) {
+            super(startTime, interval);
+        }
 
-    private void setValues() {
-        final Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (secs > 0) secs--;
+        @Override
+        public void onFinish() {
+            theEnd();
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            if (secs > 0) secs--;
+            else {
+                secs = fullSecs;
+                if (mins > 0) mins--;
                 else {
-                    secs = fullSecs;
-                    if (mins > 0) mins--;
+                    mins = fullMins;
+                    if (hours > 0) hours--;
                     else {
-                        mins = fullMins;
-                        if (hours > 0) hours--;
+                        hours = fullHours;
+                        if (days > 0) days--;
                         else {
-                            hours = fullHours;
-                            if (days > 0) days--;
+                            days = fullDays;
+                            if (years > 0) years--;
                             else {
-                                days = fullDays;
-                                if (years > 0) years--;
-                                else {
-                                    theEnd();
-                                    timer.cancel();
-                                    return;
-                                }
+                                theEnd();
+                                return;
                             }
                         }
                     }
                 }
-                runOnUiThread(() -> updateUI());
             }
-        }, 0, PERIOD);
+            updateUI();
+        }
     }
+
+//    Thread mainTimer;
+    private MalibuCountDownTimer mainTimer;
+    private void startMainTimer() {
+        if(mainTimer == null) {
+            mainTimer = new MalibuCountDownTimer(1000000000, 1000);
+            mainTimer.start();
+        }
+
+//        if (mainTimer == null) {
+//            mainTimer = new Thread() {
+//                public void run() {
+//                    try {
+//                        while (true) {
+//                            sleep(1000);
+//                            runOnUiThread(() -> updateUI());
+//                            if (secs > 0) secs--;
+//                            else {
+//                                secs = fullSecs;
+//                                if (mins > 0) mins--;
+//                                else {
+//                                    mins = fullMins;
+//                                    if (hours > 0) hours--;
+//                                    else {
+//                                        hours = fullHours;
+//                                        if (days > 0) days--;
+//                                        else {
+//                                            days = fullDays;
+//                                            if (years > 0) years--;
+//                                            else {
+//                                                theEnd();
+//                                                mainTimer.cancel();
+//                                                return;
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            };
+//            mainTimer.start();
+//        }
+    }
+
+//    Timer timer;
+//    private void startMainTimer() {
+//        if(timer == null) {
+//            timer = new Timer();
+//            timer.scheduleAtFixedRate(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    if (secs > 0) secs--;
+//                    else {
+//                        secs = fullSecs;
+//                        if (mins > 0) mins--;
+//                        else {
+//                            mins = fullMins;
+//                            if (hours > 0) hours--;
+//                            else {
+//                                hours = fullHours;
+//                                if (days > 0) days--;
+//                                else {
+//                                    days = fullDays;
+//                                    if (years > 0) years--;
+//                                    else {
+//                                        theEnd();
+//                                        timer.cancel();
+//                                        return;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                    runOnUiThread(() -> updateUI());
+//                }
+//            }, 0, PERIOD);
+//        }
+//    }
 
     private void updateUI() {
         if (years >= 10) tvYrs.setText("" + years);
@@ -1477,7 +1419,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             editor.putLong(DATE_OF_DEATH, date_of_death);
             editor.apply();
         }
-//        FirebaseDatabase.getInstance().getReference().push().setValue(date_of_death);
     }
 
     @Override
@@ -1494,16 +1435,12 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 PermissionRequest();
             }
         }
-        else {
-            super.onBackPressed();
-        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-//        updateUI(user);
     }
 
     @Override
@@ -1516,7 +1453,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     @Override
     protected void onPause() {
-        super.onPause();
         System.out.println("TIMER_TIME: " + timerTime);
         System.out.println("date_of_death: " + date_of_death);
 
@@ -1541,14 +1477,22 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
             editor.apply();
 
-//            FirebaseDatabase.getInstance().getReference().push().setValue(timerTime);
-
             Intent intent = new Intent(this, Receiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeToNotifi * 1000), pendingIntent);
 //            Snackbar.make(findViewById(android.R.id.content), "Alarm set in " + timeToNotifi + " seconds",Snackbar.LENGTH_LONG).show();
         }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(mainTimer != null) {
+            mainTimer.cancel();
+            mainTimer = null;
+        }
+        super.onDestroy();
     }
 
     // Implement a function to display an ad if the Placement is ready:
@@ -1687,26 +1631,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          * Called when purchase history was restored and the list of all owned PRODUCT ID's
          * was loaded from Google Play
          */
-        pokupkaKuplena = true;
-
-        String dateFromDataBase;
-        dateFromDataBase = myReference
-                .child("users")
-                .child(String.valueOf(getIMEI()))
-                .child("dateOfDeath")
-                .getKey();
-
-        showMsg(dateFromDataBase);
-
-        if(dateFromDataBase != null) {
-            date_of_death = Long.parseLong(dateFromDataBase);
-            saveTime();
-            countDateOfDeath();
-        } else {
-        }
-
         showMsg("onPurchaseHistoryRestored");
         handleLoadedItems();
+
+//        readFromDatabase();
     }
 
     @Override
@@ -1745,6 +1673,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             editor.putBoolean(NO_ADS, noAds);
             editor.apply();
         }
+        relative_layout_ads = findViewById(R.id.relative_layout_ads);
         if(relative_layout_ads.getVisibility() != View.GONE)
             relative_layout_ads.setVisibility(View.GONE);
     }
@@ -1791,8 +1720,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     private void showMsg(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-//        Log.d("TAG", text);
+//        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+        Log.d("showMsg", text);
     }
 
     @Override
@@ -1801,4 +1730,114 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    private void readFromDatabase() {
+        // Read from the database
+        myReference.child("users").child(Long.toString(getIMEI())).child("dateOfDeath").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                Long value = dataSnapshot.getValue(Long.class);
+                Log.e("DATE_OF_DEATH", "Value is: " + value);
+
+                if (dataSnapshot == null || value == null) { //При первой установке если данных в базе нет
+                    onCreateActivityTermOfUse();
+                    Log.e("READ_FROM_DATABASE", "terms_of_use");
+                }
+                else if (mainTimer == null) { // при обычном запуске приложения (mainTimer не запущен)
+                    date_of_death = value;
+                    saveTime();
+//                    if(activityDateTimer == null) {
+                        onCreateActivityDate();
+//                        Log.e("READ_FROM_DATABASE", "activityDateTimer == null");
+//                    }
+                    Log.e("READ_FROM_DATABASE", "mainTimer == null");
+                }
+                else {
+                    date_of_death = value;
+                    saveTime();
+                    countDateOfDeath();
+
+                    Log.e("READ_FROM_DATABASE", "update value in database");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Failed to read value
+                Log.w("DATE_OF_DEATH", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    public static boolean hasConnection(final Context context)
+    {
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        return false;
+    }
+
+//    public static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+//
+//        public MyFragmentPagerAdapter(FragmentManager fm) {
+//            super(fm);
+//        }
+//
+//        @Override
+//        public Fragment getItem(int position) {
+//            return LeftFragment.newInstance(position);
+//        }
+//
+//        @Override
+//        public int getCount() {
+//            return PAGE_COUNT;
+//        }
+//    }
+//
+//    public static class LeftFragment extends Fragment {
+//
+//        public static LeftFragment newInstance(int page) {
+//            LeftFragment leftFragment = new LeftFragment();
+////            Bundle arguments = new Bundle();
+////            arguments.putInt(ARGUMENT_PAGE_NUMBER, page);
+////            pageFragment.setArguments(arguments);
+//            return leftFragment;
+//        }
+//
+//        @Override
+//        public void onCreate(Bundle savedInstanceState) {
+//            super.onCreate(savedInstanceState);
+////            pageNumber = getArguments().getInt(ARGUMENT_PAGE_NUMBER);
+//
+////            Random rnd = new Random();
+////            backColor = Color.argb(40, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+//        }
+//
+//        @Override
+//        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                                 Bundle savedInstanceState) {
+//            View view = inflater.inflate(R.layout.activity_date, null);
+//
+//            TextView tvPage = (TextView) view.findViewById(R.id.tv);
+////            tvPage.setText("Page " + pageNumber);
+////            tvPage.setBackgroundColor(backColor);
+//
+//            return view;
+//        }
+//    }
 }
