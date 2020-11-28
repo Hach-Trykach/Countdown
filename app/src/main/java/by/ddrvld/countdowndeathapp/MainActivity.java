@@ -31,7 +31,6 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -48,7 +47,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
@@ -151,10 +149,15 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     DatabaseReference myReference;
     int clicks_on_date = 0;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wait);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(getResources().getColor(R.color.black));
+        }
 
         if(mainTimer == null) {
             settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
@@ -220,15 +223,15 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
 
             Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_yes");
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_yes");
+            firebaseAnalytics.logEvent("dialog_change_your_fate_yes", bundle);
         });
         dialogButtonNo.setOnClickListener(v -> {
             dialog.cancel();
 
             Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_no");
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_no");
+            firebaseAnalytics.logEvent("dialog_change_your_fate_no", bundle);
         });
 //        dialog.setCancelable(false);
         dialog.show();
@@ -238,16 +241,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         setContentView(R.layout.terms_of_use);
         allInitializing();
     }
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
         allInitializing();
-
-//        Bundle bundle = new Bundle();
-//        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "clicks_on_date0");
-//        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-//
-//        bundle.putString("clicks_on_date1", "clicks_on_date2");
-//        firebaseAnalytics.logEvent("clicks_on_date3", bundle);
 
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -343,6 +340,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         if(relativeLayout != null) {
             relativeLayout.setOnClickListener(view -> {
                 clicks_on_date++;
+                Bundle bundle = new Bundle();
+        //        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "clicks_on_date0");
+                firebaseAnalytics.logEvent("clicks_on_date", bundle);
+        //
+        //        bundle.putString("clicks_on_date1", "clicks_on_date2");
+        //        firebaseAnalytics.logEvent("clicks_on_date", bundle);
+
                 if (clicks_on_date >= 3) {
                     clicks_on_date = 0;
                     showChangeYourFateDialog();
@@ -512,6 +516,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     boolean pokupkaKuplena = false;
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void changeDateOfDeath() {
 //        if(pokupkaKuplena) {
         mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
@@ -540,6 +545,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         playStartSound(R.raw.countdown);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void updateValueInDatabase() {
         User user = new User(getIMEI(), date_of_death);
         myReference
@@ -827,8 +833,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             setContentView(R.layout.activity_wait);
 
             Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_accept_and_continue_click_yes");
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_accept_and_continue_click_yes");
+            firebaseAnalytics.logEvent("dialog_accept_and_continue_click_yes", bundle);
 
 //                webView = findViewById(R.id.webView);
 //                webView.setWebViewClient(new MyWebViewClient());
@@ -839,8 +845,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         });
         dialogButtonNo.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_accept_and_continue_click_no");
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_accept_and_continue_click_no");
+            firebaseAnalytics.logEvent("dialog_accept_and_continue_click_no", bundle);
 
             dialog.cancel();
             finish();
@@ -867,8 +873,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             editor.apply();
 
             Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_rating_click_yes");
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_rating_click_yes");
+            firebaseAnalytics.logEvent("dialog_rating_click_yes", bundle);
 
             if(reviewInfo != null) {
                 com.google.android.play.core.tasks.Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
@@ -890,8 +896,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             dialog.cancel();
 
             Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_rating_click_no");
-            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_rating_click_no");
+            firebaseAnalytics.logEvent("dialog_rating_click_no", bundle);
 
             Calendar cal = Calendar.getInstance();
             lastRatingDay = cal.get(Calendar.DAY_OF_MONTH);
@@ -1020,8 +1026,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                     ErrorReadPhoneStateDialog();
 
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_cancel");
-                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_cancel");
+                    firebaseAnalytics.logEvent("permission_read_phone_state_cancel", bundle);
                 } else {
                     // No explanation needed; request the permission
                     ActivityCompat.requestPermissions(MainActivity.this,
@@ -1038,8 +1044,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                     TimerToActivityDate();
 
                 Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
-                firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
+                firebaseAnalytics.logEvent("permission_read_phone_state_accept", bundle);
             }
         } else {
 //            if(activityDateTimer == null)
@@ -1093,8 +1099,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                         TimerToActivityDate();
 
                     Bundle bundle = new Bundle();
-                    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
-                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
+                    firebaseAnalytics.logEvent("permission_read_phone_state_accept", bundle);
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
@@ -1339,6 +1345,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             textHrs.setVisibility(View.INVISIBLE);
             textMin.setVisibility(View.INVISIBLE);
             textSec.setVisibility(View.INVISIBLE);
+
+            mainTimer.cancel();
         }
 
         textYrs.setText(GetWord(years, getResources().getString(R.string.text_yrs1), getResources().getString(R.string.text_yrs2), getResources().getString(R.string.text_yrs3)));
@@ -1701,7 +1709,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             showMsg("subscription_not_supported");
         }
 
-        changeFate(mBillingProcessor.listOwnedProducts().contains(CHANGE_YOUR_FATE));
+//        changeFate(mBillingProcessor.listOwnedProducts().contains(CHANGE_YOUR_FATE));
     }
 
     private void changeFate(boolean isPurchased) {
@@ -1731,6 +1739,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void readFromDatabase() {
         // Read from the database
         myReference.child("users").child(Long.toString(getIMEI())).child("dateOfDeath").addValueEventListener(new ValueEventListener() {
