@@ -33,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -93,13 +94,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private RelativeLayout relative_layout_ads;
     private Drawer drawerResult;
 
-//    private LinearLayout linearLayout;
     private RelativeLayout relativeLayout;
 
     public static int PERIOD;
 
     private boolean AdsStatusForSoonDying = false;
-//    private boolean layoutStatus = false;
 
     private final int BTN_COLOR_MATCH = 1;
     private final int BTN_JUMP_UP = 2;
@@ -110,25 +109,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private final int BTN_OUR_APPS = 7;
     private final int BTN_SHARE = 8;
     private final int BTN_CHANGE_UR_FATE = 9;
-
-//    public static long lastShareTime = 0;
-
-//    ViewPager pager;
-//    PagerAdapter pagerAdapter;
-//    static final int PAGE_COUNT = 2;
-
-//    private String unityGameID = "3523564";
-//    private Boolean testMode = true;
-//    private String placementId = "video";
-
-//    private FirebaseAuth mAuth;
-//    private FirebaseUser user;
-//    private int RC_SIGN_IN = 1101;
-//    private GoogleSignInClient mGoogleSignInClient;
-
-//    private String accountName = "";
-//    private String accountEmail = "";
-//    private Uri photoUrl;
 
     private Toolbar toolbar;
 
@@ -152,9 +132,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wait);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setNavigationBarColor(getResources().getColor(R.color.black));
-        }
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.black, getTheme()));
 
         if(mainTimer == null) {
             settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
@@ -162,7 +140,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             allInitializing();
 
             if (hasConnection(getApplicationContext())) {
-                readFromDatabase();
+//                if(settings.contains(DATE_OF_DEATH))
+//                    onCreateActivityDate();
+//                else
+                    readFromDatabase();
                 showMsg("hasConnection true");
             }
             else {
@@ -239,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         allInitializing();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
         allInitializing();
@@ -322,16 +304,15 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         countDateOfDeath();
         startMainTimer();
-        updateValueInDatabase();
+//        updateValueInDatabase();
 
         if (settings.contains(NO_ADS)) {
             noAds = settings.getBoolean(NO_ADS, false);
         }
-        if (!noAds)
+        if (noAds)
+            noAds(true);
+        else
             adsInitialization();
-        else {
-            noAds();
-        }
 
         relativeLayout = findViewById(R.id.relative_layout);
         if(relativeLayout != null) {
@@ -526,6 +507,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
         date_of_death += currentTime;
         saveTime();
+        noAds(true);
 
         updateValueInDatabase();
     }
@@ -543,7 +525,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     private void updateValueInDatabase() {
-        User user = new User(getIMEI(), date_of_death);
+        User user = new User(getIMEI(), date_of_death, noAds);
         myReference
                 .child("users")
                 .child(String.valueOf(getIMEI()))
@@ -1155,6 +1137,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         playStartSound(R.raw.krik);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private long getIMEI() {
         long imei;
         switch (android.os.Build.VERSION.SDK_INT) {
@@ -1461,6 +1444,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     @Override
     protected void onPause() {
+        updateValueInDatabase();
         System.out.println("TIMER_TIME: " + timerTime);
         System.out.println("date_of_death: " + date_of_death);
 
@@ -1666,7 +1650,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             switch (productId) {
                 case CHANGE_YOUR_FATE:
                     changeFate(true);
-                    noAds();
+                    noAds(true);
                     break;
             }
         } else {
@@ -1674,16 +1658,20 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
     }
 
-    private void noAds() {
-        if(!noAds) {
-            noAds = true;
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putBoolean(NO_ADS, noAds);
-            editor.apply();
-        }
+    private void noAds(boolean adsStatus) {
         relative_layout_ads = findViewById(R.id.relative_layout_ads);
-        if(relative_layout_ads.getVisibility() != View.GONE)
-            relative_layout_ads.setVisibility(View.GONE);
+        if(adsStatus) {
+            noAds = true;
+            if(relative_layout_ads.getVisibility() != View.GONE)
+                relative_layout_ads.setVisibility(View.GONE);
+        } else {
+            noAds = false;
+            if(relative_layout_ads.getVisibility() != View.VISIBLE)
+                relative_layout_ads.setVisibility(View.VISIBLE);
+        }
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(NO_ADS, adsStatus);
+        editor.apply();
     }
 
     private boolean checkIfPurchaseIsValid(PurchaseInfo purchaseInfo) {
@@ -1741,33 +1729,29 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     private void readFromDatabase() {
         // Read from the database
-        myReference.child("users").child(Long.toString(getIMEI())).child("dateOfDeath").addValueEventListener(new ValueEventListener() {
+        myReference.child("users").child(Long.toString(getIMEI())).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                Long value = dataSnapshot.getValue(Long.class);
-                Log.e("DATE_OF_DEATH", "Value is: " + value);
-
-                if (dataSnapshot == null || value == null) { //При первой установке если данных в базе нет
+//                Long value = dataSnapshot.getValue(Long.class);
+                User user = dataSnapshot.getValue(User.class);
+                if(user == null) {
                     onCreateActivityTermOfUse();
                     Log.e("READ_FROM_DATABASE", "terms_of_use");
-                }
-                else if (mainTimer == null) { // при обычном запуске приложения (mainTimer не запущен)
-                    date_of_death = value;
+                } else {
+                    date_of_death = user.getDateOfDeath();
                     saveTime();
-//                    if(activityDateTimer == null) {
+                    if (mainTimer == null) { // при обычном запуске приложения (mainTimer не запущен)
                         onCreateActivityDate();
-//                        Log.e("READ_FROM_DATABASE", "activityDateTimer == null");
-//                    }
-                    Log.e("READ_FROM_DATABASE", "mainTimer == null");
-                }
-                else {
-                    date_of_death = value;
-                    saveTime();
-                    countDateOfDeath();
-
-                    Log.e("READ_FROM_DATABASE", "update value in database");
+                        Log.e("READ_FROM_DATABASE", "mainTimer == null");
+                    }
+                    else {
+                        countDateOfDeath();
+                        Log.e("READ_FROM_DATABASE", "update value in database");
+                    }
+                    noAds(user.getNoAds());
+                    Log.e("DATE_OF_DEATH", "Value is: " + date_of_death);
                 }
             }
 
@@ -1778,6 +1762,45 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             }
         });
     }
+//    private void readFromDatabase() {
+//        // Read from the database
+//        myReference.child("users").child(Long.toString(getIMEI())).child("dateOfDeath").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                // This method is called once with the initial value and again
+//                // whenever data at this location is updated.
+//                Long value = dataSnapshot.getValue(Long.class);
+//                Log.e("DATE_OF_DEATH", "Value is: " + value);
+//
+//                if (value == null) { //При первой установке если данных в базе нет
+//                    onCreateActivityTermOfUse();
+//                    Log.e("READ_FROM_DATABASE", "terms_of_use");
+//                }
+//                else if (mainTimer == null) { // при обычном запуске приложения (mainTimer не запущен)
+//                    date_of_death = value;
+//                    saveTime();
+////                    if(activityDateTimer == null) {
+//                    onCreateActivityDate();
+////                        Log.e("READ_FROM_DATABASE", "activityDateTimer == null");
+////                    }
+//                    Log.e("READ_FROM_DATABASE", "mainTimer == null");
+//                }
+//                else {
+//                    date_of_death = value;
+//                    saveTime();
+//                    countDateOfDeath();
+//
+//                    Log.e("READ_FROM_DATABASE", "update value in database");
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                // Failed to read value
+//                Log.w("DATE_OF_DEATH", "Failed to read value.", error.toException());
+//            }
+//        });
+//    }
 
     public static boolean hasConnection(final Context context)
     {
