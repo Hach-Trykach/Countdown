@@ -5,7 +5,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class User {
 
-    public Long imei;
+    public String uniqueKey;
     public Long dateOfDeath;
     public Boolean noAds = false;
 
@@ -13,14 +13,14 @@ public class User {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(Long imei, Long dateOfDeath, Boolean noAds) {
-        this.imei = imei;
+    public User(String uniqueKey, Long dateOfDeath, Boolean noAds) {
+        this.uniqueKey = uniqueKey;
         this.dateOfDeath = dateOfDeath;
         this.noAds = noAds;
     }
 
-    public long getImei() {
-        return imei;
+    public String getUniqueKey() {
+        return uniqueKey;
     }
 
     public long getDateOfDeath() {

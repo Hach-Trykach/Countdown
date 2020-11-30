@@ -23,8 +23,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
-import android.text.Html;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,7 +38,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
@@ -139,97 +136,36 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.black, getTheme()));
 
-        if(mainTimer == null) {
-            settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-
-            allInitializing();
-
-            if (hasConnection(getApplicationContext())) {
-//                if(settings.contains(DATE_OF_DEATH))
-//                    onCreateActivityDate();
-//                else
-                    readFromDatabase();
-                showMsg("hasConnection true");
-            }
-            else {
-                onCreateActivityDate();
-                showMsg("hasConnection false");
-            }
-        }
-    }
-
-    private void allInitializing() {
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         myReference = firebaseDatabase.getReference();
 
-//        UnityAds.initialize (this, unityGameID, this, testMode);
-
-        mBillingProcessor = new BillingProcessor(this, GPLAY_LICENSE, this);
-        boolean isAvailable = BillingProcessor.isIabServiceAvailable(this);
-        if (!isAvailable) {
-//            mProgress.setVisibility(View.GONE);
-//            showMsg(getString(R.string.billing_not_available));
+        settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        if (hasConnection(getApplicationContext())) {
+            readFromDatabase();
+            showMsg("hasConnection true");
         } else {
-            mBillingProcessor.initialize();
+            if(settings.contains(DATE_OF_DEATH)) {
+                onCreateActivityDate();
+            } else {
+                onCreateActivityTermOfUse();
+            }
+            showMsg("hasConnection false");
         }
+    }
+
+    private void onCreateActivityTermOfUse() {
+        setContentView(R.layout.terms_of_use);
 
         Button accept_and_continue_Btn = findViewById(R.id.accept_and_continue);
         if (accept_and_continue_Btn != null) {
             accept_and_continue_Btn.setOnClickListener(view -> DialogAcceptAndContinue());
         }
-
-//        manager = new FakeReviewManager(this);
-        manager = ReviewManagerFactory.create(this);
-        com.google.android.play.core.tasks.Task<ReviewInfo> request = manager.requestReviewFlow();
-        request.addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                // We can get the ReviewInfo object
-                reviewInfo = task.getResult();
-            } else {
-                // There was some problem, continue regardless of the result.
-            }
-        });
-    }
-
-    private void showChangeYourFateDialog() {
-        final Context context = this;
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.change_your_fate);
-
-        Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
-        Button dialogButtonNo = dialog.findViewById(R.id.dialogButtonNo);
-
-        dialogButtonYes.setOnClickListener(v -> {
-            dialog.cancel();
-            mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
-
-            Bundle bundle = new Bundle();
-//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_yes");
-            firebaseAnalytics.logEvent("dialog_change_your_fate_yes", bundle);
-        });
-        dialogButtonNo.setOnClickListener(v -> {
-            dialog.cancel();
-
-            Bundle bundle = new Bundle();
-//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_no");
-            firebaseAnalytics.logEvent("dialog_change_your_fate_no", bundle);
-        });
-//        dialog.setCancelable(false);
-        dialog.show();
-    }
-
-    private void onCreateActivityTermOfUse() {
-        setContentView(R.layout.terms_of_use);
-        allInitializing();
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
-        allInitializing();
 
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -237,19 +173,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             Objects.requireNonNull(getSupportActionBar()).setTitle(null);
         }
 
-        if (settings.contains(DATE_OF_DEATH)) {
-            if (settings.contains(ADS_STATUS_FOR_SOON_DYING)) {
-                AdsStatusForSoonDying = settings.getBoolean(ADS_STATUS_FOR_SOON_DYING, false);
-                if(AdsStatusForSoonDying) {
-                    if(!noAds)
-                        createInterstitialAd_For_Soon_Dying();
-                    SharedPreferences.Editor editor = settings.edit();
-                    AdsStatusForSoonDying = false;
-                    editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
-                    editor.apply();
-                }
-            }
-        }
         if (settings.contains(LAST_RATING_DAY)) {
             lastRatingDay = settings.getInt(LAST_RATING_DAY, 0);
 
@@ -264,9 +187,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             PERIOD = settings.getInt(PERIOD_SETTINGS, 0);
         } else PERIOD = 1000; // 1000
 
-//        Long lll = 352662060043475L;
-//        final Long date_of_death = Long.parseLong(lll.toString());
-
         tvYrs = findViewById(R.id.yrs);
         tvDay = findViewById(R.id.day);
         tvHrs = findViewById(R.id.hrs);
@@ -279,39 +199,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         textMin = findViewById(R.id.text_min);
         textSec = findViewById(R.id.text_sec);
 
-//        moreAppsBtn = findViewById(R.id.more_apps_button);
-//        linearLayout = findViewById(R.id.linear_layout);
-//        floatingMenu = findViewById(R.id.floatingMenu);
-
-        if (settings.contains(DATE_OF_DEATH)) {
-            date_of_death = settings.getLong(DATE_OF_DEATH, 0);
-        } else {
-            date_of_death = getIMEI();
-//            date_of_death = 352662060003475L; // for testing
-            String imeiString = "";
-            for (int i = 8; i < Long.toString(date_of_death).length(); i++)
-                imeiString += Long.toString(date_of_death).charAt(i);
-
-            if (Character.getNumericValue(Long.toString(date_of_death).charAt(8)) <= 1) {
-                int second_number_of_timestamp = Character.getNumericValue(Long.toString(currentTime).charAt(1)) + 1;
-                date_of_death = Long.parseLong("1" + second_number_of_timestamp + imeiString + "0");
-            } else date_of_death = Long.parseLong("3" + imeiString + "00");
-
-            if (date_of_death < currentTime + (3600 * 24) * 4)
-                date_of_death = currentTime + ((3600L * 24) * 4) + 1111;
-//            else if(date_of_death > currentTime + 1982459975L) date_of_death = currentTime + 1982459975L;
-
-//            System.out.println("\date_of_death: " + date_of_death);
-//            System.out.println("\date_of_death String: " + imeiString);
-//            System.out.println("\date_of_death: " + date_of_death);
-
-            saveTime();
-        }
-
-        countDateOfDeath();
-        startMainTimer();
-//        updateValueInDatabase();
-
         if (settings.contains(NO_ADS)) {
             noAds = settings.getBoolean(NO_ADS, false);
         }
@@ -320,31 +207,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         else
             adsInitialization();
 
-        relativeLayout = findViewById(R.id.relative_layout);
-        if(relativeLayout != null) {
-            relativeLayout.setOnClickListener(view -> {
-                clicks_on_date++;
-                Bundle bundle = new Bundle();
-        //        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "clicks_on_date0");
-                firebaseAnalytics.logEvent("clicks_on_date", bundle);
-        //
-        //        bundle.putString("clicks_on_date1", "clicks_on_date2");
-        //        firebaseAnalytics.logEvent("clicks_on_date", bundle);
-
-                if (clicks_on_date >= 3) {
-                    clicks_on_date = 0;
-                    mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
-                    showChangeYourFateDialog();
-                }
-            });
-        }
-
         tvYrs.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 tvYrs.setTextSize(90);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 tvYrs.setTextSize(88);
+                clicksOnDate();
             }
             return true;
         });
@@ -355,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 tvDay.setTextSize(88);
+                clicksOnDate();
             }
             return true;
         });
@@ -365,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 tvHrs.setTextSize(88);
+                clicksOnDate();
             }
             return true;
         });
@@ -375,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 tvMin.setTextSize(88);
+                clicksOnDate();
             }
             return true;
         });
@@ -385,9 +257,52 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 tvSec.setTextSize(88);
+                clicksOnDate();
             }
             return true;
         });
+
+//        UnityAds.initialize (this, unityGameID, this, testMode);
+
+        mBillingProcessor = new BillingProcessor(this, GPLAY_LICENSE, this);
+        boolean isAvailable = BillingProcessor.isIabServiceAvailable(this);
+        if (!isAvailable) {
+//            mProgress.setVisibility(View.GONE);
+//            showMsg(getString(R.string.billing_not_available));
+        } else {
+            mBillingProcessor.initialize();
+        }
+
+//        manager = new FakeReviewManager(this);
+        manager = ReviewManagerFactory.create(this);
+        com.google.android.play.core.tasks.Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // We can get the ReviewInfo object
+                reviewInfo = task.getResult();
+            } else {
+                // There was some problem, continue regardless of the result.
+            }
+        });
+
+        if (settings.contains(DATE_OF_DEATH)) {
+            if(!hasConnection(getApplicationContext()))
+                date_of_death = settings.getLong(DATE_OF_DEATH, 0);
+
+            if (settings.contains(ADS_STATUS_FOR_SOON_DYING)) {
+                AdsStatusForSoonDying = settings.getBoolean(ADS_STATUS_FOR_SOON_DYING, false);
+                if(AdsStatusForSoonDying) {
+                    if(!noAds)
+                        createInterstitialAd_For_Soon_Dying();
+                    SharedPreferences.Editor editor = settings.edit();
+                    AdsStatusForSoonDying = false;
+                    editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
+                    editor.apply();
+                }
+            }
+        }
+
+        startMainTimer();
 
 //        relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
 //            public void onSwipeTop() {
@@ -550,6 +465,18 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         DrawerBuilder();
     }
 
+    private void clicksOnDate() {
+        clicks_on_date++;
+        Bundle bundle = new Bundle();
+        firebaseAnalytics.logEvent("clicks_on_date", bundle);
+
+        if (clicks_on_date >= 5) {
+            clicks_on_date = 0;
+            mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
+            showChangeYourFateDialog();
+        }
+    }
+
     boolean pokupkaKuplena = false;
     private void changeDateOfDeath() {
 //        if(pokupkaKuplena) {
@@ -562,7 +489,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             date_of_death = getRandomNumberInRange(34560000, 1382400000);
         }
         date_of_death += currentTime;
-        saveTime();
         noAds(true);
 
         updateValueInDatabase();
@@ -581,19 +507,26 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     private void updateValueInDatabase() {
-        User user = new User(getIMEI(), date_of_death, noAds);
+        User user = new User(getUniqueKey(), date_of_death, noAds);
         myReference
                 .child("users")
-                .child(String.valueOf(getIMEI()))
+                .child(getUniqueKey())
                 .setValue(user);
     }
 
-    private static int getRandomNumberInRange(int min, int max) {
+    private int getRandomNumberInRange(int min, int max) {
         if (min >= max) {
             throw new IllegalArgumentException("max must be greater than min");
         }
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
+    }
+
+    private long getRandomLongInRange(long min, long max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("max must be greater than min");
+        }
+        return min + (long) (Math.random() * (max - min));
     }
 
     @MainThread
@@ -874,6 +807,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //                webView = findViewById(R.id.webView);
 //                webView.setWebViewClient(new MyWebViewClient());
 
+            date_of_death = getDateOfDeathFirstTime();
+            saveTime();
+            showMsg("getDateOfDeathFirstTime");
+            updateValueInDatabase();
+
             if(!noAds)
                 createInterstitialAd();
 //                DisplayUnityInterstitialAd();
@@ -971,7 +909,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             @Override
             public void onAdFailedToLoad(int errorCode) {
                 super.onAdFailedToLoad(errorCode);
-                PermissionRequest();
+                TimerToActivityDate();
             }
 
             @Override
@@ -987,13 +925,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             @Override
             public void onAdLeftApplication() {
                 super.onAdLeftApplication();
-                PermissionRequest();
+                TimerToActivityDate();
             }
 
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-                PermissionRequest();
+                TimerToActivityDate();
 //                showKinovoWebView();
             }
         });
@@ -1044,108 +982,108 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         });
     }
 
-    private void PermissionRequest() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Here, thisActivity is the current activity
-            if (ContextCompat.checkSelfPermission(MainActivity.this,
-                    Manifest.permission.READ_PHONE_STATE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                // Permission is not granted
-                // Should we show an explanation?
+//    private void PermissionRequest() {
+//        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            // Here, thisActivity is the current activity
+//            if (ContextCompat.checkSelfPermission(MainActivity.this,
+//                    Manifest.permission.READ_PHONE_STATE)
+//                    != PackageManager.PERMISSION_GRANTED) {
+//                // Permission is not granted
+//                // Should we show an explanation?
+//
+//                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+//                        Manifest.permission.READ_PHONE_STATE)) {
+//                    // Show an explanation to the user *asynchronously* -- don't block
+//                    // this thread waiting for the user's response! After the user
+//                    // sees the explanation, try again to request the permission.
+//                    ErrorReadPhoneStateDialog();
+//
+//                    Bundle bundle = new Bundle();
+////            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_cancel");
+//                    firebaseAnalytics.logEvent("permission_read_phone_state_cancel", bundle);
+//                } else {
+//                    // No explanation needed; request the permission
+//                    ActivityCompat.requestPermissions(MainActivity.this,
+//                            new String[]{Manifest.permission.READ_PHONE_STATE},
+//                            MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
+//
+//                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+//                    // app-defined int constant. The callback method gets the
+//                    // result of the request.
+//                }
+//            } else {
+//                // Permission has already been granted
+////                if(activityDateTimer == null)
+//                    TimerToActivityDate();
+//
+//                Bundle bundle = new Bundle();
+////            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
+//                firebaseAnalytics.logEvent("permission_read_phone_state_accept", bundle);
+//            }
+//        } else {
+////            if(activityDateTimer == null)
+//                TimerToActivityDate();
+//        }
+//    }
 
-                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                        Manifest.permission.READ_PHONE_STATE)) {
-                    // Show an explanation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-                    ErrorReadPhoneStateDialog();
+//    public void ErrorReadPhoneStateDialog() {
+//        final Context context = this;
+//        final Dialog dialog = new Dialog(context);
+//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        dialog.setContentView(R.layout.error_read_phone_state_dialog);
+//
+//        TextView titleDialog = dialog.findViewById(R.id.titleDialog);
+//
+//        titleDialog.setText(Html.fromHtml(getString(R.string.app_name)));
+//
+//        TextView messageDialog = dialog.findViewById(R.id.messageDialog);
+//        messageDialog.setText(R.string.read_phone_state_text);
+//
+//        Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
+//
+//        dialogButtonYes.setText(R.string.understand);
+//
+//        dialogButtonYes.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dialog.cancel();
+//                finish();
+//                Intent intentX = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//                Uri uri = Uri.fromParts("package", getPackageName(), null);
+//                intentX.setData(uri);
+//                if (intentX.resolveActivity(getPackageManager()) != null) {
+//                    startActivity(intentX);
+//                }
+//            }
+//        });
+//        dialog.setCancelable(false);
+//        dialog.show();
+//    }
 
-                    Bundle bundle = new Bundle();
-//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_cancel");
-                    firebaseAnalytics.logEvent("permission_read_phone_state_cancel", bundle);
-                } else {
-                    // No explanation needed; request the permission
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{Manifest.permission.READ_PHONE_STATE},
-                            MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
-
-                    // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                    // app-defined int constant. The callback method gets the
-                    // result of the request.
-                }
-            } else {
-                // Permission has already been granted
-//                if(activityDateTimer == null)
-                    TimerToActivityDate();
-
-                Bundle bundle = new Bundle();
-//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
-                firebaseAnalytics.logEvent("permission_read_phone_state_accept", bundle);
-            }
-        } else {
-//            if(activityDateTimer == null)
-                TimerToActivityDate();
-        }
-    }
-
-    public void ErrorReadPhoneStateDialog() {
-        final Context context = this;
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.error_read_phone_state_dialog);
-
-        TextView titleDialog = dialog.findViewById(R.id.titleDialog);
-
-        titleDialog.setText(Html.fromHtml(getString(R.string.app_name)));
-
-        TextView messageDialog = dialog.findViewById(R.id.messageDialog);
-        messageDialog.setText(R.string.read_phone_state_text);
-
-        Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
-
-        dialogButtonYes.setText(R.string.understand);
-
-        dialogButtonYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-                finish();
-                Intent intentX = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intentX.setData(uri);
-                if (intentX.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intentX);
-                }
-            }
-        });
-        dialog.setCancelable(false);
-        dialog.show();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_PHONE_STATE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-//                    if(activityDateTimer == null)
-                        TimerToActivityDate();
-
-                    Bundle bundle = new Bundle();
-//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
-                    firebaseAnalytics.logEvent("permission_read_phone_state_accept", bundle);
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    PermissionRequest();
-                }
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request.
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        switch (requestCode) {
+//            case MY_PERMISSIONS_REQUEST_READ_PHONE_STATE: {
+//                // If request is cancelled, the result arrays are empty.
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    // permission was granted, yay! Do the
+//                    // contacts-related task you need to do.
+////                    if(activityDateTimer == null)
+//                        TimerToActivityDate();
+//
+//                    Bundle bundle = new Bundle();
+////            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "permission_read_phone_state_accept");
+//                    firebaseAnalytics.logEvent("permission_read_phone_state_accept", bundle);
+//                } else {
+//                    // permission denied, boo! Disable the
+//                    // functionality that depends on this permission.
+//                    TimerToActivityDate();
+//                }
+//            }
+//            // other 'case' lines to check for other
+//            // permissions this app might request.
+//        }
+//    }
 
     public void TimerRating() {
         final Thread logoTimer = new Thread() {
@@ -1194,47 +1132,19 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         playStartSound(R.raw.krik);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private long getIMEI() {
-        long imei;
-        switch (android.os.Build.VERSION.SDK_INT) {
-            case Build.VERSION_CODES.M:
-            case Build.VERSION_CODES.N:
-            case Build.VERSION_CODES.N_MR1:
-            case Build.VERSION_CODES.O:
-            case Build.VERSION_CODES.O_MR1:
-            case Build.VERSION_CODES.P: {
-                if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
-                    TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-                    imei = Long.parseLong(manager.getDeviceId(1));
-                    return imei;
-                }
-                else return 852662060043475L;
-            }
-            case Build.VERSION_CODES.Q: {
-                imei = 852662063043475L;
-                return imei;
-            }
-            case Build.VERSION_CODES.KITKAT:{
-                imei = 352662062543475L;
-                return imei;
-            }
-            case Build.VERSION_CODES.LOLLIPOP:{
-                imei = 352662062043475L;
-                return imei;
-            }
-            case Build.VERSION_CODES.LOLLIPOP_MR1: {
-                imei = 352662061043475L;
-                return imei;
-            }
-            default: return 352662064043475L;
-        }
+    @SuppressLint("HardwareIds")
+    private String getUniqueKey() {
+        return Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    private long getDateOfDeathFirstTime() {
+        return getRandomLongInRange(1630000000L, 3400000000L);
     }
 
     // CountDownTimer class
-    public class MalibuCountDownTimer extends CountDownTimer {
+    public class MainCountDownTimer extends CountDownTimer {
 
-        public MalibuCountDownTimer(long startTime, long interval) {
+        public MainCountDownTimer(long startTime, long interval) {
             super(startTime, interval);
         }
 
@@ -1272,88 +1182,16 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
     }
 
-//    Thread mainTimer;
-    private MalibuCountDownTimer mainTimer;
+    private CountDownTimer mainTimer;
     private void startMainTimer() {
+        if(!hasConnection(getApplicationContext()))
+            countDateOfDeath();
         if(mainTimer == null && date_of_death > currentTime) {
-            mainTimer = new MalibuCountDownTimer(1000000000, 1000);
+            mainTimer = new MainCountDownTimer(1000000000, 1000);
             mainTimer.start();
         }
         else updateUI();
-
-//        if (mainTimer == null) {
-//            mainTimer = new Thread() {
-//                public void run() {
-//                    try {
-//                        while (true) {
-//                            sleep(1000);
-//                            runOnUiThread(() -> updateUI());
-//                            if (secs > 0) secs--;
-//                            else {
-//                                secs = fullSecs;
-//                                if (mins > 0) mins--;
-//                                else {
-//                                    mins = fullMins;
-//                                    if (hours > 0) hours--;
-//                                    else {
-//                                        hours = fullHours;
-//                                        if (days > 0) days--;
-//                                        else {
-//                                            days = fullDays;
-//                                            if (years > 0) years--;
-//                                            else {
-//                                                theEnd();
-//                                                mainTimer.cancel();
-//                                                return;
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            };
-//            mainTimer.start();
-//        }
     }
-
-//    Timer timer;
-//    private void startMainTimer() {
-//        if(timer == null) {
-//            timer = new Timer();
-//            timer.scheduleAtFixedRate(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    if (secs > 0) secs--;
-//                    else {
-//                        secs = fullSecs;
-//                        if (mins > 0) mins--;
-//                        else {
-//                            mins = fullMins;
-//                            if (hours > 0) hours--;
-//                            else {
-//                                hours = fullHours;
-//                                if (days > 0) days--;
-//                                else {
-//                                    days = fullDays;
-//                                    if (years > 0) years--;
-//                                    else {
-//                                        theEnd();
-//                                        timer.cancel();
-//                                        return;
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                    runOnUiThread(() -> updateUI());
-//                }
-//            }, 0, PERIOD);
-//        }
-//    }
 
     @UiThread
     private void updateUI() {
@@ -1481,7 +1319,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             }
             else {
                 webView.setVisibility(View.INVISIBLE);
-                PermissionRequest();
+                TimerToActivityDate();
             }
         }
     }
@@ -1502,10 +1340,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     @Override
     protected void onPause() {
-        updateValueInDatabase();
-        System.out.println("TIMER_TIME: " + timerTime);
-        System.out.println("date_of_death: " + date_of_death);
-
         if (timerTime > 0 && timerTime < 259200) { // Меньше 3х дней
             long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
             yearsNow = years * 31536000;
@@ -1566,12 +1400,12 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //
 //    @Override
 //    public void onUnityAdsFinish (String placementId, UnityAds.FinishState finishState) {
-//        PermissionRequest();
+//        TimerToActivityDate();
 //    }
 //
 //    @Override
 //    public void onUnityAdsError (UnityAds.UnityAdsError error, String message) {
-//        PermissionRequest();
+//        TimerToActivityDate();
 //    }
 
 //    private void signIn() {
@@ -1683,8 +1517,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          */
         showMsg("onPurchaseHistoryRestored");
         handleLoadedItems();
-
-//        readFromDatabase();
     }
 
     @Override
@@ -1740,20 +1572,20 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private void handleLoadedItems() {
 //        mProgress.setVisibility(View.GONE);
 
-        boolean isOneTimePurchaseSupported = mBillingProcessor.isOneTimePurchaseSupported();
-        if (isOneTimePurchaseSupported) {
-//            mSingleTimePaymentButton.setVisibility(View.VISIBLE);
-//            mConsumabelButton.setVisibility(View.VISIBLE);
-        } else {
-            showMsg("one_time_payment_not_supported");
-        }
-
-        boolean isSubsUpdateSupported = mBillingProcessor.isSubscriptionUpdateSupported();
-        if (isSubsUpdateSupported) {
-//            mSubscriptionButton.setVisibility(View.VISIBLE);
-        } else {
-            showMsg("subscription_not_supported");
-        }
+//        boolean isOneTimePurchaseSupported = mBillingProcessor.isOneTimePurchaseSupported();
+//        if (isOneTimePurchaseSupported) {
+////            mSingleTimePaymentButton.setVisibility(View.VISIBLE);
+////            mConsumabelButton.setVisibility(View.VISIBLE);
+//        } else {
+//            showMsg("one_time_payment_not_supported");
+//        }
+//
+//        boolean isSubsUpdateSupported = mBillingProcessor.isSubscriptionUpdateSupported();
+//        if (isSubsUpdateSupported) {
+////            mSubscriptionButton.setVisibility(View.VISIBLE);
+//        } else {
+//            showMsg("subscription_not_supported");
+//        }
 
 //        changeFate(mBillingProcessor.listOwnedProducts().contains(CHANGE_YOUR_FATE));
     }
@@ -1773,6 +1605,34 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
     }
 
+    private void showChangeYourFateDialog() {
+        final Context context = this;
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.change_your_fate);
+
+        Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
+        Button dialogButtonNo = dialog.findViewById(R.id.dialogButtonNo);
+
+        dialogButtonYes.setOnClickListener(v -> {
+            dialog.cancel();
+            mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
+
+            Bundle bundle = new Bundle();
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_yes");
+            firebaseAnalytics.logEvent("dialog_change_your_fate_yes", bundle);
+        });
+        dialogButtonNo.setOnClickListener(v -> {
+            dialog.cancel();
+
+            Bundle bundle = new Bundle();
+//            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_no");
+            firebaseAnalytics.logEvent("dialog_change_your_fate_no", bundle);
+        });
+//        dialog.setCancelable(false);
+        dialog.show();
+    }
+
     private void showMsg(String text) {
 //        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
         Log.d("showMsg", text);
@@ -1787,27 +1647,23 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     private void readFromDatabase() {
         // Read from the database
-        myReference.child("users").child(Long.toString(getIMEI())).addValueEventListener(new ValueEventListener() {
+        myReference.child("users").child(getUniqueKey()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-//                Long value = dataSnapshot.getValue(Long.class);
                 User user = dataSnapshot.getValue(User.class);
-                if(user == null) {
+                if(user == null) { // если в БД нет записи о пользователе
                     onCreateActivityTermOfUse();
                     Log.e("READ_FROM_DATABASE", "terms_of_use");
                 } else {
                     date_of_death = user.getDateOfDeath();
-                    saveTime();
-                    if (mainTimer == null) { // при обычном запуске приложения (mainTimer не запущен)
+                    if (mainTimer == null) {  // при обычном запуске приложения (mainTimer не запущен)
                         onCreateActivityDate();
                         Log.e("READ_FROM_DATABASE", "mainTimer == null");
                     }
-                    else {
-                        countDateOfDeath();
-                        Log.e("READ_FROM_DATABASE", "update value in database");
-                    }
+                    countDateOfDeath();
+                    saveTime();
                     noAds(user.getNoAds());
                     Log.e("DATE_OF_DEATH", "Value is: " + date_of_death);
                 }
@@ -1820,45 +1676,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             }
         });
     }
-//    private void readFromDatabase() {
-//        // Read from the database
-//        myReference.child("users").child(Long.toString(getIMEI())).child("dateOfDeath").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                Long value = dataSnapshot.getValue(Long.class);
-//                Log.e("DATE_OF_DEATH", "Value is: " + value);
-//
-//                if (value == null) { //При первой установке если данных в базе нет
-//                    onCreateActivityTermOfUse();
-//                    Log.e("READ_FROM_DATABASE", "terms_of_use");
-//                }
-//                else if (mainTimer == null) { // при обычном запуске приложения (mainTimer не запущен)
-//                    date_of_death = value;
-//                    saveTime();
-////                    if(activityDateTimer == null) {
-//                    onCreateActivityDate();
-////                        Log.e("READ_FROM_DATABASE", "activityDateTimer == null");
-////                    }
-//                    Log.e("READ_FROM_DATABASE", "mainTimer == null");
-//                }
-//                else {
-//                    date_of_death = value;
-//                    saveTime();
-//                    countDateOfDeath();
-//
-//                    Log.e("READ_FROM_DATABASE", "update value in database");
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                // Failed to read value
-//                Log.w("DATE_OF_DEATH", "Failed to read value.", error.toException());
-//            }
-//        });
-//    }
 
     public static boolean hasConnection(final Context context)
     {
