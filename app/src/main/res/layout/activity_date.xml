@@ -50,7 +50,7 @@
         <LinearLayout
             android:id="@+id/layout_yrs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="120dp"
             android:layout_weight="20"
             android:orientation="horizontal">
 
@@ -63,7 +63,9 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="88sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginStart="120dp"
+                android:layout_marginEnd="120dp" />
 
             <TextView
                 android:id="@+id/text_yrs"
@@ -84,7 +86,7 @@
         <LinearLayout
             android:id="@+id/layout_day"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="120dp"
             android:layout_weight="20"
             android:orientation="horizontal" >
 
@@ -97,7 +99,9 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="88sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginStart="120dp"
+                android:layout_marginEnd="120dp" />
 
             <TextView
                 android:id="@+id/text_day"
@@ -119,7 +123,7 @@
         <LinearLayout
             android:id="@+id/layout_hrs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="120dp"
             android:layout_weight="20"
             android:orientation="horizontal" >
 
@@ -132,7 +136,9 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="88sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginStart="120dp"
+                android:layout_marginEnd="120dp" />
 
             <TextView
                 android:id="@+id/text_hrs"
@@ -154,7 +160,7 @@
         <LinearLayout
             android:id="@+id/layout_min"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="120dp"
             android:layout_weight="20"
             android:orientation="horizontal">
 
@@ -167,7 +173,9 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="88sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginStart="120dp"
+                android:layout_marginEnd="120dp" />
 
             <TextView
                 android:id="@+id/text_min"
@@ -189,7 +197,7 @@
         <LinearLayout
             android:id="@+id/layout_sec"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="120dp"
             android:layout_weight="20"
             android:orientation="horizontal">
 
@@ -203,6 +211,8 @@
                 android:textColor="@android:color/white"
                 android:textSize="88sp"
                 android:textStyle="bold"
+                android:layout_marginStart="120dp"
+                android:layout_marginEnd="120dp"
                 android:adjustViewBounds="true" />
 
             <TextView

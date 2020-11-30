@@ -1,6 +1,7 @@
 package by.ddrvld.countdowndeathapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.NotificationChannel;
@@ -25,6 +26,7 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
@@ -32,8 +34,10 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -127,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     DatabaseReference myReference;
     int clicks_on_date = 0;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         allInitializing();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
@@ -332,6 +338,56 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 }
             });
         }
+
+        tvYrs.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                tvYrs.setTextSize(90);
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                tvYrs.setTextSize(88);
+            }
+            return true;
+        });
+
+        tvDay.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                tvDay.setTextSize(90);
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                tvDay.setTextSize(88);
+            }
+            return true;
+        });
+
+        tvHrs.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                tvHrs.setTextSize(90);
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                tvHrs.setTextSize(88);
+            }
+            return true;
+        });
+
+        tvMin.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                tvMin.setTextSize(90);
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                tvMin.setTextSize(88);
+            }
+            return true;
+        });
+
+        tvSec.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                tvSec.setTextSize(90);
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                tvSec.setTextSize(88);
+            }
+            return true;
+        });
 
 //        relativeLayout.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
 //            public void onSwipeTop() {
@@ -540,6 +596,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         return r.nextInt((max - min) + 1) + min;
     }
 
+    @MainThread
     private void playStartSound(int soundID) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
             // Permission is granted
@@ -1298,20 +1355,21 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //        }
 //    }
 
+    @UiThread
     private void updateUI() {
-        if (years >= 10) tvYrs.setText("" + years);
+        if (years >= 10) tvYrs.setText(String.valueOf(years));
         else tvYrs.setText("0" + years);
 
-        if (days >= 10) tvDay.setText("" + days);
+        if (days >= 10) tvDay.setText(String.valueOf(days));
         else tvDay.setText("0" + days);
 
-        if (hours >= 10) tvHrs.setText("" + hours);
+        if (hours >= 10) tvHrs.setText(String.valueOf(hours));
         else tvHrs.setText("0" + hours);
 
-        if (mins >= 10) tvMin.setText("" + mins);
+        if (mins >= 10) tvMin.setText(String.valueOf(mins));
         else tvMin.setText("0" + mins);
 
-        if (secs >= 10) tvSec.setText("" + secs);
+        if (secs >= 10) tvSec.setText(String.valueOf(secs));
         else tvSec.setText("0" + secs);
 
         if (years <= 0 && days <= 0 && hours <= 0 && mins <= 0 && secs <= 0) {
