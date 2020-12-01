@@ -1,27 +1,32 @@
 package by.ddrvld.countdowndeathapp;
 
-import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.media.SoundPool;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class MessagingService extends FirebaseMessagingService {
 
+    SoundPool soundPool;
+    int krik;
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        theEnd();
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(10)
+//                .setAudioAttributes(attributes)
+                .build();
+        krik = soundPool.load(this, R.raw.krik, 1);
+
+        playSound(krik);
 
         // Create Notification
         Intent intent = new Intent(this, MainActivity.class);
@@ -50,23 +55,8 @@ public class MessagingService extends FirebaseMessagingService {
         notificationManager.notify(0, notificationBuilder.build());
     }
 
-    public void theEnd() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is granted
-            final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
-            mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
-            MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-            mp = MediaPlayer.create(this, R.raw.krik);
-            mp.start();
-            mp.setOnCompletionListener(mp1 -> mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0));
-        }
-        else {
-            MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-            mp = MediaPlayer.create(this, R.raw.krik);
-            mp.start();
-        }
+    public void playSound(int soundID) {
+//        soundPool.setOnLoadCompleteListener((soundPool1, sampleId, status) -> soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f));
+        soundPool.play(soundID, 1.0f, 1.0f, 0, 0, 1.0f);
     }
 }
