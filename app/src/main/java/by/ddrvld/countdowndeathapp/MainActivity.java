@@ -1383,6 +1383,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             mainTimer.cancel();
             mainTimer = null;
         }
+        if (mBillingProcessor != null) {
+            mBillingProcessor.release();
+        }
         super.onDestroy();
     }
 
@@ -1599,6 +1602,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          * Called when purchase history was restored and the list of all owned PRODUCT ID's
          * was loaded from Google Play
          */
+        if(mBillingProcessor.isPurchased(DISABLE_ADS))
+            noAds(true);
+        
         showMsg("onPurchaseHistoryRestored");
         handleLoadedItems();
     }
