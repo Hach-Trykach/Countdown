@@ -1,6 +1,5 @@
 package by.ddrvld.countdowndeathapp;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -11,11 +10,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -34,14 +32,11 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.PurchaseInfo;
@@ -96,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     TextView textYrs, textDay, textHrs, textMin, textSec;
 
     private Drawer drawerResult;
-    MediaPlayer mp;
 
     private RelativeLayout relativeLayout;
 
@@ -133,6 +127,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     DatabaseReference myReference;
     int clicks_on_date = 0;
 
+    SoundPool soundPool;
+    int countdown;
+    int krik;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +142,18 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         myReference = firebaseDatabase.getReference();
+
+//        AudioAttributes attributes = new AudioAttributes.Builder()
+//                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+//                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+//                .build();
+
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(10)
+//                .setAudioAttributes(attributes)
+                .build();
+        countdown = soundPool.load(this, R.raw.countdown, 1);
+        krik = soundPool.load(this, R.raw.krik, 1);
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (hasConnection(getApplicationContext())) {
@@ -177,9 +187,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             setSupportActionBar(toolbar);
             Objects.requireNonNull(getSupportActionBar()).setTitle(null);
         }
-
-        mp = new MediaPlayer();
-        mp.setAudioStreamType(AudioManager.USE_DEFAULT_STREAM_TYPE);
 
         if (settings.contains(LAST_RATING_DAY)) {
             lastRatingDay = settings.getInt(LAST_RATING_DAY, 0);
@@ -507,7 +514,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         mins = timerTime / 60 % 60;
         secs = timerTime % 60;
 
-        playStartSound(R.raw.countdown);
+        playSound(countdown);
     }
 
     private void updateValueInDatabase() {
@@ -533,19 +540,60 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         return min + (long) (Math.random() * (max - min));
     }
 
-    private void playStartSound(int soundID) {
-        mp = MediaPlayer.create(this, soundID);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is granted
-            final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE);
-            mAudioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, mAudioManager.getStreamMaxVolume(AudioManager.USE_DEFAULT_STREAM_TYPE), 0);
-            mp.start();
-            mp.setOnCompletionListener(mp1 -> mAudioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, originalVolume, 0));
-        } else {
-            mp.start();
-        }
+    MediaPlayer mp;
+//    private void playStartSound(int soundID) {
+//        releaseMP();
+//
+//        try {
+//            mp = new MediaPlayer();
+//            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+//            mp = MediaPlayer.create(this, soundID);
+//    //        mp.prepareAsync();
+//            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
+//                // Permission is granted
+//                final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+//                final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+//                mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
+//                mp.start();
+//                mp.setOnCompletionListener(mp1 -> mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0));
+//            } else {
+//                mp.start();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+//    public void playSound(int soundID) {
+//        mp = MediaPlayer.create(this, soundID);
+//        mp.setOnCompletionListener(MediaPlayer::release);
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
+//            // Permission is granted
+//            final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+//            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+//            mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
+//            mp.start();
+//            mp.setOnCompletionListener(mp1 -> mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0));
+//        } else {
+//            mp.start();
+//        }
+//    }
+
+    public void playSound(int soundID) {
+//        soundPool.setOnLoadCompleteListener((soundPool1, sampleId, status) -> soundPool.play(sampleId, 1.0f, 1.0f, 0, 0, 1.0f));
+        soundPool.play(soundID, 1.0f, 1.0f, 0, 0, 1.0f);
     }
+
+//    private void releaseMP() {
+//        if (mp != null) {
+//            try {
+//                mp.release();
+//                mp = null;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     private void adsInitialization() {
         AdView mAdView = findViewById(R.id.adView);
@@ -560,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         });
     }
 
-    private Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
+    private final Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             if(drawerItem.getIdentifier() == BTN_COLOR_MATCH)
@@ -1088,7 +1136,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     public void theEnd() {
-        playStartSound(R.raw.krik);
+        playSound(krik);
         createVibration(3000);
     }
 
@@ -1156,19 +1204,19 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     @UiThread
     private void updateUI() {
         if (years >= 10) tvYrs.setText(String.valueOf(years));
-        else tvYrs.setText("0" + years);
+        else tvYrs.setText(String.format("0%s", years));
 
         if (days >= 10) tvDay.setText(String.valueOf(days));
-        else tvDay.setText("0" + days);
+        else tvDay.setText(String.format("0%s", days));
 
         if (hours >= 10) tvHrs.setText(String.valueOf(hours));
-        else tvHrs.setText("0" + hours);
+        else tvHrs.setText(String.format("0%s", hours));
 
         if (mins >= 10) tvMin.setText(String.valueOf(mins));
-        else tvMin.setText("0" + mins);
+        else tvMin.setText(String.format("0%s", mins));
 
         if (secs >= 10) tvSec.setText(String.valueOf(secs));
-        else tvSec.setText("0" + secs);
+        else tvSec.setText(String.format("0%s", secs));
 
         if (years <= 0 && days <= 0 && hours <= 0 && mins <= 0 && secs <= 0) {
             tvYrs.setText("B");
@@ -1195,39 +1243,39 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         textSec.setText(GetWord(secs, getResources().getString(R.string.text_sec1), getResources().getString(R.string.text_sec2), getResources().getString(R.string.text_sec3)));
 
         if (years == 0) {
-            tvYrs.setTextColor(getResources().getColor(R.color.red));
-            textYrs.setTextColor(getResources().getColor(R.color.red));
+            tvYrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
+            textYrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
             if (days == 0) {
-                tvDay.setTextColor(getResources().getColor(R.color.red));
-                textDay.setTextColor(getResources().getColor(R.color.red));
+                tvDay.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                textDay.setTextColor(getResources().getColor(R.color.red, getTheme()));
                 if (hours == 0) {
-                    tvHrs.setTextColor(getResources().getColor(R.color.red));
-                    textHrs.setTextColor(getResources().getColor(R.color.red));
+                    tvHrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                    textHrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
                     if (mins == 0) {
-                        tvMin.setTextColor(getResources().getColor(R.color.red));
-                        textMin.setTextColor(getResources().getColor(R.color.red));
+                        tvMin.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                        textMin.setTextColor(getResources().getColor(R.color.red, getTheme()));
                         if (secs == 0) {
-                            tvSec.setTextColor(getResources().getColor(R.color.red));
-                            textSec.setTextColor(getResources().getColor(R.color.red));
+                            tvSec.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                            textSec.setTextColor(getResources().getColor(R.color.red, getTheme()));
                         } else {
-                            tvSec.setTextColor(getResources().getColor(R.color.white));
-                            textSec.setTextColor(getResources().getColor(R.color.white));
+                            tvSec.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                            textSec.setTextColor(getResources().getColor(R.color.white, getTheme()));
                         }
                     } else {
-                        tvMin.setTextColor(getResources().getColor(R.color.white));
-                        textMin.setTextColor(getResources().getColor(R.color.white));
+                        tvMin.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                        textMin.setTextColor(getResources().getColor(R.color.white, getTheme()));
                     }
                 } else {
-                    tvHrs.setTextColor(getResources().getColor(R.color.white));
-                    textHrs.setTextColor(getResources().getColor(R.color.white));
+                    tvHrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                    textHrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
                 }
             } else {
-                tvDay.setTextColor(getResources().getColor(R.color.white));
-                textDay.setTextColor(getResources().getColor(R.color.white));
+                tvDay.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                textDay.setTextColor(getResources().getColor(R.color.white, getTheme()));
             }
         } else {
-            tvYrs.setTextColor(getResources().getColor(R.color.white));
-            textYrs.setTextColor(getResources().getColor(R.color.white));
+            tvYrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
+            textYrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
         }
     }
 

@@ -21,22 +21,22 @@ public class Receiver extends BroadcastReceiver {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
             // Permission is granted
             final AudioManager mAudioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
-            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE);
-            mAudioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, mAudioManager.getStreamMaxVolume(AudioManager.USE_DEFAULT_STREAM_TYPE), 0);
+            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
+            mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
             MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
             mp = MediaPlayer.create(context, R.raw.krik);
             mp.start();
             mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mAudioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, originalVolume, 0);
+                    mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
                 }
             });
         }
         else {
             MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
             mp = MediaPlayer.create(context, R.raw.krik);
             mp.start();
         }
