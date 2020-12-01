@@ -500,7 +500,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             date_of_death = getRandomNumberInRange(34560000, 1382400000);
         }
         date_of_death += currentTime;
-        noAds(true);
 
         updateValueInDatabase();
     }
@@ -1624,11 +1623,12 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             showMsg("purchase: " + productId + " COMPLETED");
             switch (productId) {
                 case CHANGE_YOUR_FATE:
-                    changeFate(true);
                     noAds(true);
+                    changeDateOfDeath();
                     break;
                 case DISABLE_ADS:
                     noAds(true);
+                    updateValueInDatabase();
                     break;
             }
         } else {
@@ -1677,20 +1677,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //        }
 
 //        changeFate(mBillingProcessor.listOwnedProducts().contains(CHANGE_YOUR_FATE));
-    }
-
-    private void changeFate(boolean isPurchased) {
-//        mConsumabelButton.setEnabled(isPurchased);
-//        mSingleTimePaymentButton.setEnabled(!isPurchased);
-        if (isPurchased) {
-//            mSingleTimePaymentButton.setText(R.string.already_bought);
-//            mConsumabelButton.setText(R.string.consume_one_time);
-            changeDateOfDeath();
-        } else {
-//            SkuDetails details = mBillingProcessor.getPurchaseListingDetails(CHANGE_YOUR_FATE);
-//            mSingleTimePaymentButton.setText(getString(R.string.one_time_payment_value, details.priceText));
-//            mConsumabelButton.setText(R.string.not_bought_yet);
-        }
     }
 
     private void showChangeYourFateDialog() {
