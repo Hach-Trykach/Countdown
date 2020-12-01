@@ -60,12 +60,7 @@ public class MessagingService extends FirebaseMessagingService {
             mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
             mp = MediaPlayer.create(this, R.raw.krik);
             mp.start();
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0);
-                }
-            });
+            mp.setOnCompletionListener(mp1 -> mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0));
         }
         else {
             MediaPlayer mp = new MediaPlayer();
