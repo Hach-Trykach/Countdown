@@ -22,6 +22,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -1087,6 +1089,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     public void theEnd() {
         playStartSound(R.raw.krik);
+        createVibration(3000);
     }
 
     @SuppressLint("HardwareIds")
@@ -1733,6 +1736,16 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             return true;
         }
         return false;
+    }
+
+    private void createVibration(int duration) {
+        Vibrator vibration = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibration.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            vibration.vibrate(duration);
+        }
     }
 
 //    public static class MyFragmentPagerAdapter extends FragmentPagerAdapter {
