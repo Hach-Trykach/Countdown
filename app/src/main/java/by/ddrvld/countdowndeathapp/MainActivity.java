@@ -1604,7 +1604,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          */
         if(mBillingProcessor.isPurchased(DISABLE_ADS))
             noAds(true);
-        
+
         showMsg("onPurchaseHistoryRestored");
         handleLoadedItems();
     }
@@ -1625,20 +1625,22 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          * Called when requested PRODUCT ID was successfully purchased
          */
         showMsg("onProductPurchased");
-        if (checkIfPurchaseIsValid(details.purchaseInfo)) {
-            showMsg("purchase: " + productId + " COMPLETED");
-            switch (productId) {
-                case CHANGE_YOUR_FATE:
-                    noAds(true);
-                    changeDateOfDeath();
-                    break;
-                case DISABLE_ADS:
-                    noAds(true);
-                    updateValueInDatabase();
-                    break;
+        if(details != null) {
+            if (checkIfPurchaseIsValid(details.purchaseInfo)) {
+                showMsg("purchase: " + productId + " COMPLETED");
+                switch (productId) {
+                    case CHANGE_YOUR_FATE:
+                        noAds(true);
+                        changeDateOfDeath();
+                        break;
+                    case DISABLE_ADS:
+                        noAds(true);
+                        updateValueInDatabase();
+                        break;
+                }
+            } else {
+                showMsg("fakePayment");
             }
-        } else {
-            showMsg("fakePayment");
         }
     }
 
