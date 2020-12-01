@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -92,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     TextView tvYrs, tvDay, tvHrs, tvMin, tvSec;
     TextView textYrs, textDay, textHrs, textMin, textSec;
 
-    private RelativeLayout relative_layout_ads;
     private Drawer drawerResult;
+    MediaPlayer mp;
 
     private RelativeLayout relativeLayout;
 
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private final int BTN_OUR_APPS = 7;
     private final int BTN_SHARE = 8;
     private final int BTN_CHANGE_UR_FATE = 9;
+    private final int BTN_DISABLE_ADS = 10;
 
     private Toolbar toolbar;
 
@@ -121,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     BillingProcessor mBillingProcessor;
     private final static String CHANGE_YOUR_FATE = "change_your_fate";
+    private final static String DISABLE_ADS = "disable_ads";
     private final static String GPLAY_LICENSE = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlh3IXfvwhrH43ZO3anu7x7mbf3oT9JqAOD+3bTKocpYtvBexKwCiKhv9CrhAkZNaY48sfM80PtnVFAlqljPAcj9UthtHR94YCOSWL/F1SJB8FWxGa94d/JHc4ivuOLw0aNkoh6EdJX+0MH61FFI444bwmMYSKEjZLCkVcoddxq0CMdFcZTb3j4UsWhpgf2OMDLvEPn+qKqYVtrdKnoMd/vK9RTcC6iHvNNssAtBbQUEiA2SPA45shVgxK/jfxshNt96/jzhQUyvGiwYgwOVWrd6gXqkj5oiafzDGZkc6QTknMU2fYovy5FI1h8rKj3PfXaxR1sG5l+CavTj2s1F+QwIDAQAB";
 
     FirebaseAnalytics firebaseAnalytics;
@@ -172,6 +175,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             setSupportActionBar(toolbar);
             Objects.requireNonNull(getSupportActionBar()).setTitle(null);
         }
+
+        mp = new MediaPlayer();
+        mp.setAudioStreamType(AudioManager.USE_DEFAULT_STREAM_TYPE);
 
         if (settings.contains(LAST_RATING_DAY)) {
             lastRatingDay = settings.getInt(LAST_RATING_DAY, 0);
@@ -266,11 +272,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         mBillingProcessor = new BillingProcessor(this, GPLAY_LICENSE, this);
         boolean isAvailable = BillingProcessor.isIabServiceAvailable(this);
-        if (!isAvailable) {
+        if (isAvailable) {
+            mBillingProcessor.initialize();
+        } else {
 //            mProgress.setVisibility(View.GONE);
 //            showMsg(getString(R.string.billing_not_available));
-        } else {
-            mBillingProcessor.initialize();
         }
 
 //        manager = new FakeReviewManager(this);
@@ -477,11 +483,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
     }
 
-    boolean pokupkaKuplena = false;
     private void changeDateOfDeath() {
-//        if(pokupkaKuplena) {
-//        mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
-//        }
         if(years > 0) {
             date_of_death = getRandomNumberInRange(600000, 17280000);
         }
@@ -529,22 +531,16 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         return min + (long) (Math.random() * (max - min));
     }
 
-    @MainThread
     private void playStartSound(int soundID) {
+        mp = MediaPlayer.create(this, soundID);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
             // Permission is granted
             final AudioManager mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
-            mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION), 0);
-            MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-            mp = MediaPlayer.create(this, soundID);
+            final int originalVolume = mAudioManager.getStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            mAudioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, mAudioManager.getStreamMaxVolume(AudioManager.USE_DEFAULT_STREAM_TYPE), 0);
             mp.start();
-            mp.setOnCompletionListener(mp1 -> mAudioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, originalVolume, 0));
+            mp.setOnCompletionListener(mp1 -> mAudioManager.setStreamVolume(AudioManager.USE_DEFAULT_STREAM_TYPE, originalVolume, 0));
         } else {
-            MediaPlayer mp = new MediaPlayer();
-            mp.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
-            mp = MediaPlayer.create(this, soundID);
             mp.start();
         }
     }
@@ -666,76 +662,37 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
                 return true;
             }
+            else if(drawerItem.getIdentifier() == BTN_DISABLE_ADS) {
+                Bundle bundle = new Bundle();
+                firebaseAnalytics.logEvent("click_on_disable_ads_button", bundle);
+                mBillingProcessor.purchase(MainActivity.this, DISABLE_ADS);
+                return true;
+            }
+//            else if(drawerItem.getIdentifier() == BTN_CHAT) {
+//                if(user == null) {
+//                    // Configure Google Sign In
+//                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                            .requestIdToken(getString(R.string.default_web_client_id))
+//                            .requestEmail()
+//                            .requestProfile()
+//                            .build();
+//
+//                    // Build a GoogleSignInClient with the options specified by gso.
+//                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
+//
+//                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//                    startActivityForResult(signInIntent, RC_SIGN_IN);
+//                }
+//                else {
+//                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+//                    startActivity(intent);
+//                }
+//                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
+//                return true;
+//            }
             return false;
         }
     };
-
-    private IDrawerItem[] initializeDrawerItems() {
-        return new IDrawerItem[] {
-
-            new DividerDrawerItem()
-                    .withEnabled(true),
-
-            new PrimaryDrawerItem()
-                    .withName(R.string.our_apps)
-                    .withTextColorRes(R.color.white)
-                    .withIdentifier(BTN_OUR_APPS),
-
-            new PrimaryDrawerItem()
-                    .withName(R.string.color_match)
-                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_color_match)
-                    .withIdentifier(BTN_COLOR_MATCH),
-
-            new PrimaryDrawerItem()
-                    .withName(R.string.jump_up)
-                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_jump_up)
-                    .withIdentifier(BTN_JUMP_UP),
-
-//            new PrimaryDrawerItem()
-//                    .withName(R.string.christmas_game)
-//                    .withTextColorRes(R.color.white)
-//                    .withIcon(R.drawable.img_christmas_game)
-//                    .withIdentifier(BTN_CHRISTMAS_GAME),
-
-            new PrimaryDrawerItem()
-                    .withName(R.string.christmas_tree)
-                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_christmas_tree)
-                    .withIdentifier(BTN_CHRISTMAS_TREE),
-
-            new PrimaryDrawerItem()
-                    .withName(R.string.barley_break)
-                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_barley_break)
-                    .withIdentifier(BTN_BARLEY_BREAK),
-
-            new PrimaryDrawerItem()
-                    .withName(R.string.shopping_calculator)
-                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.img_shopping_calculator)
-                    .withIdentifier(BTN_SHOPPING_CALCULATOR),
-
-                new DividerDrawerItem()
-                        .withEnabled(true),
-
-                new DividerDrawerItem()
-                        .withEnabled(true),
-
-            new PrimaryDrawerItem()
-                    .withName(R.string.change_your_fate)
-                    .withTextColorRes(R.color.white)
-                    .withIcon(R.drawable.icon_filled)
-                    .withIdentifier(BTN_CHANGE_UR_FATE),
-
-            new PrimaryDrawerItem()
-                    .withName(R.string.share)
-                    .withTextColorRes(R.color.white)
-                    .withIcon(android.R.drawable.ic_menu_share)
-                    .withIdentifier(BTN_SHARE)
-        };
-    }
 
 //    private IDrawerItem[] initializeStickyDrawerItems() {
 //        return new IDrawerItem[]{
@@ -1340,13 +1297,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     @Override
     protected void onPause() {
-        if (timerTime > 0 && timerTime < 259200) { // Меньше 3х дней
+        if (timerTime > 0) {
             long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
             yearsNow = years * 31536000;
             daysNow = days * 86400;
             hoursNow = hours * 3600;
             minsNow = mins * 60;
-            timeToNotifi = yearsNow + daysNow + hoursNow + minsNow + secs;
+            timeToNotifi = yearsNow + daysNow + hoursNow + minsNow;
 
 //            if(timerTime > 36000)
 //                timeToNotifi /= 3;
@@ -1460,20 +1417,97 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //        accountName = acct.getDisplayName();
 //        accountEmail = acct.getEmail();
 //        photoUrl = acct.getPhotoUrl();
-//
+
+        final DividerDrawerItem dividerDrawerItem = new DividerDrawerItem()
+                .withEnabled(true);
+
+        final PrimaryDrawerItem ourAppsDrawerItem = new PrimaryDrawerItem()
+                .withName(R.string.our_apps)
+                .withTextColorRes(R.color.white)
+                .withIdentifier(BTN_OUR_APPS);
+
+        final PrimaryDrawerItem colorMatchDrawerItem = new PrimaryDrawerItem()
+                .withName(R.string.color_match)
+                .withTextColorRes(R.color.white)
+                .withIcon(R.drawable.img_color_match)
+                .withIdentifier(BTN_COLOR_MATCH);
+
+        final PrimaryDrawerItem jumpUpDrawerItem = new PrimaryDrawerItem()
+                .withName(R.string.jump_up)
+                .withTextColorRes(R.color.white)
+                .withIcon(R.drawable.img_jump_up)
+                .withIdentifier(BTN_JUMP_UP);
+
+//        final PrimaryDrawerItem christmasGameDrawerItem = new PrimaryDrawerItem()
+//                .withName(R.string.christmas_game)
+//                .withTextColorRes(R.color.white)
+//                .withIcon(R.drawable.img_christmas_game)
+//                .withIdentifier(BTN_CHRISTMAS_GAME);
+
+        final PrimaryDrawerItem christmasTreeDrawerItem = new PrimaryDrawerItem()
+                .withName(R.string.christmas_tree)
+                .withTextColorRes(R.color.white)
+                .withIcon(R.drawable.img_christmas_tree)
+                .withIdentifier(BTN_CHRISTMAS_TREE);
+
+        final PrimaryDrawerItem barleyBreakDrawerItem = new PrimaryDrawerItem()
+                .withName(R.string.barley_break)
+                .withTextColorRes(R.color.white)
+                .withIcon(R.drawable.img_barley_break)
+                .withIdentifier(BTN_BARLEY_BREAK);
+
+        final PrimaryDrawerItem shoppingCalculatorDrawerItem = new PrimaryDrawerItem()
+                .withName(R.string.shopping_calculator)
+                .withTextColorRes(R.color.white)
+                .withIcon(R.drawable.img_shopping_calculator)
+                .withIdentifier(BTN_SHOPPING_CALCULATOR);
+
+        final PrimaryDrawerItem changeYourFateDrawerItem = new PrimaryDrawerItem()
+                .withName(R.string.change_your_fate)
+                .withTextColorRes(R.color.white)
+                .withIcon(R.drawable.icon_filled)
+                .withIdentifier(BTN_CHANGE_UR_FATE);
+
+        final PrimaryDrawerItem shareDrawerItem = new PrimaryDrawerItem()
+                .withName(R.string.share)
+                .withTextColorRes(R.color.white)
+                .withIcon(android.R.drawable.ic_menu_share)
+                .withIdentifier(BTN_SHARE);
+
+        PrimaryDrawerItem disableAdsDrawerItem;
+        if(!noAds) {
+            disableAdsDrawerItem = new PrimaryDrawerItem()
+                    .withName(R.string.disable_ads)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(R.drawable.no_ads)
+                    .withIdentifier(BTN_DISABLE_ADS);
+        }
+        else disableAdsDrawerItem = null;
+
 //        AccountHeader accountHeader = initializeAccountHeader();
         drawerResult = new DrawerBuilder()
-            .withActivity(MainActivity.this)
-            .withToolbar(toolbar)
-            .withSliderBackgroundColorRes(R.color.transparent)
-            .withActionBarDrawerToggleAnimated(true)
-            .addDrawerItems(initializeDrawerItems())
-//            .addStickyDrawerItems(initializeStickyDrawerItems())
-            .withOnDrawerItemClickListener(onClicksLis)
-//            .withAccountHeader(accountHeader)
-//            .withRootView(R.id.drawer_layout)
-            .withGenerateMiniDrawer(true)
-            .build();
+                .withActivity(MainActivity.this)
+                .withToolbar(toolbar)
+                .withSliderBackgroundColorRes(R.color.transparent)
+                .withActionBarDrawerToggleAnimated(true)
+                .addDrawerItems(dividerDrawerItem)
+                .addDrawerItems(ourAppsDrawerItem)
+                .addDrawerItems(colorMatchDrawerItem)
+                .addDrawerItems(jumpUpDrawerItem)
+                .addDrawerItems(christmasTreeDrawerItem)
+                .addDrawerItems(barleyBreakDrawerItem)
+                .addDrawerItems(shoppingCalculatorDrawerItem)
+                .addDrawerItems(dividerDrawerItem)
+                .addDrawerItems(dividerDrawerItem)
+                .addDrawerItems(changeYourFateDrawerItem)
+                .addDrawerItems(disableAdsDrawerItem)
+                .addDrawerItems(shareDrawerItem)
+    //            .addStickyDrawerItems(initializeStickyDrawerItems())
+                .withOnDrawerItemClickListener(onClicksLis)
+    //            .withAccountHeader(accountHeader)
+    //            .withRootView(R.id.drawer_layout)
+                .withGenerateMiniDrawer(true)
+                .build();
     }
 
 //    private void showKinovoWebView() {
@@ -1530,7 +1564,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         showMsg("onBillingError");
     }
 
-    public void onProductPurchased(String productId, TransactionDetails details) {
+    public void onProductPurchased(@NonNull String productId, TransactionDetails details) {
         /*
          * Called when requested PRODUCT ID was successfully purchased
          */
@@ -1542,6 +1576,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                     changeFate(true);
                     noAds(true);
                     break;
+                case DISABLE_ADS:
+                    noAds(true);
+                    break;
             }
         } else {
             showMsg("fakePayment");
@@ -1549,7 +1586,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     private void noAds(boolean adsStatus) {
-        relative_layout_ads = findViewById(R.id.relative_layout_ads);
+        RelativeLayout relative_layout_ads = findViewById(R.id.relative_layout_ads);
         if(adsStatus) {
             noAds = true;
             if(relative_layout_ads.getVisibility() != View.GONE)
@@ -1562,6 +1599,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(NO_ADS, adsStatus);
         editor.apply();
+        DrawerBuilder();
     }
 
     private boolean checkIfPurchaseIsValid(PurchaseInfo purchaseInfo) {
@@ -1596,7 +1634,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         if (isPurchased) {
 //            mSingleTimePaymentButton.setText(R.string.already_bought);
 //            mConsumabelButton.setText(R.string.consume_one_time);
-            pokupkaKuplena = true;
             changeDateOfDeath();
         } else {
 //            SkuDetails details = mBillingProcessor.getPurchaseListingDetails(CHANGE_YOUR_FATE);

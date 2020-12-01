@@ -31,6 +31,8 @@
     <string name="seconds">seconds</string>
     <string name="coming_soon">Coming soon…</string>
     <string name="do_you_want_change_your_fate">Do you want change your fate?</string>
+    <string name="also_disable_ads">Also disable ads…</string>
+    <string name="disable_ads">Disable ads</string>
 
     <string name="cross_text_1">+LICENSE++++++++++++++++++++++++++</string>
     <string name="cross_text_2">+DISTRIBUTION+++++++++++++++++++++</string>

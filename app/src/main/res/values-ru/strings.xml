@@ -58,5 +58,7 @@
     <string name="seconds">секунд.</string>
     <string name="coming_soon">Скоро появится…</string>
     <string name="do_you_want_change_your_fate">Хотите изменить свою судьбу?</string>
+    <string name="also_disable_ads">А также отключить рекламу…</string>
+    <string name="disable_ads">Отключить рекламу</string>
     <string name="undo">Отмена</string>
 </resources>
