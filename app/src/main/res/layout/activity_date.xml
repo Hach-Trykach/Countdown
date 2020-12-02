@@ -54,14 +54,13 @@
             android:layout_weight="20"
             android:orientation="horizontal">
 
-            <TextView
+            <TextSwitcher
                 android:id="@+id/yrs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
                 android:text="00"
                 android:textAlignment="center"
-                android:textColor="@android:color/white"
                 android:textSize="88sp"
                 android:textStyle="bold"
                 android:layout_marginStart="120dp"
@@ -90,7 +89,7 @@
             android:layout_weight="20"
             android:orientation="horizontal" >
 
-            <TextView
+            <TextSwitcher
                 android:id="@+id/day"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -127,7 +126,7 @@
             android:layout_weight="20"
             android:orientation="horizontal" >
 
-            <TextView
+            <TextSwitcher
                 android:id="@+id/hrs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -164,7 +163,7 @@
             android:layout_weight="20"
             android:orientation="horizontal">
 
-            <TextView
+            <TextSwitcher
                 android:id="@+id/min"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -201,7 +200,7 @@
             android:layout_weight="20"
             android:orientation="horizontal">
 
-            <TextView
+            <TextSwitcher
                 android:id="@+id/sec"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

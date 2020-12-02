@@ -20,7 +20,7 @@ public class Receiver extends BroadcastReceiver {
                 .setMaxStreams(10)
 //                .setAudioAttributes(attributes)
                 .build();
-        krik = soundPool.load(context, R.raw.krik, 1);
+        krik = soundPool.load(context, R.raw.krik, 2);
 
         playSound(krik);
 

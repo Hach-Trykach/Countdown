@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
@@ -24,12 +25,16 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -67,10 +72,9 @@ import java.util.Random;
 
 import static by.ddrvld.countdowndeathapp.Update.GetWord;
 
-public class MainActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler /*implements IUnityAdsListener*/ {
+public class MainActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler,TextSwitcher.ViewFactory /*implements IUnityAdsListener*/ {
     static SharedPreferences settings;
     static final String APP_PREFERENCES = "settings";
-    private final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
 
     static final String DATE_OF_DEATH = "randomlifetime";
     static final String PERIOD_SETTINGS = "period";
@@ -78,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     static final String ADS_STATUS_FOR_SOON_DYING = "AdsStatusForSoonDying";
     static final String NO_ADS = "no_ads";
     static Boolean noAds = false;
-//    private ImageView moreAppsBtn;
 
     int lastRatingDay;
 
@@ -87,12 +90,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     static long years, days, hours, mins, secs;
 
-    TextView tvYrs, tvDay, tvHrs, tvMin, tvSec;
+    TextSwitcher tvYrs, tvDay, tvHrs, tvMin, tvSec;
     TextView textYrs, textDay, textHrs, textMin, textSec;
 
     private Drawer drawerResult;
-
-    private RelativeLayout relativeLayout;
 
     public static int PERIOD;
 
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //                .setAudioAttributes(attributes)
                 .build();
         countdown = soundPool.load(this, R.raw.countdown, 1);
-        krik = soundPool.load(this, R.raw.krik, 1);
+        krik = soundPool.load(this, R.raw.krik, 2);
 
         settings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (hasConnection(getApplicationContext())) {
@@ -203,10 +204,30 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         } else PERIOD = 1000; // 1000
 
         tvYrs = findViewById(R.id.yrs);
+        tvYrs.setFactory(this);
         tvDay = findViewById(R.id.day);
+        tvDay.setFactory(this);
         tvHrs = findViewById(R.id.hrs);
+        tvHrs.setFactory(this);
         tvMin = findViewById(R.id.min);
+        tvMin.setFactory(this);
         tvSec = findViewById(R.id.sec);
+        tvSec.setFactory(this);
+
+        Animation inAnimation = AnimationUtils.loadAnimation(this, android.R.anim.fade_in);
+        Animation outAnimation = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
+        Animation resize = AnimationUtils.loadAnimation(this, R.anim.resize);
+
+        tvYrs.setInAnimation(inAnimation);
+        tvYrs.setOutAnimation(outAnimation);
+        tvDay.setInAnimation(inAnimation);
+        tvDay.setOutAnimation(outAnimation);
+        tvHrs.setInAnimation(inAnimation);
+        tvHrs.setOutAnimation(outAnimation);
+        tvMin.setInAnimation(inAnimation);
+        tvMin.setOutAnimation(outAnimation);
+        tvSec.setInAnimation(inAnimation);
+        tvSec.setOutAnimation(outAnimation);
 
         textYrs = findViewById(R.id.text_yrs);
         textDay = findViewById(R.id.text_day);
@@ -224,10 +245,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         tvYrs.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                tvYrs.setTextSize(90);
+//                tvYrs.setTextSize(90);
+                tvYrs.startAnimation(resize);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                tvYrs.setTextSize(88);
+//                tvYrs.setTextSize(88);
                 clicksOnDate();
             }
             return true;
@@ -235,10 +257,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         tvDay.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                tvDay.setTextSize(90);
+//                tvDay.setTextSize(90);
+                tvDay.startAnimation(resize);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                tvDay.setTextSize(88);
+//                tvDay.setTextSize(88);
                 clicksOnDate();
             }
             return true;
@@ -246,10 +269,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         tvHrs.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                tvHrs.setTextSize(90);
+//                tvHrs.setTextSize(90);
+                tvHrs.startAnimation(resize);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                tvHrs.setTextSize(88);
+//                tvHrs.setTextSize(88);
                 clicksOnDate();
             }
             return true;
@@ -257,10 +281,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         tvMin.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                tvMin.setTextSize(90);
+//                tvMin.setTextSize(90);
+                tvMin.startAnimation(resize);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                tvMin.setTextSize(88);
+//                tvMin.setTextSize(88);
                 clicksOnDate();
             }
             return true;
@@ -268,10 +293,11 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         tvSec.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                tvSec.setTextSize(90);
+//                tvSec.setTextSize(90);
+                tvSec.startAnimation(resize);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                tvSec.setTextSize(88);
+//                tvSec.setTextSize(88);
                 clicksOnDate();
             }
             return true;
@@ -539,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         return min + (long) (Math.random() * (max - min));
     }
 
-    MediaPlayer mp;
+//    MediaPlayer mp;
 //    private void playStartSound(int soundID) {
 //        releaseMP();
 //
@@ -937,7 +963,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
-                TimerToActivityDate();
+//                TimerToActivityDate();
 //                showKinovoWebView();
             }
         });
@@ -1148,6 +1174,17 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         return getRandomLongInRange(1630000000L, 3400000000L);
     }
 
+    @Override
+    public View makeView() {
+        TextView textView = new TextView(this);
+        textView.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL);
+        textView.setTypeface(Typeface.DEFAULT_BOLD);
+        textView.setTextSize(88);
+        textView.setTextColor(Color.WHITE);
+//        textView.setShadowLayer(5, 5, 5, Color.WHITE);
+        return textView;
+    }
+
     // CountDownTimer class
     public class MainCountDownTimer extends CountDownTimer {
 
@@ -1202,20 +1239,32 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     @UiThread
     private void updateUI() {
-        if (years >= 10) tvYrs.setText(String.valueOf(years));
-        else tvYrs.setText(String.format("0%s", years));
+        TextView tvTextYrs = (TextView) tvYrs.getChildAt(0);
+        TextView tvTextDay = (TextView) tvDay.getChildAt(0);
+        TextView tvTextHrs = (TextView) tvHrs.getChildAt(0);
+        TextView tvTextMin = (TextView) tvMin.getChildAt(0);
+        TextView tvTextSec = (TextView) tvSec.getChildAt(0);
 
-        if (days >= 10) tvDay.setText(String.valueOf(days));
-        else tvDay.setText(String.format("0%s", days));
-
-        if (hours >= 10) tvHrs.setText(String.valueOf(hours));
-        else tvHrs.setText(String.format("0%s", hours));
-
-        if (mins >= 10) tvMin.setText(String.valueOf(mins));
-        else tvMin.setText(String.format("0%s", mins));
-
-        if (secs >= 10) tvSec.setText(String.valueOf(secs));
-        else tvSec.setText(String.format("0%s", secs));
+        if (years > 0) {
+            if (years >= 10) tvYrs.setText(String.valueOf(years));
+            else tvYrs.setText(String.format("0%s", years));
+        } else tvTextYrs.setText(String.format("0%s", years));
+        if (days > 0) {
+            if (days >= 10) tvDay.setText(String.valueOf(days));
+            else tvDay.setText(String.format("0%s", days));
+        } else tvTextDay.setText(String.format("0%s", days));
+        if (hours > 0) {
+            if (hours >= 10) tvHrs.setText(String.valueOf(hours));
+            else tvHrs.setText(String.format("0%s", hours));
+        } else tvTextHrs.setText(String.format("0%s", hours));
+        if(mins > 0) {
+            if (mins >= 10) tvMin.setText(String.valueOf(mins));
+            else tvMin.setText(String.format("0%s", mins));
+        } else tvTextMin.setText(String.format("0%s", mins));
+        if(secs > 0) {
+            if (secs >= 10) tvSec.setText(String.valueOf(secs));
+            else tvSec.setText(String.format("0%s", secs));
+        } else tvTextSec.setText(String.format("0%s", secs));
 
         if (years <= 0 && days <= 0 && hours <= 0 && mins <= 0 && secs <= 0) {
             tvYrs.setText("B");
@@ -1242,38 +1291,38 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         textSec.setText(GetWord(secs, getResources().getString(R.string.text_sec1), getResources().getString(R.string.text_sec2), getResources().getString(R.string.text_sec3)));
 
         if (years == 0) {
-            tvYrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
+            tvTextYrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
             textYrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
             if (days == 0) {
-                tvDay.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                tvTextDay.setTextColor(getResources().getColor(R.color.red, getTheme()));
                 textDay.setTextColor(getResources().getColor(R.color.red, getTheme()));
                 if (hours == 0) {
-                    tvHrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                    tvTextHrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
                     textHrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
                     if (mins == 0) {
-                        tvMin.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                        tvTextMin.setTextColor(getResources().getColor(R.color.red, getTheme()));
                         textMin.setTextColor(getResources().getColor(R.color.red, getTheme()));
                         if (secs == 0) {
-                            tvSec.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                            tvTextSec.setTextColor(getResources().getColor(R.color.red, getTheme()));
                             textSec.setTextColor(getResources().getColor(R.color.red, getTheme()));
                         } else {
-                            tvSec.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                            tvTextSec.setTextColor(getResources().getColor(R.color.white, getTheme()));
                             textSec.setTextColor(getResources().getColor(R.color.white, getTheme()));
                         }
                     } else {
-                        tvMin.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                        tvTextMin.setTextColor(getResources().getColor(R.color.white, getTheme()));
                         textMin.setTextColor(getResources().getColor(R.color.white, getTheme()));
                     }
                 } else {
-                    tvHrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                    tvTextHrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
                     textHrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
                 }
             } else {
-                tvDay.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                tvTextDay.setTextColor(getResources().getColor(R.color.white, getTheme()));
                 textDay.setTextColor(getResources().getColor(R.color.white, getTheme()));
             }
         } else {
-            tvYrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
+            tvTextYrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
             textYrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
         }
     }

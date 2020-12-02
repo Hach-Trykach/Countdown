@@ -24,7 +24,7 @@ public class MessagingService extends FirebaseMessagingService {
                 .setMaxStreams(10)
 //                .setAudioAttributes(attributes)
                 .build();
-        krik = soundPool.load(this, R.raw.krik, 1);
+        krik = soundPool.load(this, R.raw.krik, 2);
 
         playSound(krik);
 
