@@ -53,9 +53,12 @@
 
     <string name="sign_out">Вийти</string>
     <string name="type_message">Введіть повідомлення…</string>
-    <string name="chat">Чат</string>
+    <string name="change_your_fate">Зміни свою долю</string>
     <string name="new_message_after">Нове повідомлення через</string>
     <string name="seconds">секунд.</string>
     <string name="coming_soon">Скоро з\'явиться…</string>
+    <string name="do_you_want_change_your_fate">Ви хочете змінити свою долю?</string>
+    <string name="also_disable_ads">А також вимкнути рекламу…</string>
+    <string name="disable_ads">Вимкнути рекламу</string>
     <string name="undo">Відміна</string>
 </resources>

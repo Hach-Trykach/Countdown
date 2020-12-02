@@ -53,9 +53,12 @@
 
     <string name="sign_out">шығу</string>
     <string name="type_message">Хабарыңызды енгізіңіз…</string>
-    <string name="chat">Чат</string>
+    <string name="change_your_fate">Тағдырыңызды өзгертіңіз</string>
     <string name="new_message_after">жаңа хабарлама</string>
     <string name="seconds">секунд.</string>
     <string name="coming_soon">Жақында…</string>
+    <string name="do_you_want_change_your_fate">Сіз өзіңіздің тағдырыңызды өзгерткіңіз келе ме?</string>
+    <string name="also_disable_ads">Сонымен қатар жарнамаларды өшіру…</string>
+    <string name="disable_ads">Жарнамаларды өшіру</string>
     <string name="undo">Бас тарту</string>
 </resources>
