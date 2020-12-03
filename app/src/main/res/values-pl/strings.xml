@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Odliczanie do śmierci</string>
+    <string name="text_yrs3">Lata</string>
+    <string name="text_day3">Dni</string>
+    <string name="text_hrs3">Godziny</string>
+    <string name="text_min3">Minuty</string>
+    <string name="text_sec3">Sekundy</string>
+    <string name="question">Czy akceptujesz swoje przeznaczenie?</string>
+    <string name="key_yes">Tak</string>
+    <string name="key_no">Nie</string>
+    <string name="countdown_is_ready">Twoje odliczanie jest gotowe.</string>
+    <string name="read_phone_state_text">Aby aplikacja działała, przejdź do ustawień, znajdź tę aplikację i nadaj uprawnienie \ "Telefon \" w sekcji \ "Uprawnienia aplikacji \".</string>
+    <string name="understand">Rozumiem</string>
+    <string name="text_day2">Dni</string>
+    <string name="text_day1">Dzień</string>
+    <string name="text_hrs1">Godzina</string>
+    <string name="text_hrs2">Godziny</string>
+    <string name="text_min1">Minuta</string>
+    <string name="text_min2">Minuty</string>
+    <string name="text_sec1">Drugi</string>
+    <string name="text_sec2">sekundy</string>
+    <string name="text_yrs1">Rok</string>
+    <string name="text_yrs2">Lata</string>
+    <string name="accept_and_continue">Zaakceptuj i kontynuuj</string>
+    <string name="user_agreement_broken">ZŁAMANA UMOWA UŻYTKOWNIKA</string>
+    <string name="christmas_game">Choinka: zgubiona skarpeta</string>
+    <string name="barley_break">Piętnaście</string>
+    <string name="christmas_tree">Choinka (widżet)</string>
+    <string name="later">Później</string>
+    <string name="of_course">Oczywiście</string>
+    <string name="rating_text">Czy chcesz ocenić aplikację?</string>
+    <string name="countdown_copyright" translatable="false">Countdown Copyright © Countdown Fate Systems, LLC WAŻNE: PRZECZYTAJ UWAŻNIE TĘ LICENCJĘ PRZED UŻYCIEM TEGO OPROGRAMOWANIA.</string>
+    <string name="countdown_text_1">"Użytkownik musi używać aplikacji ściśle zgodnie z obowiązującymi umowami. Otrzymując, otwierając pakiet plików i / lub korzystając z Countdown (oprogramowania) zawierającego to oprogramowanie, zgadzasz się, że niniejsza Umowa licencyjna Użytkownik końcowy (EULA) jest prawnie wiążącą i ważną umową i zgadzasz się jej przestrzegać. Zgadzasz się przestrzegać praw własności intelektualnej i wszystkich warunków niniejszej Umowy. Użytkownik akceptuje warunki swojego przeznaczenia. Wszelkie próby wykorzystania informacji uzyskanych z Countdown w celu zmiany losu użytkownik naruszy tę umowę. O ile nie masz innej umowy licencyjnej podpisanej przez Countdown Fate Systems, LLC, korzystanie z Countdown oznacza akceptację niniejszej umowy licencyjnej i gwarancji. Z zastrzeżeniem warunków niniejszej Umowy, Countdown Fate Systems, LLC będzie dostarcza ograniczoną, niewyłączną, nieprzenoszalną, nieprzenoszalną licencję na używanie Countdown zgodnie z niniejszą Umową i każdą inną pisemną umową z Countdown. Destiny Systems, LLC. Countdown Fate Systems, LLC nie przyzna Ci tytułu Countdown; udzielona Ci licencja nie jest sprzedażą. Niniejsza umowa jest wiążącą umową prawną między Countdown Fate Systems, LLC a kupującymi lub użytkownikami Countdown. "</string>
+    <string name="countdown_text_2">Jeśli nie zgadzasz się z tą umową, natychmiast usuń Countdown ze swojego urządzenia i, jeśli ma to zastosowanie, niezwłocznie zwróć do Countdown Fate Systems, LLC pocztą wszelkie kopie Countdown i towarzyszącej mu dokumentacji oraz opakowania, które znajdują się w twoim utylizacja.</string>
+    <string name="countdown_text_3">Odliczanie czasu i udzielona licencja nie mogą być kopiowane, przekazywane, rozprowadzane, odsprzedawane, oferowane do odsprzedaży, przekazywane ani objęte sublicencjonowaniem w całości lub w części, z wyjątkiem, że możesz wykonać jedną kopię wyłącznie do celów archiwalnych. Aby uzyskać informacje na temat ponownego przydzielania Countdown, skontaktuj się z Countdown Fate Systems, LLC.</string>
+    <string name="countdown_text_4">Twoja licencja na korzystanie z Countdown jest ograniczona liczbą zakupionych licencji. Nie możesz pozwalać innym na używanie, kopiowanie lub ocenianie kopii Odliczania.</string>
+    <string name="countdown_text_5">Musisz używać Countdown zgodnie ze wszystkimi obowiązującymi przepisami, a nie w jakimkolwiek nielegalnym celu. Bez ograniczania powyższego, używanie, wyświetlanie lub rozpowszechnianie Countdown w połączeniu z materiałami pornograficznymi, rasistowskimi, wulgarnymi, obscenicznymi, zniesławiającymi, oszczerczymi, obraźliwymi, promującymi nienawiść, dyskryminację lub okazywanie uprzedzeń ze względu na religię, pochodzenie etniczne, rasę, orientację seksualną lub wiek jest surowo zabronione. Każda licencjonowana kopia Countdown może być używana przez jednego użytkownika na jednym komputerze. Korzystanie z Countdown oznacza, że ​​pobrałeś, zainstalowałeś lub uruchomiłeś Countdown na komputerze lub podobnym urządzeniu. Jeśli instalujesz Countdown na platformie dla wielu użytkowników, serwerze lub sieci, każdy indywidualny użytkownik Countdown musi mieć oddzielną licencję. Możesz wykonać jedną kopię Countdown jako kopię zapasową, pod warunkiem, że jest tylko jedna kopia zainstalowana na jednym komputerze i używana przez jedną osobę. Inni użytkownicy nie mogą korzystać z Twojej kopii Countdown. Przesyłanie, sublicencjonowanie, tworzenie sieci, sprzedaż lub dystrybucja kopii Countdown jest surowo zabronione bez uprzedniej pisemnej zgody Countdown Fate Systems, LLC. Naruszenie tej umowy jest naruszeniem praw do przenoszenia, sprzedaży, przenoszenia, przenoszenia, dzierżawy, dzierżawy, dzierżawy, wypożyczania, przenoszenia do sieci lub przenoszenia użytkowania. Jeśli ktokolwiek inny niż ty użyje Countdown zarejestrowanego na twoje nazwisko, w tym samym czasie lub w innym czasie, niniejsza umowa jest naruszona i jesteś odpowiedzialny za to naruszenie!</string>
+    <string name="countdown_text_6">To oprogramowanie zawiera materiały chronione prawem autorskim, tajemnice handlowe i inne materiały objęte prawem autorskim. Nie wolno i nie wolno Państwu modyfikować, odtwarzać kodu źródłowego, dezasemblować ani dekompilować Countdown. Nie możesz również tworzyć żadnych prac pochodnych ani innych prac opartych na Countdown lub pochodzących z Countdown w całości lub w części. Odliczanie Nazwa, logo i plik graficzny Fate Systems, LLC, które reprezentują Countdown, nie powinny być w żaden sposób wykorzystywane do promowania produktów opracowanych przy użyciu Countdown. Countdown Company Fate Systems, LLC zastrzega sobie wyłączną własność wszystkich praw, praw własności i udziałów w odniesieniu do odliczania oraz wszelkich praw własności intelektualnej z nim związanych. Prawo autorskie i międzynarodowe umowy dotyczące praw autorskich chronią wszystkie części systemu odliczania, produkty i usługi. Żaden program, kod, część, obraz, próbka dźwiękowa ani tekst nie mogą być kopiowane ani używane przez użytkownika w jakikolwiek inny sposób niż jako część programu dla jednego użytkownika. Wszelkie prawa, które nie zostały wyraźnie przyznane na mocy niniejszej Umowy, są zastrzeżone przez Countdown Fate Systems, LLC.</string>
+    <string name="countdown_text_7">Zabezpieczasz, rozbrajasz i bronisz Countdown Fate Systems, LLC, jego pracowników, agentów i dystrybutorów przed wszelkimi roszczeniami, postępowaniami sądowymi, roszczeniami i kosztami wynikającymi z używania oprogramowania Countdown Fate Systems, LLC lub w jakikolwiek sposób z nim związany. W żadnych okolicznościach (w tym między innymi zaniedbania) Countdown Fate Systems, LLC, jego pracownicy, agenci lub dystrybutorzy nie ponoszą odpowiedzialności za jakiekolwiek szkody pośrednie, przypadkowe, wynikowe, specjalne lub karne (w tym między innymi odszkodowanie ). bronić, bronić i bronić Countdown Fate Systems, LLC, jego pracowników, agentów i dystrybutorów przed wszelkimi roszczeniami, sporami sądowymi, roszczeniami i kosztami wynikającymi z lub w jakikolwiek sposób związanymi z używaniem oprogramowania Countdown Fate Systems, LLC. (w tym między innymi zaniedbanie) Countdown Fate Systems, LLC, jego pracownicy, agenci lub dystrybutorzy będą odpowiedzialni za wszelkie szkody pośrednie, przypadkowe, wynikowe, specjalne lub karne (w tym między innymi szkody w przypadku utraty zysków, utrata użytkowania, przerwa w pracy, utrata informacji lub danych lub strata materialna), w związku z niniejszą Umową, Countdown lub USA lub wynikającą z tej Umowy, lub niemożność korzystania z Countdown lub świadczenia, wykonania lub wykorzystania jakiejkolwiek innej sprawy na mocy niniejszej Umowy na podstawie umowy, niewłaściwego postępowania lub jakiejkolwiek innej teorii, w tym zaniedbania. Cała odpowiedzialność Fate Systems Countdown LLC, bez wyjątku, jest ograniczona do zwrotu ceny zakupu oprogramowania przez nabywcę (maksymalna kwota jest niższa niż kwota zapłacona przez użytkownika i zalecana cena detaliczna pokazana w „Countdown”, LLC) w zamian za zwrot produktu, wszystko kopie, dokumenty rejestracyjne i podręczniki oraz wszystkie materiały, które stanowią przeniesienie licencji od klienta z powrotem do Countdown Fate Systems, LLC.</string>
+    <string name="cross_text_1">+ LICENCJE ++++++++++++++++++++++++</string>
+    <string name="cross_text_2">+ SPREAD ++++++++++++++++</string>
+    <string name="cross_text_3">+ UMOWA UŻYTKOWNIKA ++</string>
+    <string name="cross_text_4">++ Użycie +++++++++++++++++++</string>
+    <string name="cross_text_5">++ Ograniczenia użytkowania +++++++</string>
+    <string name="cross_text_6">++ Ograniczenie praw autorskich +++++++</string>
+    <string name="cross_text_7">++ Disclaimer ++++++</string>
+    <string name="shopping_calculator">Kalkulator zakupów</string>
+    <string name="share_text_1">Zostałem do życia</string>
+    <string name="share_text_2">Ile Ci zostało? Sprawdź to!</string>
+    <string name="our_apps">Nasze aplikacje</string>
+    <string name="share">Udostępnij</string>
+
+    <string name="sign_out">Wyloguj się</string>
+    <string name="type_message">Wpisz swoją wiadomość…</string>
+    <string name="change_your_fate">Zmień swoje przeznaczenie</string>
+    <string name="new_message_after">Nowa wiadomość w</string>
+    <string name="seconds">sekundy.</string>
+    <string name="coming_soon">Już wkrótce…</string>
+    <string name="do_you_want_change_your_fate">Chcesz zmienić swoje przeznaczenie?</string>
+    <string name="also_disable_ads">A także wyłącz reklamy…</string>
+    <string name="disable_ads">Wyłącz reklamy</string>
+    <string name="undo">Anuluj</string>
+</resources>

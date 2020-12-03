@@ -13,7 +13,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioAttributes;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -511,7 +510,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         Bundle bundle = new Bundle();
         firebaseAnalytics.logEvent("clicks_on_date", bundle);
 
-        if (clicks_on_date >= 5) {
+        if (clicks_on_date >= 2) {
             clicks_on_date = 0;
             mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
             showChangeYourFateDialog();
@@ -1290,40 +1289,40 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         textMin.setText(GetWord(mins, getResources().getString(R.string.text_min1), getResources().getString(R.string.text_min2), getResources().getString(R.string.text_min3)));
         textSec.setText(GetWord(secs, getResources().getString(R.string.text_sec1), getResources().getString(R.string.text_sec2), getResources().getString(R.string.text_sec3)));
 
-        if (years > 0) {
-            tvTextYrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
-            textYrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
-            if (days > 0) {
-                tvTextDay.setTextColor(getResources().getColor(R.color.white, getTheme()));
-                textDay.setTextColor(getResources().getColor(R.color.white, getTheme()));
-                if (hours > 0) {
-                    tvTextHrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
-                    textHrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
-                    if (mins > 0) {
-                        tvTextMin.setTextColor(getResources().getColor(R.color.white, getTheme()));
-                        textMin.setTextColor(getResources().getColor(R.color.white, getTheme()));
-                        if (secs > 0) {
-                            tvTextSec.setTextColor(getResources().getColor(R.color.white, getTheme()));
-                            textSec.setTextColor(getResources().getColor(R.color.white, getTheme()));
-                        } else {
-                            tvTextSec.setTextColor(getResources().getColor(R.color.red, getTheme()));
-                            textSec.setTextColor(getResources().getColor(R.color.red, getTheme()));
-                        }
-                    } else {
-                        tvTextMin.setTextColor(getResources().getColor(R.color.red, getTheme()));
-                        textMin.setTextColor(getResources().getColor(R.color.red, getTheme()));
-                    }
-                } else {
-                    tvTextHrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
-                    textHrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
-                }
-            } else {
-                tvTextDay.setTextColor(getResources().getColor(R.color.red, getTheme()));
-                textDay.setTextColor(getResources().getColor(R.color.red, getTheme()));
-            }
-        } else {
+        if (years == 0) {
             tvTextYrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
             textYrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
+            if (days == 0) {
+                tvTextDay.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                textDay.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                if (hours == 0) {
+                    tvTextHrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                    textHrs.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                    if (mins == 0) {
+                        tvTextMin.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                        textMin.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                        if (secs == 0) {
+                            tvTextSec.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                            textSec.setTextColor(getResources().getColor(R.color.red, getTheme()));
+                        } else {
+                            tvTextSec.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                            textSec.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                        }
+                    } else {
+                        tvTextMin.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                        textMin.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                    }
+                } else {
+                    tvTextHrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                    textHrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                }
+            } else {
+                tvTextDay.setTextColor(getResources().getColor(R.color.white, getTheme()));
+                textDay.setTextColor(getResources().getColor(R.color.white, getTheme()));
+            }
+        } else {
+            tvTextYrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
+            textYrs.setTextColor(getResources().getColor(R.color.white, getTheme()));
         }
     }
 
