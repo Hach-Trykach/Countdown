@@ -3,7 +3,7 @@
     <scale
         android:fromXScale="1.0"
         android:fromYScale="1.0"
-        android:toXScale="1.03"
-        android:toYScale="1.03"
-        android:duration="200"/>
+        android:toXScale="1.04"
+        android:toYScale="1.04"
+        android:duration="300"/>
 </set>

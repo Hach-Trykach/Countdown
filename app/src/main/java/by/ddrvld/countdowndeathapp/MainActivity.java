@@ -510,7 +510,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         Bundle bundle = new Bundle();
         firebaseAnalytics.logEvent("clicks_on_date", bundle);
 
-        if (clicks_on_date >= 2) {
+        if (clicks_on_date >= 1) {
             clicks_on_date = 0;
             mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
             showChangeYourFateDialog();
