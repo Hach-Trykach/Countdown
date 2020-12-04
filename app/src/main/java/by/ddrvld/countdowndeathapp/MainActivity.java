@@ -53,6 +53,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -315,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
 //        manager = new FakeReviewManager(this);
         manager = ReviewManagerFactory.create(this);
-        com.google.android.play.core.tasks.Task<ReviewInfo> request = manager.requestReviewFlow();
+        Task<ReviewInfo> request = manager.requestReviewFlow();
         request.addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // We can get the ReviewInfo object
@@ -881,7 +882,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             firebaseAnalytics.logEvent("dialog_rating_click_yes", bundle);
 
             if(reviewInfo != null) {
-                com.google.android.play.core.tasks.Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
+                Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
                 flow.addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("TAG", "inAppReview isSuccessful");
