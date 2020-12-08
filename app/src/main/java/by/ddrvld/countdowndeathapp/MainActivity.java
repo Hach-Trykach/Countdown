@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     static final String DATE_OF_DEATH = "randomlifetime";
     static final String PERIOD_SETTINGS = "period";
     static final String LAST_RATING_DAY = "last_rating_day";
-    static final String ADS_STATUS_FOR_SOON_DYING = "AdsStatusForSoonDying";
+//    static final String ADS_STATUS_FOR_SOON_DYING = "AdsStatusForSoonDying";
     static final String NO_ADS = "no_ads";
     static Boolean noAds = false;
 
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     public static int PERIOD;
 
-    private boolean AdsStatusForSoonDying = false;
+//    private boolean AdsStatusForSoonDying = false;
 
     private final int BTN_COLOR_MATCH = 1;
     private final int BTN_JUMP_UP = 2;
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     private WebView webView;
 
-//    private FakeReviewManager manager;
+    //    private FakeReviewManager manager;
     private ReviewManager manager;
     private ReviewInfo reviewInfo;
 
@@ -330,17 +330,17 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             if(!hasConnection(getApplicationContext()))
                 date_of_death = settings.getLong(DATE_OF_DEATH, 0);
 
-            if (settings.contains(ADS_STATUS_FOR_SOON_DYING)) {
-                AdsStatusForSoonDying = settings.getBoolean(ADS_STATUS_FOR_SOON_DYING, false);
-                if(AdsStatusForSoonDying) {
-                    if(!noAds)
-                        createInterstitialAd_For_Soon_Dying();
-                    SharedPreferences.Editor editor = settings.edit();
-                    AdsStatusForSoonDying = false;
-                    editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
-                    editor.apply();
-                }
-            }
+//            if (settings.contains(ADS_STATUS_FOR_SOON_DYING)) {
+//                AdsStatusForSoonDying = settings.getBoolean(ADS_STATUS_FOR_SOON_DYING, false);
+//                if(AdsStatusForSoonDying) {
+//                    if(!noAds)
+//                        createInterstitialAd_For_Soon_Dying();
+//                    SharedPreferences.Editor editor = settings.edit();
+//                    AdsStatusForSoonDying = false;
+//                    editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
+//                    editor.apply();
+//                }
+//            }
         }
 
         startMainTimer();
@@ -502,8 +502,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //                }
 //                Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT).show();
 //            });
-        
+
         DrawerBuilder();
+
+        startAdsTimer();
     }
 
     private void clicksOnDate() {
@@ -1114,19 +1116,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //    }
 
     public void TimerRating() {
-        final Thread logoTimer = new Thread() {
-            int logoTimer = 0;
-
+        final Thread ratingTimer = new Thread() {
             public void run() {
                 try {
-                    while (logoTimer < 60000) { // 1 минута
-                        sleep(1000);
-                        logoTimer += 1000;
-                        if(logoTimer == 10000)
-                            if(!noAds)
-                                createInterstitialAd();
-//                                DisplayUnityInterstitialAd();
-                    }
+                    Thread.sleep(60 * 1000);
                     runOnUiThread(() -> {
                         DialogRating();
                     });
@@ -1135,20 +1128,14 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 }
             }
         };
-        logoTimer.start();
+        ratingTimer.start();
     }
 
-    Thread activityDateTimer;
     public void TimerToActivityDate() {
-        activityDateTimer = new Thread() {
-            int logoTimer = 0;
-
+        final Thread activityDateTimer = new Thread() {
             public void run() {
                 try {
-                    while (logoTimer < 2) {
-                        sleep(1000);
-                        logoTimer ++;
-                    }
+                    Thread.sleep(2 * 1000);
                     runOnUiThread(() -> {
                         onCreateActivityDate();
                     });
@@ -1183,6 +1170,32 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         textView.setTextColor(Color.WHITE);
 //        textView.setShadowLayer(5, 5, 5, Color.WHITE);
         return textView;
+    }
+
+    public class AdsTimer extends CountDownTimer {
+
+        public AdsTimer(long startTime, long interval) {
+            super(startTime, interval);
+        }
+
+        @Override
+        public void onFinish() {
+            if(!noAds)
+                createInterstitialAd();
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {}
+    }
+
+    private AdsTimer adsTimer;
+    private void startAdsTimer() {
+        if(!noAds) {
+            if (adsTimer == null) {
+                adsTimer = new AdsTimer(12 * 1000, 1000);
+                adsTimer.start();
+            }
+        }
     }
 
     // CountDownTimer class
@@ -1246,24 +1259,24 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         TextView tvTextSec = (TextView) tvSec.getChildAt(0);
 
 //        if (years > 0) {
-            if (years >= 10) tvYrs.setText(String.valueOf(years));
-            else tvYrs.setText(String.format("0%s", years));
+        if (years >= 10) tvYrs.setText(String.valueOf(years));
+        else tvYrs.setText(String.format("0%s", years));
 //        } else tvTextYrs.setText(String.format("0%s", years));
 //        if (days > 0) {
-            if (days >= 10) tvDay.setText(String.valueOf(days));
-            else tvDay.setText(String.format("0%s", days));
+        if (days >= 10) tvDay.setText(String.valueOf(days));
+        else tvDay.setText(String.format("0%s", days));
 //        } else tvTextDay.setText(String.format("0%s", days));
 //        if (hours > 0) {
-            if (hours >= 10) tvHrs.setText(String.valueOf(hours));
-            else tvHrs.setText(String.format("0%s", hours));
+        if (hours >= 10) tvHrs.setText(String.valueOf(hours));
+        else tvHrs.setText(String.format("0%s", hours));
 //        } else tvTextHrs.setText(String.format("0%s", hours));
 //        if(mins > 0) {
-            if (mins >= 10) tvMin.setText(String.valueOf(mins));
-            else tvMin.setText(String.format("0%s", mins));
+        if (mins >= 10) tvMin.setText(String.valueOf(mins));
+        else tvMin.setText(String.format("0%s", mins));
 //        } else tvTextMin.setText(String.format("0%s", mins));
 //        if(secs > 0) {
-            if (secs >= 10) tvSec.setText(String.valueOf(secs));
-            else tvSec.setText(String.format("0%s", secs));
+        if (secs >= 10) tvSec.setText(String.valueOf(secs));
+        else tvSec.setText(String.format("0%s", secs));
 //        } else tvTextSec.setText(String.format("0%s", secs));
 
         if (years <= 0 && days <= 0 && hours <= 0 && mins <= 0 && secs <= 0) {
@@ -1412,10 +1425,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //                timeToNotifi = timerTime;
 //            else return;
 
-            SharedPreferences.Editor editor = settings.edit();
-            AdsStatusForSoonDying = true;
-            editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
-            editor.apply();
+//            SharedPreferences.Editor editor = settings.edit();
+//            AdsStatusForSoonDying = true;
+//            editor.putBoolean(ADS_STATUS_FOR_SOON_DYING, AdsStatusForSoonDying);
+//            editor.apply();
 
             Intent intent = new Intent(this, Receiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
@@ -1604,10 +1617,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 .addDrawerItems(changeYourFateDrawerItem)
                 .addDrawerItems(disableAdsDrawerItem)
                 .addDrawerItems(shareDrawerItem)
-    //            .addStickyDrawerItems(initializeStickyDrawerItems())
+                //            .addStickyDrawerItems(initializeStickyDrawerItems())
                 .withOnDrawerItemClickListener(onClicksLis)
-    //            .withAccountHeader(accountHeader)
-    //            .withRootView(R.id.drawer_layout)
+                //            .withAccountHeader(accountHeader)
+                //            .withRootView(R.id.drawer_layout)
                 .withGenerateMiniDrawer(true)
                 .build();
     }
@@ -1760,7 +1773,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_no");
             firebaseAnalytics.logEvent("dialog_change_your_fate_no", bundle);
         });
-//        dialog.setCancelable(false);
+        dialog.setCancelable(false);
         dialog.show();
     }
 
