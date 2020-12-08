@@ -843,10 +843,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             saveTime();
             showMsg("getDateOfDeathFirstTime");
             updateValueInDatabase();
-
-            if(!noAds)
-                createInterstitialAd();
-//                DisplayUnityInterstitialAd();
         });
         dialogButtonNo.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
@@ -1126,6 +1122,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                     while (logoTimer < 60000) { // 1 минута
                         sleep(1000);
                         logoTimer += 1000;
+                        if(logoTimer == 10000)
+                            if(!noAds)
+                                createInterstitialAd();
+//                                DisplayUnityInterstitialAd();
                     }
                     runOnUiThread(() -> {
                         DialogRating();
