@@ -6,10 +6,17 @@
     <string name="text_hrs3">Сағаттар</string>
     <string name="text_min3">Хаттама</string>
     <string name="text_sec3">Секунд</string>
+    <string name="enter_your_information">Ақпаратты енгізіңіз</string>
+    <string name="enter_name">Аты-жөні</string>
+    <string name="enter_birthday">Туған күн</string>
+    <string name="enter_place_of_birth">Туған жері</string>
     <string name="question">Сіз тағдырыңызға келісесіз бе?</string>
     <string name="key_yes">Иә</string>
     <string name="key_no">жоқ</string>
+    <string name="key_cancel">Бас тарту</string>
+    <string name="key_accept">Қабылдау</string>
     <string name="countdown_is_ready">Сіздің кері санауыңыз дайын.</string>
+    <string name="i_have_read_user_agreement">Мен пайдаланушы келісімімен таныстым және шарттар мен талаптарды қабылдаймын.</string>
     <string name="read_phone_state_text">Қосымшаның жұмыс істеуі үшін параметрлерге өтіп, осы қосымшаны тауып, \ "Қолданба рұқсаттары \" бөлімінен \ "Телефон \" рұқсатын беріңіз.</string>
     <string name="understand">Түсіндім</string>
     <string name="text_day2">Күндер</string>

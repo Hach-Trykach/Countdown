@@ -6,10 +6,17 @@
     <string name="text_hrs3">Godziny</string>
     <string name="text_min3">Minuty</string>
     <string name="text_sec3">Sekundy</string>
+    <string name="enter_your_information">Wprowadź swoje dane</string>
+    <string name="enter_name">Nazwa</string>
+    <string name="enter_birthday">Urodziny</string>
+    <string name="enter_place_of_birth">Miejsce urodzenia</string>
     <string name="question">Czy akceptujesz swoje przeznaczenie?</string>
     <string name="key_yes">Tak</string>
     <string name="key_no">Nie</string>
+    <string name="key_cancel">Anuluj</string>
+    <string name="key_accept">Zaakceptować</string>
     <string name="countdown_is_ready">Twoje odliczanie jest gotowe.</string>
+    <string name="i_have_read_user_agreement">Zapoznałem się z umową użytkownika i akceptuję regulamin.</string>
     <string name="read_phone_state_text">Aby aplikacja działała, przejdź do ustawień, znajdź tę aplikację i nadaj uprawnienie \ "Telefon \" w sekcji \ "Uprawnienia aplikacji \".</string>
     <string name="understand">Rozumiem</string>
     <string name="text_day2">Dni</string>

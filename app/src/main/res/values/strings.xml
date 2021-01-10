@@ -5,10 +5,17 @@
     <string name="text_hrs3">HRS</string>
     <string name="text_min3">MIN</string>
     <string name="text_sec3">SEC</string>
+    <string name="enter_your_information">Enter Your Information</string>
+    <string name="enter_name">Name</string>
+    <string name="enter_birthday">Birthday</string>
+    <string name="enter_place_of_birth">Place of Birth</string>
     <string name="question">Do you accept your fate?</string>
     <string name="key_yes">Yes</string>
     <string name="key_no">No</string>
+    <string name="key_cancel">Cancel</string>
+    <string name="key_accept">Accept</string>
     <string name="countdown_is_ready">Your countdown is ready.</string>
+    <string name="i_have_read_user_agreement">I have read the user agreement and accept the terms and conditions.</string>
     <string name="read_phone_state_text">For the application to work, go to the settings, find this application and provide the \"Phone\"
         permission in the \"Application Permissions\" section.
     </string>

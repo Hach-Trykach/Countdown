@@ -6,10 +6,17 @@
     <string name="text_hrs3">Часів</string>
     <string name="text_min3">Хвилин</string>
     <string name="text_sec3">Cекунд</string>
+    <string name="enter_your_information">Введіть свою інформацію</string>
+    <string name="enter_name">Ім\'я</string>
+    <string name="enter_birthday">День народження</string>
+    <string name="enter_place_of_birth">Місце народження</string>
     <string name="question">Ви приймаєте свою долю?</string>
     <string name="key_yes">Так</string>
     <string name="key_no">Ні</string>
+    <string name="key_cancel">Скасувати</string>
+    <string name="key_accept">Прийміть</string>
     <string name="countdown_is_ready">Ваш зворотний відлік готовий.</string>
+    <string name="i_have_read_user_agreement">Я прочитав користувальницьку угоду та приймаю умови використання.</string>
     <string name="read_phone_state_text">Для роботи програми зайдіть в настройки, знайдіть цю програму і надайте дозвіл \ "Телефон \" в розділі \ "Дозволи додатків \".</string>
     <string name="understand">Зрозуміло</string>
     <string name="text_day2">Дня</string>

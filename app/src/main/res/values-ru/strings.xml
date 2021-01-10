@@ -6,10 +6,17 @@
     <string name="text_hrs3">Часов</string>
     <string name="text_min3">Минут</string>
     <string name="text_sec3">Секунд</string>
+    <string name="enter_your_information">Введите информацию о себе</string>
+    <string name="enter_name">Имя</string>
+    <string name="enter_birthday">День рождения</string>
+    <string name="enter_place_of_birth">Место рождения</string>
     <string name="question">Вы принимаете свою судьбу?</string>
     <string name="key_yes">Да</string>
     <string name="key_no">Нет</string>
+    <string name="key_cancel">Отмена</string>
+    <string name="key_accept">Принять</string>
     <string name="countdown_is_ready">Ваш обратный отсчёт готов.</string>
+    <string name="i_have_read_user_agreement">Я прочитал(а) пользовательское соглашение и принимаю условия.</string>
     <string name="read_phone_state_text">Для работы приложения зайдите в настройки, найдите это приложение и предоставьте разрешение \"Телефон\" в разделе \"Разрешения приложений\".</string>
     <string name="understand">Понятно</string>
     <string name="text_day2">Дня</string>
