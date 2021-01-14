@@ -33,6 +33,7 @@
         android:layout_marginBottom="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_name"
@@ -49,6 +50,7 @@
         android:layout_marginBottom="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/birthday"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_birthday"
@@ -65,6 +67,7 @@
         android:layout_marginBottom="10dp">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/placeOfBirth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/enter_place_of_birth"
@@ -72,6 +75,21 @@
 
         </com.google.android.material.textfield.TextInputEditText>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/dialogButtonYes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:background="@color/white"
+            android:textColor="@color/black"
+            android:text="@string/accept_and_continue"/>
     </LinearLayout>
 
 </LinearLayout>

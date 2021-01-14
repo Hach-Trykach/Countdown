@@ -50,6 +50,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
@@ -66,7 +67,14 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
 
@@ -137,6 +145,39 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wait);
+
+
+
+        String jsonString = "https://api.themoviedb.org/3/movie/550?api_key=85323c5fecd31399148b0c27841aa218";
+        // Считываем json
+        Object obj = null; // Object obj = new JSONParser().parse(new FileReader("JSONExample.json"));
+        try {
+            obj = new JSONParser().parse(jsonString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        // Кастим obj в JSONObject
+        JSONObject jo = (JSONObject) obj;
+        // Достаём firstName and lastName
+        String backdrop_path = null;
+        try {
+            backdrop_path = (String) jo.get("backdrop_path");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String poster_path = null;
+        try {
+            poster_path = (String) jo.get("poster_path");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println("backdrop_path: " + backdrop_path + ", poster_path " + poster_path);
+
+
+
+
+
+
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.black, getTheme()));
 
@@ -1772,6 +1813,33 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             Bundle bundle = new Bundle();
 //            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_no");
             firebaseAnalytics.logEvent("dialog_change_your_fate_no", bundle);
+        });
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    public void EnterInformationDialog() {
+        final Context context = this;
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.enter_information_dialog);
+
+        Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
+
+        TextInputEditText textInptEdtTxtName = findViewById(R.id.name);
+        TextInputEditText textInptEdtTxtBirthday = findViewById(R.id.birthday);
+        TextInputEditText textInptEdtTxtPlaceOfBirth = findViewById(R.id.placeOfBirth);
+
+        dialogButtonYes.setOnClickListener(v -> {
+            dialog.cancel();
+            finish();
+//            Intent intentX = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//            Uri uri = Uri.fromParts("package", getPackageName(), null);
+//            intentX.setData(uri);
+//            if (intentX.resolveActivity(getPackageManager()) != null) {
+//                startActivity(intentX);
+//            }
+            //submit
         });
         dialog.setCancelable(false);
         dialog.show();
