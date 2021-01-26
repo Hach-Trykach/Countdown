@@ -67,14 +67,7 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
 
@@ -146,40 +139,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wait);
 
-
-
-        String jsonString = "https://api.themoviedb.org/3/movie/550?api_key=85323c5fecd31399148b0c27841aa218";
-        // Считываем json
-        Object obj = null; // Object obj = new JSONParser().parse(new FileReader("JSONExample.json"));
-        try {
-            obj = new JSONParser().parse(jsonString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        // Кастим obj в JSONObject
-        JSONObject jo = (JSONObject) obj;
-        // Достаём firstName and lastName
-        String backdrop_path = null;
-        try {
-            backdrop_path = (String) jo.get("backdrop_path");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String poster_path = null;
-        try {
-            poster_path = (String) jo.get("poster_path");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        System.out.println("backdrop_path: " + backdrop_path + ", poster_path " + poster_path);
-
-
-
-
-
-
-
         getWindow().setNavigationBarColor(getResources().getColor(R.color.black, getTheme()));
+
+//        EnterInformationDialog();
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
