@@ -2,6 +2,7 @@ package by.ddrvld.countdowndeathapp;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.net.ConnectivityManager;
@@ -32,6 +34,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
@@ -133,6 +138,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     int countdown;
     int krik;
 
+    private TextView textViewBirthday;
+    private TextInputEditText textInptEdtTxtName, textInptEdtTxtPlaceOfBirth;
+    private DatePickerDialog.OnDateSetListener dateSetListener;
+
+//    public MainActivity() {
+//    }
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,11 +153,13 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.black, getTheme()));
 
-//        EnterInformationDialog();
-
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         myReference = firebaseDatabase.getReference();
+
+        TextInputEditText textInptEdtTxtName = findViewById(R.id.name);
+        textViewBirthday = findViewById(R.id.birthday);
+        TextInputEditText textInptEdtTxtPlaceOfBirth = findViewById(R.id.placeOfBirth);
 
 //        AudioAttributes attributes = new AudioAttributes.Builder()
 //                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -167,7 +181,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             if(settings.contains(DATE_OF_DEATH)) {
                 onCreateActivityDate();
             } else {
-                onCreateActivityTermOfUse();
+                EnterInformationDialog();
+//                onCreateActivityTermOfUse();
             }
             showMsg("hasConnection false");
         }
@@ -1788,13 +1803,23 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
 
-        TextInputEditText textInptEdtTxtName = findViewById(R.id.name);
-        TextInputEditText textInptEdtTxtBirthday = findViewById(R.id.birthday);
-        TextInputEditText textInptEdtTxtPlaceOfBirth = findViewById(R.id.placeOfBirth);
+        textViewBirthday.setOnClickListener(v -> {
+            Calendar cal = Calendar.getInstance();
+            int year = cal.get(Calendar.YEAR);
+            int month = cal.get(Calendar.MONTH);
+            int day = cal.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog dpDialog = new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_MinWidth, dateSetListener, year, month, day);
+
+            dpDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dpDialog.show();
+        });
+
+        dateSetListener = (view, year, month, dayOfMonth) -> Log.d("TAG", "onDateSet: date: " + year + "/" + month + "/" + dayOfMonth);
 
         dialogButtonYes.setOnClickListener(v -> {
             dialog.cancel();
-            finish();
+            onCreateActivityTermOfUse();
 //            Intent intentX = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 //            Uri uri = Uri.fromParts("package", getPackageName(), null);
 //            intentX.setData(uri);
@@ -1828,17 +1853,19 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 // whenever data at this location is updated.
                 User user = dataSnapshot.getValue(User.class);
                 if(user == null) { // если в БД нет записи о пользователе
-                    onCreateActivityTermOfUse();
+                    EnterInformationDialog();
+//                    onCreateActivityTermOfUse();
                     Log.e("READ_FROM_DATABASE", "terms_of_use");
                 } else {
                     date_of_death = user.getDateOfDeath();
-                    if (mainTimer == null) {  // при обычном запуске приложения (mainTimer не запущен)
-                        onCreateActivityDate();
+                    if (mainTimer == null) {  // при обычном запуске приложения (mainTimer не запущен)\
+                        EnterInformationDialog();
+//                        onCreateActivityDate();
                         Log.e("READ_FROM_DATABASE", "mainTimer == null");
                     }
-                    countDateOfDeath();
-                    saveTime();
-                    noAds(user.getNoAds());
+//                    countDateOfDeath();
+//                    saveTime();
+//                    noAds(user.getNoAds());
                     Log.e("DATE_OF_DEATH", "Value is: " + date_of_death);
                 }
             }
