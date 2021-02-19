@@ -7,9 +7,11 @@
     <string name="text_min3">Минут</string>
     <string name="text_sec3">Секунд</string>
     <string name="enter_your_information">Введите информацию о себе</string>
-    <string name="enter_name">Имя</string>
+    <string name="enter_name">Имя и Фамилия</string>
     <string name="enter_birthday">День рождения</string>
     <string name="enter_place_of_birth">Место рождения</string>
+    <string name="enterAllData">Введите все данные</string>
+    <string name="ifSomethingDoesNotSuitYouDeleteTheApplication">Если вас что-то не устраивает - удалите приложение!</string>
     <string name="question">Вы принимаете свою судьбу?</string>
     <string name="key_yes">Да</string>
     <string name="key_no">Нет</string>

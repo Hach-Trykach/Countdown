@@ -7,9 +7,11 @@
     <string name="text_min3">Хаттама</string>
     <string name="text_sec3">Секунд</string>
     <string name="enter_your_information">Ақпаратты енгізіңіз</string>
-    <string name="enter_name">Аты-жөні</string>
+    <string name="enter_name">Тегі және аты</string>
     <string name="enter_birthday">Туған күн</string>
     <string name="enter_place_of_birth">Туған жері</string>
+    <string name="enterAllData">Барлық деректерді енгізіңіз</string>
+    <string name="ifSomethingDoesNotSuitYouDeleteTheApplication">Егер сіз бірдеңе көңіліңізден шықпаса - қосымшаны жойыңыз!</string>
     <string name="question">Сіз тағдырыңызға келісесіз бе?</string>
     <string name="key_yes">Иә</string>
     <string name="key_no">жоқ</string>

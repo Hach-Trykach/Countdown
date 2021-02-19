@@ -55,6 +55,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
@@ -85,9 +86,15 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     static final String DATE_OF_DEATH = "randomlifetime";
     static final String PERIOD_SETTINGS = "period";
     static final String LAST_RATING_DAY = "last_rating_day";
+    static final String NAME_AND_SURNAME = "name_and_surname";
+    static final String DATE_OF_BIRTH = "date_of_birth";
+    static final String PLACE_OF_BIRTH = "place_of_birth";
 //    static final String ADS_STATUS_FOR_SOON_DYING = "AdsStatusForSoonDying";
     static final String NO_ADS = "no_ads";
     static Boolean noAds = false;
+    static String nameAndSurname;
+    static String dateOfBirth;
+    static String placeOfBirth;
 
     int lastRatingDay;
 
@@ -157,10 +164,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         firebaseDatabase = FirebaseDatabase.getInstance();
         myReference = firebaseDatabase.getReference();
 
-        TextInputEditText textInptEdtTxtName = findViewById(R.id.name);
-        textViewBirthday = findViewById(R.id.birthday);
-        TextInputEditText textInptEdtTxtPlaceOfBirth = findViewById(R.id.placeOfBirth);
-
 //        AudioAttributes attributes = new AudioAttributes.Builder()
 //                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
 //                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -182,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 onCreateActivityDate();
             } else {
                 EnterInformationDialog();
-//                onCreateActivityTermOfUse();
             }
             showMsg("hasConnection false");
         }
@@ -563,11 +565,12 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     private void updateValueInDatabase() {
-        User user = new User(getUniqueKey(), date_of_death, noAds);
+        User user = new User(getUniqueKey(), date_of_death, noAds, nameAndSurname, dateOfBirth, placeOfBirth);
         myReference
                 .child("users")
                 .child(getUniqueKey())
                 .setValue(user);
+        Log.d("TAG", date_of_death + "|" + noAds + "|" + nameAndSurname + "|" + dateOfBirth + "|" + placeOfBirth);
     }
 
     private int getRandomNumberInRange(int min, int max) {
@@ -985,50 +988,50 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         });
     }
 
-    private void createInterstitialAd_For_Soon_Dying() { //Создаём межстраничное объявление
-        final InterstitialAd interstitial;
-
-        interstitial = new InterstitialAd(MainActivity.this);
-        interstitial.setAdUnitId("ca-app-pub-7528412641056592/7503516855");
-        AdRequest adRequesti = new AdRequest.Builder()
-                .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
-                .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
-                .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
-                .build();
-        interstitial.loadAd(adRequesti);
-        interstitial.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                interstitial.show();
-            }
-
-            @Override
-            public void onAdFailedToLoad(int errorCode) {
-                super.onAdFailedToLoad(errorCode);
-            }
-
-            @Override
-            public void onAdOpened() {
-                super.onAdOpened();
-            }
-
-            @Override
-            public void onAdClicked() {
-                super.onAdClicked();
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                super.onAdLeftApplication();
-            }
-
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-            }
-        });
-    }
+//    private void createInterstitialAd_For_Soon_Dying() { //Создаём межстраничное объявление
+//        final InterstitialAd interstitial;
+//
+//        interstitial = new InterstitialAd(MainActivity.this);
+//        interstitial.setAdUnitId("ca-app-pub-7528412641056592/7503516855");
+//        AdRequest adRequesti = new AdRequest.Builder()
+//                .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
+//                .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
+//                .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
+//                .build();
+//        interstitial.loadAd(adRequesti);
+//        interstitial.setAdListener(new AdListener() {
+//            @Override
+//            public void onAdLoaded() {
+//                super.onAdLoaded();
+//                interstitial.show();
+//            }
+//
+//            @Override
+//            public void onAdFailedToLoad(int errorCode) {
+//                super.onAdFailedToLoad(errorCode);
+//            }
+//
+//            @Override
+//            public void onAdOpened() {
+//                super.onAdOpened();
+//            }
+//
+//            @Override
+//            public void onAdClicked() {
+//                super.onAdClicked();
+//            }
+//
+//            @Override
+//            public void onAdLeftApplication() {
+//                super.onAdLeftApplication();
+//            }
+//
+//            @Override
+//            public void onAdClosed() {
+//                super.onAdClosed();
+//            }
+//        });
+//    }
 
 //    private void PermissionRequest() {
 //        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -1803,23 +1806,53 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         Button dialogButtonYes = dialog.findViewById(R.id.dialogButtonYes);
 
+        TextInputEditText textInptEdtTxtName = dialog.findViewById(R.id.name);
+        textViewBirthday = dialog.findViewById(R.id.birthday);
+        TextInputEditText textInptEdtTxtPlaceOfBirth = dialog.findViewById(R.id.placeOfBirth);
+
+        Bundle bundle = new Bundle();
+        firebaseAnalytics.logEvent("EnterInformationDialog", bundle);
+
         textViewBirthday.setOnClickListener(v -> {
             Calendar cal = Calendar.getInstance();
             int year = cal.get(Calendar.YEAR);
             int month = cal.get(Calendar.MONTH);
             int day = cal.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog dpDialog = new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog_MinWidth, dateSetListener, year, month, day);
+            DatePickerDialog dpDialog = new DatePickerDialog(this, android.R.style.Theme_Holo_Dialog_MinWidth, dateSetListener, year, month, day);
 
             dpDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dpDialog.show();
         });
 
-        dateSetListener = (view, year, month, dayOfMonth) -> Log.d("TAG", "onDateSet: date: " + year + "/" + month + "/" + dayOfMonth);
+        dateSetListener = (view, year, month, dayOfMonth) -> {
+            month += 1; // correction
+            dateOfBirth = dayOfMonth + "." + month + "." + year;
+            textViewBirthday.setText(dateOfBirth);
+        };
 
         dialogButtonYes.setOnClickListener(v -> {
-            dialog.cancel();
-            onCreateActivityTermOfUse();
+            if((!textInptEdtTxtName.getText().equals("") && textInptEdtTxtName.length() > 3) &&
+                    (!textViewBirthday.getText().equals("Birthday")) &&
+                    (!textInptEdtTxtPlaceOfBirth.getText().equals("") && textInptEdtTxtPlaceOfBirth.length() > 3)) {
+
+                nameAndSurname = textInptEdtTxtName.getText().toString();
+                placeOfBirth = textInptEdtTxtPlaceOfBirth.getText().toString();
+
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(NAME_AND_SURNAME, nameAndSurname);
+                editor.putString(DATE_OF_BIRTH, dateOfBirth);
+                editor.putString(PLACE_OF_BIRTH, placeOfBirth);
+                editor.apply();
+
+                dialog.cancel();
+                onCreateActivityTermOfUse();
+                firebaseAnalytics.logEvent("EnterInformationDialog_accept_button", bundle);
+            }
+            else {
+                Snackbar.make(findViewById(android.R.id.content), R.string.enterAllData, Snackbar.LENGTH_SHORT).show();
+                firebaseAnalytics.logEvent("enterAllData_snackbar_message", bundle);
+            }
 //            Intent intentX = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 //            Uri uri = Uri.fromParts("package", getPackageName(), null);
 //            intentX.setData(uri);
@@ -1854,18 +1887,16 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 User user = dataSnapshot.getValue(User.class);
                 if(user == null) { // если в БД нет записи о пользователе
                     EnterInformationDialog();
-//                    onCreateActivityTermOfUse();
                     Log.e("READ_FROM_DATABASE", "terms_of_use");
                 } else {
                     date_of_death = user.getDateOfDeath();
-                    if (mainTimer == null) {  // при обычном запуске приложения (mainTimer не запущен)\
-                        EnterInformationDialog();
-//                        onCreateActivityDate();
+                    if (mainTimer == null) {  // при обычном запуске приложения (mainTimer не запущен)
+                        onCreateActivityDate();
                         Log.e("READ_FROM_DATABASE", "mainTimer == null");
                     }
-//                    countDateOfDeath();
-//                    saveTime();
-//                    noAds(user.getNoAds());
+                    countDateOfDeath();
+                    saveTime();
+                    noAds(user.getNoAds());
                     Log.e("DATE_OF_DEATH", "Value is: " + date_of_death);
                 }
             }

@@ -123,6 +123,28 @@
         </LinearLayout>
 
         <RelativeLayout
+            android:id="@+id/relative_layout_enter_dialog_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="0dp" >
+
+            <TextView
+                android:id="@+id/messageDialogEnterDialogInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:layout_below="@+id/messageDialog"
+                android:text="@string/ifSomethingDoesNotSuitYouDeleteTheApplication"
+                android:textColor="@color/grey_300"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -7,9 +7,11 @@
     <string name="text_min3">Minuty</string>
     <string name="text_sec3">Sekundy</string>
     <string name="enter_your_information">Wprowadź swoje dane</string>
-    <string name="enter_name">Nazwa</string>
+    <string name="enter_name">Imię i Nazwisko</string>
     <string name="enter_birthday">Urodziny</string>
     <string name="enter_place_of_birth">Miejsce urodzenia</string>
+    <string name="enterAllData">Wprowadź wszystkie dane</string>
+    <string name="ifSomethingDoesNotSuitYouDeleteTheApplication">Jeśli z czegoś nie jesteś zadowolony - usuń aplikację!</string>
     <string name="question">Czy akceptujesz swoje przeznaczenie?</string>
     <string name="key_yes">Tak</string>
     <string name="key_no">Nie</string>

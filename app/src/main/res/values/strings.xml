@@ -6,9 +6,11 @@
     <string name="text_min3">MIN</string>
     <string name="text_sec3">SEC</string>
     <string name="enter_your_information">Enter Your Information</string>
-    <string name="enter_name">Name</string>
+    <string name="enter_name">Name and Surname</string>
     <string name="enter_birthday">Birthday</string>
     <string name="enter_place_of_birth">Place of Birth</string>
+    <string name="enterAllData">Enter all data</string>
+    <string name="ifSomethingDoesNotSuitYouDeleteTheApplication">If something does not suit you, delete the application!</string>
     <string name="question">Do you accept your fate?</string>
     <string name="key_yes">Yes</string>
     <string name="key_no">No</string>

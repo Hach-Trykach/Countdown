@@ -7,9 +7,11 @@
     <string name="text_min3">Хвилин</string>
     <string name="text_sec3">Cекунд</string>
     <string name="enter_your_information">Введіть свою інформацію</string>
-    <string name="enter_name">Ім\'я</string>
+    <string name="enter_name">Ім\'я та Прізвище</string>
     <string name="enter_birthday">День народження</string>
     <string name="enter_place_of_birth">Місце народження</string>
+    <string name="enterAllData">Введіть всі дані</string>
+    <string name="ifSomethingDoesNotSuitYouDeleteTheApplication">Якщо вас щось не влаштовує - спершу видаліть цю програму!</string>
     <string name="question">Ви приймаєте свою долю?</string>
     <string name="key_yes">Так</string>
     <string name="key_no">Ні</string>
