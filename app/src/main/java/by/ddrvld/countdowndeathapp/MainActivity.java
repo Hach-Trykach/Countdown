@@ -37,9 +37,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
@@ -649,12 +646,45 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //    }
 
     private void adsInitialization() {
-        int banner = getRandomNumberInRange(1, 4);
+        int banner = getRandomNumberInRange(1, 5);
         switch (banner)
         {
             case 1:
             {
+                webView.setVisibility(View.VISIBLE);
+                // включаем поддержку JavaScript
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.setWebViewClient(new MyWebViewClient());
+                webView.loadUrl("https://ddrvld.com/countdown/banner1/index.html");
+            }
+            case 2:
+            {
+                webView.setVisibility(View.VISIBLE);
+                // включаем поддержку JavaScript
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.setWebViewClient(new MyWebViewClient());
+                webView.loadUrl("https://ddrvld.com/countdown/banner2/index.html");
+            }
+            case 3:
+            {
+                webView.setVisibility(View.VISIBLE);
+                // включаем поддержку JavaScript
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.setWebViewClient(new MyWebViewClient());
+                webView.loadUrl("https://ddrvld.com/countdown/banner3/index.html");
+            }
+            case 4:
+            {
+                webView.setVisibility(View.VISIBLE);
+                // включаем поддержку JavaScript
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.setWebViewClient(new MyWebViewClient());
+                webView.loadUrl("https://ddrvld.com/countdown/banner4/index.html");
+            }
+            default:
+            {
                 AdView mAdView = findViewById(R.id.adView);
+                mAdView.setVisibility(View.VISIBLE);
                 AdRequest adRequest = new AdRequest.Builder()
                         .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
                         .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
@@ -665,17 +695,14 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 MobileAds.initialize(this, initializationStatus -> {
                 });
             }
-            default:
-            {
-//                webView.setVisibility(View.VISIBLE);
-                // включаем поддержку JavaScript
-                webView.getSettings().setJavaScriptEnabled(true);
-                webView.setWebViewClient(new MyWebViewClient());
-//                webView.loadData("<html><body>Hello, Android</body></html>","text/html", "UTF-8");
-//                webView.loadUrl("file:///android_asset/index.html");
-                webView.loadUrl("file:///android_asset/index.html");
-            }
         }
+    }
+
+    public void onclickOneMinBanner(View view)
+    {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://1-min.ru/?utm_source=blog&utm_medium=banner&utm_campaign=start06042021&utm_term=death"));
+        startActivity(intent);
+        Log.d("DDD", "1-min.ru");
     }
 
     private final Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {

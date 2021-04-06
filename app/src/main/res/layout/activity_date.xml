@@ -325,8 +325,8 @@
 
     <RelativeLayout
         android:id="@+id/relative_layout_ads"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true">
 
         <com.google.android.gms.ads.AdView
@@ -337,7 +337,7 @@
             android:layout_centerHorizontal="true"
             app:adSize="BANNER"
             app:adUnitId="ca-app-pub-7528412641056592/8720202087"
-            android:visibility="gone">
+            android:visibility="invisible">
         </com.google.android.gms.ads.AdView>
 
         <WebView
@@ -345,8 +345,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true">
-
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"
+            android:onClick="onclickOneMinBanner">
         </WebView>
 
     </RelativeLayout>
