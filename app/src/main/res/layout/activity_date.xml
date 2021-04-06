@@ -336,8 +336,18 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             app:adSize="BANNER"
-            app:adUnitId="ca-app-pub-7528412641056592/8720202087">
+            app:adUnitId="ca-app-pub-7528412641056592/8720202087"
+            android:visibility="gone">
         </com.google.android.gms.ads.AdView>
+
+        <WebView
+            android:id="@+id/oneMinBanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true">
+
+        </WebView>
 
     </RelativeLayout>
 

@@ -1,6 +1,7 @@
 package by.ddrvld.countdowndeathapp;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -32,7 +33,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -254,6 +257,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         textHrs = findViewById(R.id.text_hrs);
         textMin = findViewById(R.id.text_min);
         textSec = findViewById(R.id.text_sec);
+
+        webView = findViewById(R.id.oneMinBanner);
 
         if (settings.contains(NO_ADS)) {
             noAds = settings.getBoolean(NO_ADS, false);
@@ -644,16 +649,33 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //    }
 
     private void adsInitialization() {
-        AdView mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
-                .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
-                .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
-                .build();
-        mAdView.loadAd(adRequest);
+        int banner = getRandomNumberInRange(1, 4);
+        switch (banner)
+        {
+            case 1:
+            {
+                AdView mAdView = findViewById(R.id.adView);
+                AdRequest adRequest = new AdRequest.Builder()
+                        .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
+                        .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
+                        .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
+                        .build();
+                mAdView.loadAd(adRequest);
 
-        MobileAds.initialize(this, initializationStatus -> {
-        });
+                MobileAds.initialize(this, initializationStatus -> {
+                });
+            }
+            default:
+            {
+//                webView.setVisibility(View.VISIBLE);
+                // включаем поддержку JavaScript
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.setWebViewClient(new MyWebViewClient());
+//                webView.loadData("<html><body>Hello, Android</body></html>","text/html", "UTF-8");
+//                webView.loadUrl("file:///android_asset/index.html");
+                webView.loadUrl("file:///android_asset/index.html");
+            }
+        }
     }
 
     private final Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
@@ -859,8 +881,8 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_accept_and_continue_click_yes");
             firebaseAnalytics.logEvent("dialog_accept_and_continue_click_yes", bundle);
 
-//                webView = findViewById(R.id.webView);
-//                webView.setWebViewClient(new MyWebViewClient());
+//            webView = findViewById(R.id.webView);
+//            webView.setWebViewClient(new MyWebViewClient());
 
             date_of_death = getDateOfDeathFirstTime();
             saveTime();
@@ -1654,21 +1676,21 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //        webView.loadUrl("https://kinovo.online");
 //    }
 
-//    private class MyWebViewClient extends WebViewClient {
-//        @TargetApi(Build.VERSION_CODES.N)
-//        @Override
-//        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-//            view.loadUrl(request.getUrl().toString());
-//            return true;
-//        }
-//
-//        // Для старых устройств
-//        @Override
-//        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//            view.loadUrl(url);
-//            return true;
-//        }
-//    }
+    private class MyWebViewClient extends WebViewClient {
+        @TargetApi(Build.VERSION_CODES.N)
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            view.loadUrl(request.getUrl().toString());
+            return true;
+        }
+
+        // Для старых устройств
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+    }
 
     public void onBillingInitialized() {
         /*
