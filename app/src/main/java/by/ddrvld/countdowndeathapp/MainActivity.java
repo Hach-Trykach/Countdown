@@ -55,6 +55,10 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.play.core.review.ReviewInfo;
@@ -62,6 +66,10 @@ import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.android.play.core.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -122,6 +130,14 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private final int BTN_SHARE = 8;
     private final int BTN_CHANGE_UR_FATE = 9;
     private final int BTN_DISABLE_ADS = 10;
+    private final int BTN_CHAT = 11;
+
+    public static long lastShareTime = 0;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private int RC_SIGN_IN = 1101;
+    private GoogleSignInClient mGoogleSignInClient;
 
     private Toolbar toolbar;
 
@@ -815,28 +831,28 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 mBillingProcessor.purchase(MainActivity.this, DISABLE_ADS);
                 return true;
             }
-//            else if(drawerItem.getIdentifier() == BTN_CHAT) {
-//                if(user == null) {
-//                    // Configure Google Sign In
-//                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                            .requestIdToken(getString(R.string.default_web_client_id))
-//                            .requestEmail()
-//                            .requestProfile()
-//                            .build();
-//
-//                    // Build a GoogleSignInClient with the options specified by gso.
-//                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
-//
-//                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-//                    startActivityForResult(signInIntent, RC_SIGN_IN);
-//                }
-//                else {
-//                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-//                    startActivity(intent);
-//                }
-//                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
-//                return true;
-//            }
+            else if(drawerItem.getIdentifier() == BTN_CHAT) {
+                if(user == null) {
+                    // Configure Google Sign In
+                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(R.string.default_web_client_id))
+                            .requestEmail()
+                            .requestProfile()
+                            .build();
+
+                    // Build a GoogleSignInClient with the options specified by gso.
+                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
+
+                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                    startActivityForResult(signInIntent, RC_SIGN_IN);
+                }
+                else {
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    startActivity(intent);
+                }
+                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
+                return true;
+            }
             return false;
         }
     };
@@ -1574,29 +1590,29 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //        }
 //    }
 
-//    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
-//        Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId());
-//
-//        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-//        mAuth.signInWithCredential(credential)
-//                .addOnCompleteListener(this, task -> {
-//                    if (task.isSuccessful()) {
-//                        // Sign in success, update UI with the signed-in user's information
-//                        Log.d("TAG", "signInWithCredential:success");
-////                            updateUI(user);
-////                            DrawerBuilder();
-//
-//                        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-//                        startActivity(intent);
-//                    } else {
-//                        // If sign in fails, display a message to the user.
-//                        Log.w("TAG", "signInWithCredential:failure", task.getException());
-//                        Snackbar.make(findViewById(R.id.relative_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-////                            updateUI(null);
-//                    }
-//                    // ...
-//                });
-//    }
+    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
+        Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d("TAG", "signInWithCredential:success");
+//                            updateUI(user);
+//                            DrawerBuilder();
+
+                        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                        startActivity(intent);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w("TAG", "signInWithCredential:failure", task.getException());
+                        Snackbar.make(findViewById(R.id.relative_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+//                            updateUI(null);
+                    }
+                    // ...
+                });
+    }
 
     private void DrawerBuilder() {
 //        accountName = acct.getDisplayName();
