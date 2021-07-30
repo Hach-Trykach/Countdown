@@ -59,12 +59,14 @@
     <string name="share_text_2">Ile Ci zostało? Sprawdź to!</string>
     <string name="our_apps">Nasze aplikacje</string>
     <string name="share">Udostępnij</string>
+    <string name="general_chat">Czat ogólny</string>
+    <string name="share_date_of_death">Udostępnij datę śmierci</string>
 
     <string name="sign_out">Wyloguj się</string>
     <string name="type_message">Wpisz swoją wiadomość…</string>
     <string name="change_your_fate">Zmień swoje przeznaczenie</string>
     <string name="new_message_after">Nowa wiadomość w</string>
-    <string name="seconds">sekundy.</string>
+    <string name="seconds">sekundy</string>
     <string name="coming_soon">Już wkrótce…</string>
     <string name="do_you_want_change_your_fate">Chcesz zmienić swoje przeznaczenie?</string>
     <string name="also_disable_ads">A także wyłącz reklamy…</string>

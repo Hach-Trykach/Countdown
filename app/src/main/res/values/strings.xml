@@ -42,6 +42,8 @@
     <string name="do_you_want_change_your_fate">Do you want change your fate?</string>
     <string name="also_disable_ads">Also disable ads…</string>
     <string name="disable_ads">Disable ads</string>
+    <string name="general_chat">General chat</string>
+    <string name="share_date_of_death">Share date of death</string>
 
     <string name="cross_text_1">+LICENSE++++++++++++++++++++++++++</string>
     <string name="cross_text_2">+DISTRIBUTION+++++++++++++++++++++</string>

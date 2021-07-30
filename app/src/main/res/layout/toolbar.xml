@@ -4,6 +4,6 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_alignParentTop="true" >
+    android:layout_alignParentTop="true">
 
 </androidx.appcompat.widget.Toolbar>

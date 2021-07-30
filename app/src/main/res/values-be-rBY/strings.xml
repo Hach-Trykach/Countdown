@@ -58,13 +58,15 @@
     <string name="share_text_1">Мне засталося жыць</string>
     <string name="share_text_2">А колькі засталося табе? Правер!</string>
     <string name="our_apps">Нашы прыкладанні</string>
-    <string name="share">Падзеліцца</string>
+    <string name="share">Падзяліцца</string>
+    <string name="general_chat">Агульны чат</string>
+    <string name="share_date_of_death">Падзяліцца датай смерці</string>
 
     <string name="sign_out">Выйсцi</string>
     <string name="type_message">Набярыце паведамленне…</string>
     <string name="change_your_fate">Змяніць свой лёс</string>
     <string name="new_message_after">Новае паведамленне праз</string>
-    <string name="seconds">секунд.</string>
+    <string name="seconds">секунд</string>
     <string name="coming_soon">Хутка з\'явіцца…</string>
     <string name="do_you_want_change_your_fate">Вы хочаце змяніць свой лёс?</string>
     <string name="also_disable_ads">А таксама адключыць рэкламу…</string>

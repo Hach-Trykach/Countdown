@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     FirebaseAnalytics firebaseAnalytics;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference myReference;
-    int clicks_on_date = 0;
+    int clicks_on_date = 15;
 
     SoundPool soundPool;
     int countdown;
@@ -219,6 +219,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     @SuppressLint("ClickableViewAccessibility")
     private void onCreateActivityDate() {
         setContentView(R.layout.activity_date);
+
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -283,21 +286,28 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             adsInitialization();
 
         tvYrs.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN && years > 0) {
 //                tvYrs.setTextSize(90);
                 tvYrs.startAnimation(resize);
+                updateUI(1,0,0,0,0);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 //                tvYrs.setTextSize(88);
                 clicksOnDate();
             }
+            if (event.getAction() == MotionEvent.CLASSIFICATION_DEEP_PRESS && years > 0) {
+//                tvYrs.setTextSize(90);
+                tvYrs.startAnimation(resize);
+                updateUI(1,0,0,0,0);
+            }
             return true;
         });
 
         tvDay.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN && days > 0) {
 //                tvDay.setTextSize(90);
                 tvDay.startAnimation(resize);
+                updateUI(0,1,0,0,0);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 //                tvDay.setTextSize(88);
@@ -307,9 +317,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         });
 
         tvHrs.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN && hours > 0) {
 //                tvHrs.setTextSize(90);
                 tvHrs.startAnimation(resize);
+                updateUI(0,0,1,0,0);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 //                tvHrs.setTextSize(88);
@@ -319,9 +330,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         });
 
         tvMin.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN && mins > 0) {
 //                tvMin.setTextSize(90);
                 tvMin.startAnimation(resize);
+                updateUI(0,0,0,1,0);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 //                tvMin.setTextSize(88);
@@ -331,9 +343,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         });
 
         tvSec.setOnTouchListener((v, event) -> {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN && secs > 0) {
 //                tvSec.setTextSize(90);
                 tvSec.startAnimation(resize);
+                updateUI(0,0,0,0,1);
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
 //                tvSec.setTextSize(88);
@@ -552,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         Bundle bundle = new Bundle();
         firebaseAnalytics.logEvent("clicks_on_date", bundle);
 
-        if (clicks_on_date >= 1) {
+        if (clicks_on_date >= 20) {
             clicks_on_date = 0;
             mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
             showChangeYourFateDialog();
@@ -1234,9 +1247,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         activityDateTimer.start();
     }
 
-    public void theEnd() {
-        playSound(krik);
-        createVibration(3000);
+    public void theEnd(int soundID, int vibrDuration) {
+        playSound(soundID);
+        createVibration(vibrDuration);
     }
 
     @SuppressLint("HardwareIds")
@@ -1294,7 +1307,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         @Override
         public void onFinish() {
-            theEnd();
+            theEnd(krik, 3000);
         }
 
         @Override
@@ -1315,7 +1328,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                             days = fullDays;
                             if (years > 0) years--;
                             else {
-                                theEnd();
+                                theEnd(krik, 3000);
                                 if(mainTimer != null)
                                     mainTimer.cancel();
                             }
@@ -1338,6 +1351,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
     @UiThread
+    private void updateUI(int addYears, int addDays, int addHours, int addMins, int addSecs) {}
     private void updateUI() {
         TextView tvTextYrs = (TextView) tvYrs.getChildAt(0);
         TextView tvTextDay = (TextView) tvDay.getChildAt(0);
@@ -1381,7 +1395,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
             if(mainTimer != null)
                 mainTimer.cancel();
-            theEnd();
+            theEnd(krik, 3000);
         }
 
         textYrs.setText(GetWord(years, getResources().getString(R.string.text_yrs1), getResources().getString(R.string.text_yrs2), getResources().getString(R.string.text_yrs3)));
@@ -1428,7 +1442,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     }
 
 //    private void sendInAppNotification() {
-//        theEnd();
+//        theEnd(krik, 3000);
 //
 ////        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.krik);
 //        NotificationCompat.Builder builder =

@@ -59,12 +59,14 @@
     <string name="share_text_2">А сколько осталось тебе? Проверь!</string>
     <string name="our_apps">Наши приложения</string>
     <string name="share">Поделиться</string>
+    <string name="general_chat">Общий чат</string>
+    <string name="share_date_of_death">Поделиться датой смерти</string>
 
     <string name="sign_out">Выйти</string>
     <string name="type_message">Введите сообщение…</string>
     <string name="change_your_fate">Изменить свою судьбу</string>
     <string name="new_message_after">Новое сообщение через</string>
-    <string name="seconds">секунд.</string>
+    <string name="seconds">секунд</string>
     <string name="coming_soon">Скоро появится…</string>
     <string name="do_you_want_change_your_fate">Хотите изменить свою судьбу?</string>
     <string name="also_disable_ads">А также отключить рекламу…</string>

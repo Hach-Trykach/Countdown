@@ -31,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
@@ -46,6 +47,8 @@ public class ChatActivity extends AppCompatActivity {
     private RelativeLayout activity_chat;
     //    private FirebaseListAdapter<Message> adapter;
     private final List<Message> list_message = new ArrayList<>();
+//    private final List<AppSettings> list_settings = new ArrayList<>();
+    private AppSettings appSettings = new AppSettings();
     private EmojiconEditText emojiconEditText;
     ImageView emojiButton, submitButton, shareDateOfDeath;
     EmojIconActions emojIconActions;
@@ -70,6 +73,8 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     public static DatabaseReference mDatabaseReference;
     Activity activity = null;
+
+    String locale = Locale.getDefault().getDisplayLanguage();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,6 +199,7 @@ public class ChatActivity extends AppCompatActivity {
             }
             createMessage(text);
         });
+
         listOfMessages.setOnItemClickListener((adapterView, view, i, l) -> {
             if(listOfMessages.isItemChecked(i) /*&& itemOldClickId != i*/) {
                 selectedItem = i;
@@ -204,6 +210,7 @@ public class ChatActivity extends AppCompatActivity {
             unregisterForContextMenu(listOfMessages);
             createVibration(30);
         });
+
         listOfMessages.setOnItemLongClickListener((adapterView, view, i, l) -> {
 //            activity.closeContextMenu();
             return false;
@@ -216,19 +223,20 @@ public class ChatActivity extends AppCompatActivity {
             Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.new_message_after) + " " + (lastShareTime-System.currentTimeMillis())/1000 + " " + getResources().getString(R.string.seconds), Snackbar.LENGTH_SHORT).show();
             return;
         }
-        messageID = mDatabaseReference.child("chats").child("general").push().getKey();
+        messageID = mDatabaseReference.child("chats").child(locale).push().getKey();
         Message message = new Message(user.getEmail(), user.getDisplayName(), text, messageID);
         mDatabaseReference.child("chats")
-                .child("general")
+                .child(locale)
                 .child(messageID)
                 .setValue(message);
-        lastShareTime = System.currentTimeMillis() + 60 * 1000;
+
+        lastShareTime = System.currentTimeMillis() + appSettings.getIntervalBetweenMessages() * 1000;
         clearEditText();
     }
 
 //    private void updateMessage(Message selectedListItem) {
 //        mDatabaseReference.child("chats")
-//                .child("general")
+//                .child(locale)
 //                .push()
 //                .child(mAuth.getUid())
 //                .child(selectedListItem.getEmail())
@@ -241,7 +249,7 @@ public class ChatActivity extends AppCompatActivity {
     private void deleteMessage(Message selectedListItem) {
         if(selectedListItem != null) {
             mDatabaseReference.child("chats")
-                    .child("general")
+                    .child(locale)
                     .child(selectedListItem.getMessageID())
                     .removeValue();
             deselectAllItems();
@@ -285,7 +293,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public class UndoDeleteMessage implements View.OnClickListener {
-
         @Override
         public void onClick(View v) {
             // Code to undo the user's last action
@@ -342,7 +349,7 @@ public class ChatActivity extends AppCompatActivity {
                                     getResources().getString(R.string.text_min1),
                                     getResources().getString(R.string.text_min2),
                                     getResources().getString(R.string.text_min3)) : ""));
-                    lastShareTime = System.currentTimeMillis() + 60 * 1000;
+                    lastShareTime = System.currentTimeMillis() + appSettings.getIntervalBetweenMessages() * 1000;
                 }
                 else {
                     Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.new_message_after) + " " + (lastShareTime-System.currentTimeMillis())/1000 + " " + getResources().getString(R.string.seconds), Snackbar.LENGTH_SHORT).show();
@@ -359,7 +366,7 @@ public class ChatActivity extends AppCompatActivity {
         selectedListItem = null;
 //        adapterView.setSelected(false);
         selectMode = false;
-        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitle(R.string.general_chat);
     }
 
     private void createVibration(int duration) {
@@ -427,17 +434,21 @@ public class ChatActivity extends AppCompatActivity {
         circular_progress.setVisibility(View.VISIBLE);
         listOfMessages.setVisibility(View.INVISIBLE);
 
-        mDatabaseReference.child("chats").child("general").addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.child("chats").child(locale).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 if (list_message.size() > 0)
                     list_message.clear();
-//                проходим по всем записям и помещаем их в list_users в виде класса Message
+//                проходим по всем записям и помещаем их в list_message в виде класса Message
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     Message uMessage = postSnapshot.getValue(Message.class);
                     list_message.add(uMessage);
                 }
+//                for (DataSnapshot settingsSnapshot : snapshot.getChildren()) {
+//                    AppSettings uSettings = settingsSnapshot.getValue(AppSettings.class);
+//                    list_settings.add(uSettings);
+//                }
 
                 adapter = new ListViewAdapter(ChatActivity.this, list_message, mAuth);
                 listOfMessages.setAdapter(adapter);

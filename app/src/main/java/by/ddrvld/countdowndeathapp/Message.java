@@ -2,6 +2,8 @@ package by.ddrvld.countdowndeathapp;
 
 import java.util.Date;
 
+import static by.ddrvld.countdowndeathapp.ChatActivity.mDatabaseReference;
+
 public class Message {
     public String email;
     public  String userName;
@@ -48,5 +50,18 @@ public class Message {
 
     public String getMessageID() {
         return messageID;
+    }
+}
+
+class AppSettings {
+    public int intervalBetweenMessages;
+
+    public void AppSettings() {}
+    public void AppSettings(int intervalBetweenMessages) {
+        this.intervalBetweenMessages = intervalBetweenMessages;
+    }
+
+    public int getIntervalBetweenMessages() {
+        return Integer.parseInt(mDatabaseReference.child("settings").child("intervalBetweenMessages").getKey());
     }
 }
