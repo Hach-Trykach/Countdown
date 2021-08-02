@@ -61,6 +61,11 @@
     <string name="share">бөлісу</string>
     <string name="general_chat">Жалпы чат</string>
     <string name="share_date_of_death">Қайтыс болған күнімен бөлісіңіз</string>
+    <string name="chat_language">Чат тілі</string>
+    <string name="one_message_deleted">Message deleted</string>
+    <string name="add">Add</string>
+    <string name="update">Update</string>
+    <string name="delete">Delete message</string>
 
     <string name="sign_out">шығу</string>
     <string name="type_message">Хабарыңызды енгізіңіз…</string>

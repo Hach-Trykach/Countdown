@@ -61,6 +61,11 @@
     <string name="share">Поделиться</string>
     <string name="general_chat">Общий чат</string>
     <string name="share_date_of_death">Поделиться датой смерти</string>
+    <string name="chat_language">Язык чата</string>
+    <string name="one_message_deleted">Сообщение удалено</string>
+    <string name="add">Добавить</string>
+    <string name="update">Обновить</string>
+    <string name="delete">Удалить сообщение</string>
 
     <string name="sign_out">Выйти</string>
     <string name="type_message">Введите сообщение…</string>

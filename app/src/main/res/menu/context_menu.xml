@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/option_1"
-        android:title="Delete">
+        android:title="@string/delete">
     </item>
     <item
         android:id="@+id/option_2"
-        android:title="Add">
+        android:title="@string/add">
     </item>
     <item
         android:id="@+id/option_3"
-        android:title="Update">
+        android:title="@string/update">
     </item>
 </menu>

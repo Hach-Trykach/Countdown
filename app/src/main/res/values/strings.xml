@@ -44,6 +44,11 @@
     <string name="disable_ads">Disable ads</string>
     <string name="general_chat">General chat</string>
     <string name="share_date_of_death">Share date of death</string>
+    <string name="chat_language">Chat language</string>
+    <string name="one_message_deleted">Message deleted</string>
+    <string name="add">Add</string>
+    <string name="update">Update</string>
+    <string name="delete">Delete message</string>
 
     <string name="cross_text_1">+LICENSE++++++++++++++++++++++++++</string>
     <string name="cross_text_2">+DISTRIBUTION+++++++++++++++++++++</string>

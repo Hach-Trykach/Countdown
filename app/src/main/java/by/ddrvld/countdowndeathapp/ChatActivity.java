@@ -47,8 +47,6 @@ public class ChatActivity extends AppCompatActivity {
     private RelativeLayout activity_chat;
     //    private FirebaseListAdapter<Message> adapter;
     private final List<Message> list_message = new ArrayList<>();
-//    private final List<AppSettings> list_settings = new ArrayList<>();
-    private AppSettings appSettings = new AppSettings();
     private EmojiconEditText emojiconEditText;
     ImageView emojiButton, submitButton, shareDateOfDeath;
     EmojIconActions emojIconActions;
@@ -120,6 +118,7 @@ public class ChatActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
+            toolbar.setTitle(getResources().getString(R.string.chat_language) + " «" + locale + "»");
         }
 //        initializeDrawer(toolbar);
 
@@ -137,6 +136,8 @@ public class ChatActivity extends AppCompatActivity {
         //показываем View загрузки
         circular_progress.setVisibility(View.VISIBLE);
         listOfMessages.setVisibility(View.INVISIBLE);
+
+        loadSettingsFromDatabase();
 
         displayAllMessages();
 
@@ -230,7 +231,7 @@ public class ChatActivity extends AppCompatActivity {
                 .child(messageID)
                 .setValue(message);
 
-        lastShareTime = System.currentTimeMillis() + appSettings.getIntervalBetweenMessages() * 1000;
+        lastShareTime = System.currentTimeMillis() + sixtySeconds * 1000;
         clearEditText();
     }
 
@@ -285,7 +286,7 @@ public class ChatActivity extends AppCompatActivity {
             Timer();
             adapter.removeItem(selectedItem);
 
-            Snackbar deleteMesSnackbar = Snackbar.make(findViewById(android.R.id.content), "Сообщение удалено", Snackbar.LENGTH_LONG);
+            Snackbar deleteMesSnackbar = Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.one_message_deleted), Snackbar.LENGTH_LONG);
             deleteMesSnackbar.setAction(R.string.undo, new UndoDeleteMessage());
             deleteMesSnackbar.show();
         }
@@ -349,7 +350,7 @@ public class ChatActivity extends AppCompatActivity {
                                     getResources().getString(R.string.text_min1),
                                     getResources().getString(R.string.text_min2),
                                     getResources().getString(R.string.text_min3)) : ""));
-                    lastShareTime = System.currentTimeMillis() + appSettings.getIntervalBetweenMessages() * 1000;
+                    lastShareTime = System.currentTimeMillis() + sixtySeconds * 1000;
                 }
                 else {
                     Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.new_message_after) + " " + (lastShareTime-System.currentTimeMillis())/1000 + " " + getResources().getString(R.string.seconds), Snackbar.LENGTH_SHORT).show();
@@ -366,7 +367,7 @@ public class ChatActivity extends AppCompatActivity {
         selectedListItem = null;
 //        adapterView.setSelected(false);
         selectMode = false;
-        toolbar.setTitle(R.string.general_chat);
+        toolbar.setTitle(getResources().getString(R.string.chat_language) + " «" + locale + "»");
     }
 
     private void createVibration(int duration) {
@@ -440,15 +441,12 @@ public class ChatActivity extends AppCompatActivity {
 
                 if (list_message.size() > 0)
                     list_message.clear();
+
 //                проходим по всем записям и помещаем их в list_message в виде класса Message
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     Message uMessage = postSnapshot.getValue(Message.class);
                     list_message.add(uMessage);
                 }
-//                for (DataSnapshot settingsSnapshot : snapshot.getChildren()) {
-//                    AppSettings uSettings = settingsSnapshot.getValue(AppSettings.class);
-//                    list_settings.add(uSettings);
-//                }
 
                 adapter = new ListViewAdapter(ChatActivity.this, list_message, mAuth);
                 listOfMessages.setAdapter(adapter);
@@ -459,7 +457,30 @@ public class ChatActivity extends AppCompatActivity {
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.w(TAG, "Listener was cancelled");
+                Log.w(TAG, "displayAllMessages was cancelled");
+            }
+        });
+    }
+
+    private int sixtySeconds;
+    private void loadSettingsFromDatabase() {
+        mDatabaseReference.child("settings").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+//                if (list_settings.size() > 0)
+//                    list_settings.clear();
+
+                for (DataSnapshot settingsSnapshot : snapshot.getChildren()) {
+//                    AppSettings uSettings = settingsSnapshot.getValue(AppSettings.class);
+                    sixtySeconds = Integer.parseInt(settingsSnapshot.getValue(String.class));
+                }
+//                settingsAdapter = new ListViewAdapter(ChatActivity.this, list_settings, mAuth);
+//                listOfSettings.setAdapter(settingsAdapter);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w(TAG, "loadSettingsFromDatabase was cancelled");
             }
         });
     }
