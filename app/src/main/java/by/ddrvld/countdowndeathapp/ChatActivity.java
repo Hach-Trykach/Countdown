@@ -309,13 +309,17 @@ public class ChatActivity extends AppCompatActivity {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
         if(v.getId() == R.id.list_of_messages) {
             getMenuInflater().inflate(R.menu.context_menu, menu);
+
+            if(!selectedListItem.getEmail().equals(user.getEmail())) {
+                menu.getItem(0).setVisible(false);
+            }
         }
         else if(v.getId() == R.id.shareDateOfDeath) {
             getMenuInflater().inflate(R.menu.share_date_of_death, menu);
         }
+        super.onCreateContextMenu(menu, v, menuInfo);
     }
 
     @Override
