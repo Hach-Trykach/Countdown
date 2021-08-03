@@ -49,6 +49,7 @@
     <string name="add">Add</string>
     <string name="update">Update</string>
     <string name="delete">Delete message</string>
+    <string name="edit">Edit message</string>
 
     <string name="cross_text_1">+LICENSE++++++++++++++++++++++++++</string>
     <string name="cross_text_2">+DISTRIBUTION+++++++++++++++++++++</string>

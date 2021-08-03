@@ -66,6 +66,7 @@
     <string name="add">Добавить</string>
     <string name="update">Обновить</string>
     <string name="delete">Удалить сообщение</string>
+    <string name="edit">Изменить</string>
 
     <string name="sign_out">Выйти</string>
     <string name="type_message">Введите сообщение…</string>

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/option_1"
-        android:title="@string/delete">
+        android:id="@+id/delete_item"
+        android:title="@string/delete"
+        android:visible="false">
     </item>
     <item
-        android:id="@+id/option_2"
-        android:title="@string/add">
-    </item>
-    <item
-        android:id="@+id/option_3"
-        android:title="@string/update">
+        android:id="@+id/edit_item"
+        android:title="@string/edit"
+        android:visible="false">
     </item>
 </menu>

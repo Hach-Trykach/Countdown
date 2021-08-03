@@ -66,6 +66,7 @@
     <string name="add">Add</string>
     <string name="update">Update</string>
     <string name="delete">Delete message</string>
+    <string name="edit">Edit message</string>
 
     <string name="sign_out">шығу</string>
     <string name="type_message">Хабарыңызды енгізіңіз…</string>
