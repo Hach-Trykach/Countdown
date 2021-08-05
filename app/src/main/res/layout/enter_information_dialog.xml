@@ -136,7 +136,6 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:gravity="center"
-                android:layout_below="@+id/messageDialog"
                 android:text="@string/ifSomethingDoesNotSuitYouDeleteTheApplication"
                 android:textColor="@color/grey_300"
                 android:textSize="12sp"

@@ -50,11 +50,15 @@ import androidx.appcompat.widget.Toolbar;
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.PurchaseInfo;
 import com.anjlab.android.iab.v3.TransactionDetails;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -82,13 +86,19 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+import static android.content.ContentValues.TAG;
 import static by.ddrvld.countdowndeathapp.Update.GetWord;
 
 public class MainActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler,TextSwitcher.ViewFactory /*implements IUnityAdsListener*/ {
+
+    private InterstitialAd mInterstitialAd;
+
     static SharedPreferences settings;
     static final String APP_PREFERENCES = "settings";
 
@@ -280,10 +290,12 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         if (settings.contains(NO_ADS)) {
             noAds = settings.getBoolean(NO_ADS, false);
         }
-        if (noAds)
+        if (noAds) {
             noAds(true);
-        else
+        }
+        else {
             adsInitialization();
+        }
 
         tvYrs.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN && years > 0) {
@@ -677,48 +689,58 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     private void adsInitialization() {
         int banner = getRandomNumberInRange(1, 5);
-        switch (banner)
+        switch(banner)
         {
-            case 1:
-            {
-                webView.setVisibility(View.VISIBLE);
-                // включаем поддержку JavaScript
-                webView.getSettings().setJavaScriptEnabled(true);
-                webView.setWebViewClient(new MyWebViewClient());
-                webView.loadUrl("https://ddrvld.com/countdown/banner1/index.html");
-            }
-            case 2:
-            {
-                webView.setVisibility(View.VISIBLE);
-                // включаем поддержку JavaScript
-                webView.getSettings().setJavaScriptEnabled(true);
-                webView.setWebViewClient(new MyWebViewClient());
-                webView.loadUrl("https://ddrvld.com/countdown/banner2/index.html");
-            }
-            case 3:
-            {
-                webView.setVisibility(View.VISIBLE);
-                // включаем поддержку JavaScript
-                webView.getSettings().setJavaScriptEnabled(true);
-                webView.setWebViewClient(new MyWebViewClient());
-                webView.loadUrl("https://ddrvld.com/countdown/banner3/index.html");
-            }
-            case 4:
-            {
-                webView.setVisibility(View.VISIBLE);
-                // включаем поддержку JavaScript
-                webView.getSettings().setJavaScriptEnabled(true);
-                webView.setWebViewClient(new MyWebViewClient());
-                webView.loadUrl("https://ddrvld.com/countdown/banner4/index.html");
-            }
+//            case 1:
+//            {
+//                webView.setVisibility(View.VISIBLE);
+//                // включаем поддержку JavaScript
+//                webView.getSettings().setJavaScriptEnabled(true);
+//                webView.setWebViewClient(new MyWebViewClient());
+//                webView.loadUrl("https://ddrvld.com/countdown/banner1/index.html");
+//            }
+//            case 2:
+//            {
+//                webView.setVisibility(View.VISIBLE);
+//                // включаем поддержку JavaScript
+//                webView.getSettings().setJavaScriptEnabled(true);
+//                webView.setWebViewClient(new MyWebViewClient());
+//                webView.loadUrl("https://ddrvld.com/countdown/banner2/index.html");
+//            }
+//            case 3:
+//            {
+//                webView.setVisibility(View.VISIBLE);
+//                // включаем поддержку JavaScript
+//                webView.getSettings().setJavaScriptEnabled(true);
+//                webView.setWebViewClient(new MyWebViewClient());
+//                webView.loadUrl("https://ddrvld.com/countdown/banner3/index.html");
+//            }
+//            case 4:
+//            {
+//                webView.setVisibility(View.VISIBLE);
+//                // включаем поддержку JavaScript
+//                webView.getSettings().setJavaScriptEnabled(true);
+//                webView.setWebViewClient(new MyWebViewClient());
+//                webView.loadUrl("https://ddrvld.com/countdown/banner4/index.html");
+//            }
             default:
             {
                 AdView mAdView = findViewById(R.id.adView);
                 mAdView.setVisibility(View.VISIBLE);
+
+                MobileAds.initialize(this, new OnInitializationCompleteListener() {
+                    @Override
+                    public void onInitializationComplete(InitializationStatus initializationStatus) {}
+                });
+
+                List<String> testDeviceIds = Arrays.asList("2915B28E56B33B9CC3D2C5D421E9FE3E", "1D5297D5D4A3A977DCE0D970B2D4F83A", "F8E3AC49CB906029A3F3B414144CFB18");
+                RequestConfiguration configuration = new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+                MobileAds.setRequestConfiguration(configuration);
+
                 AdRequest adRequest = new AdRequest.Builder()
-                        .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
-                        .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
-                        .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
+//                        .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
+//                        .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
+//                        .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
                         .build();
                 mAdView.loadAd(adRequest);
 
@@ -728,12 +750,12 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         }
     }
 
-    public void onclickOneMinBanner(View view)
-    {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://1-min.ru/?utm_source=blog&utm_medium=banner&utm_campaign=start06042021&utm_term=death"));
-        startActivity(intent);
-        Log.d("DDD", "1-min.ru");
-    }
+//    public void onclickOneMinBanner(View view)
+//    {
+//        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://1-min.ru/?utm_source=blog&utm_medium=banner&utm_campaign=start06042021&utm_term=death"));
+//        startActivity(intent);
+//        Log.d("DDD", "1-min.ru");
+//    }
 
     private final Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
         @Override
@@ -1019,52 +1041,101 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     private void createInterstitialAd() {
         //Создаём межстраничное объявление
-        final InterstitialAd interstitial;
+        AdRequest adRequest = new AdRequest.Builder().build();
 
-        interstitial = new InterstitialAd(MainActivity.this);
-        interstitial.setAdUnitId("ca-app-pub-7528412641056592/9979660478");
-        AdRequest adRequesti = new AdRequest.Builder()
-                .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
-                .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
-                .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
-                .build();
-        interstitial.loadAd(adRequesti);
-        interstitial.setAdListener(new AdListener() {
+        InterstitialAd.load(this,"ca-app-pub-7528412641056592/9979660478", adRequest,
+        new InterstitialAdLoadCallback() {
             @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                interstitial.show();
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+                Log.i(TAG, "onAdLoaded");
+
+//                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+//                    @Override
+//                    public void onAdDismissedFullScreenContent() {
+//                        // Called when fullscreen content is dismissed.
+//                        Log.d("TAG", "The ad was dismissed.");
+//                    }
+//
+//                    @Override
+//                    public void onAdFailedToShowFullScreenContent(AdError adError) {
+//                        // Called when fullscreen content failed to show.
+//                        Log.d("TAG", "The ad failed to show.");
+//                        TimerToActivityDate();
+//                    }
+//
+//                    @Override
+//                    public void onAdShowedFullScreenContent() {
+//                        // Called when fullscreen content is shown.
+//                        // Make sure to set your reference to null so you don't
+//                        // show it a second time.
+//                        mInterstitialAd = null;
+//                        Log.d("TAG", "The ad was shown.");
+//                    }
+//                });
+
+                if (mInterstitialAd != null) {
+                    mInterstitialAd.show(MainActivity.this);
+                } else {
+                    Log.d("TAG", "The interstitial ad wasn't ready yet.");
+                }
             }
 
             @Override
-            public void onAdFailedToLoad(int errorCode) {
-                super.onAdFailedToLoad(errorCode);
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                Log.i(TAG, loadAdError.getMessage());
+                mInterstitialAd = null;
                 TimerToActivityDate();
-            }
-
-            @Override
-            public void onAdOpened() {
-                super.onAdOpened();
-            }
-
-            @Override
-            public void onAdClicked() {
-                super.onAdClicked();
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                super.onAdLeftApplication();
-                TimerToActivityDate();
-            }
-
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-//                TimerToActivityDate();
-//                showKinovoWebView();
             }
         });
+
+//        interstitial = new InterstitialAd(MainActivity.this);
+//        interstitial.setAdUnitId("ca-app-pub-7528412641056592/9979660478");
+//        AdRequest adRequesti = new AdRequest.Builder()
+//                .addTestDevice("2915B28E56B33B9CC3D2C5D421E9FE3E")
+//                .addTestDevice("1D5297D5D4A3A977DCE0D970B2D4F83A")
+//                .addTestDevice("F8E3AC49CB906029A3F3B414144CFB18")
+//                .build();
+//        interstitial.loadAd(adRequesti);
+//        interstitial.setAdListener(new AdListener() {
+//            @Override
+//            public void onAdLoaded() {
+//                super.onAdLoaded();
+//                interstitial.show();
+//            }
+//
+//            @Override
+//            public void onAdFailedToLoad(int errorCode) {
+//                super.onAdFailedToLoad(errorCode);
+//                TimerToActivityDate();
+//            }
+//
+//            @Override
+//            public void onAdOpened() {
+//                super.onAdOpened();
+//            }
+//
+//            @Override
+//            public void onAdClicked() {
+//                super.onAdClicked();
+//            }
+//
+//            @Override
+//            public void onAdLeftApplication() {
+//                super.onAdLeftApplication();
+//                TimerToActivityDate();
+//            }
+//
+//            @Override
+//            public void onAdClosed() {
+//                super.onAdClosed();
+////                TimerToActivityDate();
+////                showKinovoWebView();
+//            }
+//        });
     }
 
 //    private void createInterstitialAd_For_Soon_Dying() { //Создаём межстраничное объявление
