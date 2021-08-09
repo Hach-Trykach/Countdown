@@ -40,6 +40,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -47,9 +48,17 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.anjlab.android.iab.v3.BillingProcessor;
-import com.anjlab.android.iab.v3.PurchaseInfo;
-import com.anjlab.android.iab.v3.TransactionDetails;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.LoadAdError;
@@ -86,16 +95,23 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
 import static android.content.ContentValues.TAG;
 import static by.ddrvld.countdowndeathapp.Update.GetWord;
 
-public class MainActivity extends AppCompatActivity implements BillingProcessor.IBillingHandler,TextSwitcher.ViewFactory /*implements IUnityAdsListener*/ {
+//import com.anjlab.android.iab.v3.BillingProcessor;
+//import com.anjlab.android.iab.v3.PurchaseInfo;
+//import com.anjlab.android.iab.v3.TransactionDetails;
+
+public class MainActivity extends AppCompatActivity implements TextSwitcher.ViewFactory /*implements IUnityAdsListener*/ {
 
     private InterstitialAd mInterstitialAd;
 
@@ -158,10 +174,7 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private ReviewManager manager;
     private ReviewInfo reviewInfo;
 
-    BillingProcessor mBillingProcessor;
-    private final static String CHANGE_YOUR_FATE = "change_your_fate";
-    private final static String DISABLE_ADS = "disable_ads";
-    private final static String GPLAY_LICENSE = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlh3IXfvwhrH43ZO3anu7x7mbf3oT9JqAOD+3bTKocpYtvBexKwCiKhv9CrhAkZNaY48sfM80PtnVFAlqljPAcj9UthtHR94YCOSWL/F1SJB8FWxGa94d/JHc4ivuOLw0aNkoh6EdJX+0MH61FFI444bwmMYSKEjZLCkVcoddxq0CMdFcZTb3j4UsWhpgf2OMDLvEPn+qKqYVtrdKnoMd/vK9RTcC6iHvNNssAtBbQUEiA2SPA45shVgxK/jfxshNt96/jzhQUyvGiwYgwOVWrd6gXqkj5oiafzDGZkc6QTknMU2fYovy5FI1h8rKj3PfXaxR1sG5l+CavTj2s1F+QwIDAQAB";
+//    BillingProcessor mBillingProcessor;
 
     FirebaseAnalytics firebaseAnalytics;
     FirebaseDatabase firebaseDatabase;
@@ -175,6 +188,14 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
     private TextView textViewBirthday;
     private TextInputEditText textInptEdtTxtName, textInptEdtTxtPlaceOfBirth;
     private DatePickerDialog.OnDateSetListener dateSetListener;
+
+    private BillingClient mBillingClient;
+    private Map<String, SkuDetails> mSkuDetailsMap = new HashMap<>();
+
+    private final static String CHANGE_YOUR_FATE = "change_your_fate";
+    private final static String DISABLE_ADS = "disable_ads";
+    private final static String GPLAY_LICENSE = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlh3IXfvwhrH43ZO3anu7x7mbf3oT9JqAOD+3bTKocpYtvBexKwCiKhv9CrhAkZNaY48sfM80PtnVFAlqljPAcj9UthtHR94YCOSWL/F1SJB8FWxGa94d/JHc4ivuOLw0aNkoh6EdJX+0MH61FFI444bwmMYSKEjZLCkVcoddxq0CMdFcZTb3j4UsWhpgf2OMDLvEPn+qKqYVtrdKnoMd/vK9RTcC6iHvNNssAtBbQUEiA2SPA45shVgxK/jfxshNt96/jzhQUyvGiwYgwOVWrd6gXqkj5oiafzDGZkc6QTknMU2fYovy5FI1h8rKj3PfXaxR1sG5l+CavTj2s1F+QwIDAQAB";
+
 
 //    public MainActivity() {
 //    }
@@ -369,14 +390,37 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
 //        UnityAds.initialize (this, unityGameID, this, testMode);
 
-        mBillingProcessor = new BillingProcessor(this, GPLAY_LICENSE, this);
-        boolean isAvailable = BillingProcessor.isIabServiceAvailable(this);
-        if (isAvailable) {
-            mBillingProcessor.initialize();
-        } else {
-//            mProgress.setVisibility(View.GONE);
-//            showMsg(getString(R.string.billing_not_available));
-        }
+
+
+        mBillingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener(new PurchasesUpdatedListener() {
+            @Override
+            public void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && purchases != null) {
+                    for (Purchase purchase : purchases) {
+                        handlePurchase(purchase);
+                    }
+                    // Perform your Successful Purchase Task here
+
+                    Snackbar.make(findViewById(android.R.id.content), "Great!! Purchase Flow Successful! :)", Snackbar.LENGTH_LONG).show();
+//                    dismiss();
+                } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
+                    // Handle an error caused by a user cancelling the purchase flow.
+                    Snackbar.make(findViewById(android.R.id.content), "User Cancelled the Purchase Flow!", Snackbar.LENGTH_LONG).show();
+                } else {
+                    // Handle any other error codes.
+                    Snackbar.make(findViewById(android.R.id.content), "Error! Purchase Task was not performed!", Snackbar.LENGTH_LONG).show();
+                }
+            }
+        }).build();
+
+//        mBillingProcessor = new BillingProcessor(this, GPLAY_LICENSE, this);
+//        boolean isAvailable = BillingProcessor.isIabServiceAvailable(this);
+//        if (isAvailable) {
+//            mBillingProcessor.initialize();
+//        } else {
+////            mProgress.setVisibility(View.GONE);
+////            showMsg(getString(R.string.billing_not_available));
+//        }
 
 //        manager = new FakeReviewManager(this);
         manager = ReviewManagerFactory.create(this);
@@ -577,9 +621,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         Bundle bundle = new Bundle();
         firebaseAnalytics.logEvent("clicks_on_date", bundle);
 
-        if (clicks_on_date >= 20) {
+        if (clicks_on_date >= 10) {
             clicks_on_date = 0;
-            mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
+//            mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
             showChangeYourFateDialog();
         }
     }
@@ -839,32 +883,33 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
                 return true;
             }
             else if(drawerItem.getIdentifier() == BTN_CHANGE_UR_FATE) {
-                if(user == null) {
-                    // Configure Google Sign In
-                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(getString(R.string.default_web_client_id))
-                            .requestEmail()
-                            .requestProfile()
-                            .build();
-
-                    // Build a GoogleSignInClient with the options specified by gso.
-                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
-
-                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                    startActivityForResult(signInIntent, RC_SIGN_IN);
-                }
-                else {
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    startActivity(intent);
-                }
+                showChangeYourFateDialog();
+//                if(user == null) {
+//                    // Configure Google Sign In
+//                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                            .requestIdToken(getString(R.string.default_web_client_id))
+//                            .requestEmail()
+//                            .requestProfile()
+//                            .build();
+//
+//                    // Build a GoogleSignInClient with the options specified by gso.
+//                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
+//
+//                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//                    startActivityForResult(signInIntent, RC_SIGN_IN);
+//                }
+//                else {
+//                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+//                    startActivity(intent);
+//                }
 //                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
-                mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
+//                mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
                 return true;
             }
             else if(drawerItem.getIdentifier() == BTN_DISABLE_ADS) {
                 Bundle bundle = new Bundle();
                 firebaseAnalytics.logEvent("click_on_disable_ads_button", bundle);
-                mBillingProcessor.purchase(MainActivity.this, DISABLE_ADS);
+//                mBillingProcessor.purchase(MainActivity.this, DISABLE_ADS);
                 return true;
             }
             else if(drawerItem.getIdentifier() == BTN_CHAT) {
@@ -1617,9 +1662,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
             mainTimer.cancel();
             mainTimer = null;
         }
-        if (mBillingProcessor != null) {
-            mBillingProcessor.release();
-        }
+//        if (mBillingProcessor != null) {
+//            mBillingProcessor.release();
+//        }
         super.onDestroy();
     }
 
@@ -1659,9 +1704,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!mBillingProcessor.handleActivityResult(requestCode, resultCode, data)) {
+//        if (!mBillingProcessor.handleActivityResult(requestCode, resultCode, data)) {
             super.onActivityResult(requestCode, resultCode, data);
-        }
+//        }
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
@@ -1835,9 +1880,9 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          * Called when BillingProcessor was initialized and it's ready to purchase
          */
         showMsg("onBillingInitialized");
-        if (mBillingProcessor.loadOwnedPurchasesFromGoogle()) {
-            handleLoadedItems();
-        }
+//        if (mBillingProcessor.loadOwnedPurchasesFromGoogle()) {
+//            handleLoadedItems();
+//        }
     }
 
     public void onPurchaseHistoryRestored() {
@@ -1845,46 +1890,76 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
          * Called when purchase history was restored and the list of all owned PRODUCT ID's
          * was loaded from Google Play
          */
-        if(mBillingProcessor.isPurchased(DISABLE_ADS))
-            noAds(true);
+//        if(mBillingProcessor.isPurchased(DISABLE_ADS)) {
+//            noAds(true);
+//        }
 
         showMsg("onPurchaseHistoryRestored");
         handleLoadedItems();
     }
 
-    @Override
-    public void onBillingError(int errorCode, Throwable error) {
-        /*
-         * Called when some error occurred. See Constants class for more details
-         *
-         * Note - this includes handling the case where the user canceled the buy dialog:
-         * errorCode = Constants.BILLING_RESPONSE_RESULT_USER_CANCELED
-         */
-        showMsg("onBillingError");
-    }
+//    @Override
+//    public void onBillingError(int errorCode, Throwable error) {
+//        /*
+//         * Called when some error occurred. See Constants class for more details
+//         *
+//         * Note - this includes handling the case where the user canceled the buy dialog:
+//         * errorCode = Constants.BILLING_RESPONSE_RESULT_USER_CANCELED
+//         */
+//        showMsg("onBillingError");
+//    }
 
-    public void onProductPurchased(@NonNull String productId, TransactionDetails details) {
-        /*
-         * Called when requested PRODUCT ID was successfully purchased
-         */
-        showMsg("onProductPurchased");
-        if(details != null) {
-            if (checkIfPurchaseIsValid(details.purchaseInfo)) {
-                showMsg("purchase: " + productId + " COMPLETED");
-                switch (productId) {
-                    case CHANGE_YOUR_FATE:
-                        noAds(true);
-                        changeDateOfDeath();
-                        break;
-                    case DISABLE_ADS:
-                        noAds(true);
-                        updateValueInDatabase();
-                        break;
+//    public void onProductPurchased(@NonNull String productId, TransactionDetails details) {
+//        /*
+//         * Called when requested PRODUCT ID was successfully purchased
+//         */
+//        showMsg("onProductPurchased");
+//        if(details != null) {
+//            if (checkIfPurchaseIsValid(details.purchaseInfo)) {
+//                showMsg("purchase: " + productId + " COMPLETED");
+//                switch (productId) {
+//                    case CHANGE_YOUR_FATE:
+//                        noAds(true);
+//                        changeDateOfDeath();
+//                        break;
+//                    case DISABLE_ADS:
+//                        noAds(true);
+//                        updateValueInDatabase();
+//                        break;
+//                }
+//            } else {
+//                showMsg("fakePayment");
+//            }
+//        }
+//    }
+
+    void handlePurchase(Purchase purchase) {
+        ConsumeParams consumeParams =
+                ConsumeParams.newBuilder()
+                        .setPurchaseToken(purchase.getPurchaseToken())
+                        .build();
+
+        ConsumeResponseListener listener = new ConsumeResponseListener() {
+            @Override
+            public void onConsumeResponse(BillingResult billingResult, @NonNull String purchaseToken) {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    // Handle the success of the consume operation.
+                    if(billingResult != null) {
+                        switch (purchaseToken) {
+                            case CHANGE_YOUR_FATE:
+                                noAds(true);
+                                changeDateOfDeath();
+                                break;
+                            case DISABLE_ADS:
+                                noAds(true);
+                                updateValueInDatabase();
+                                break;
+                        }
+                    }
                 }
-            } else {
-                showMsg("fakePayment");
             }
-        }
+        };
+        mBillingClient.consumeAsync(consumeParams, listener);
     }
 
     private void noAds(boolean adsStatus) {
@@ -1904,10 +1979,10 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
         DrawerBuilder();
     }
 
-    private boolean checkIfPurchaseIsValid(PurchaseInfo purchaseInfo) {
-        // TODO as of now we assume that all purchases are valid
-        return true;
-    }
+//    private boolean checkIfPurchaseIsValid(PurchaseInfo purchaseInfo) {
+//        // TODO as of now we assume that all purchases are valid
+//        return true;
+//    }
 
     private void handleLoadedItems() {
 //        mProgress.setVisibility(View.GONE);
@@ -1941,7 +2016,55 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 
         dialogButtonYes.setOnClickListener(v -> {
             dialog.cancel();
-            mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
+//            mBillingProcessor.purchase(MainActivity.this, CHANGE_YOUR_FATE);
+//            BillingActivity billingActivity = new BillingActivity();
+//            launchBilling("0");
+
+
+
+            mBillingClient.startConnection(new BillingClientStateListener() {
+
+                @Override
+                public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+
+                    if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                        // The BillingClient is ready. You can query purchases here.
+
+                        List<String> skuList = new ArrayList<>();
+                        skuList.add(CHANGE_YOUR_FATE);
+                        skuList.add(DISABLE_ADS);
+                        SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+                        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
+                        mBillingClient.querySkuDetailsAsync(params.build(),
+                                new SkuDetailsResponseListener() {
+                                    @Override
+                                    public void onSkuDetailsResponse(BillingResult billingResult,
+                                                                     List<SkuDetails> skuDetailsList) {
+                                        // Process the result.
+                                        // Retrieve a value for "skuDetails" by calling querySkuDetailsAsync().
+                                        BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                                                .setSkuDetails(skuDetailsList.get(0))
+                                                .build();
+                                        int responseCode = mBillingClient.launchBillingFlow(MainActivity.this, billingFlowParams).getResponseCode();
+
+                                        if (responseCode == 0) {
+                                            for (SkuDetails skuDetails : skuDetailsList) {
+                                                mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
+                                            }
+                                        }
+                                    }
+                                });
+                    }
+                }
+
+                @Override
+                public void onBillingServiceDisconnected() {
+                    // Try to restart the connection on the next request to Google Play by calling the startConnection() method.
+                    Toast.makeText(MainActivity.this, "Service Disconnected!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
 
             Bundle bundle = new Bundle();
 //            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "dialog_change_your_fate_yes");
@@ -2141,4 +2264,12 @@ public class MainActivity extends AppCompatActivity implements BillingProcessor.
 //            return view;
 //        }
 //    }
+
+
+    public void launchBilling(String skuId) {
+        BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                .setSkuDetails(mSkuDetailsMap.get(0))
+                .build();
+        mBillingClient.launchBillingFlow(this, billingFlowParams);
+    }
 }
