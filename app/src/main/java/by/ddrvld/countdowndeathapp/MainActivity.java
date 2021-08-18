@@ -928,7 +928,8 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                     startActivityForResult(signInIntent, RC_SIGN_IN);
                 }
                 else {
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+//                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ChatKitActivity.class);
                     startActivity(intent);
                 }
 //                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
