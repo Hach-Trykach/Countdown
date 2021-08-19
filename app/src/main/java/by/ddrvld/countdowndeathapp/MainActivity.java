@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
     private final int BTN_CHANGE_UR_FATE = 9;
     private final int BTN_DISABLE_ADS = 10;
     private final int BTN_CHAT = 11;
+    private final int BTN_CHAT_KIT = 12;
 
     public static long lastShareTime = 0;
 
@@ -913,6 +914,29 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                 return true;
             }
             else if(drawerItem.getIdentifier() == BTN_CHAT) {
+                if(user == null) {
+                    // Configure Google Sign In
+                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(R.string.default_web_client_id))
+                            .requestEmail()
+                            .requestProfile()
+                            .build();
+
+                    // Build a GoogleSignInClient with the options specified by gso.
+                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
+
+                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                    startActivityForResult(signInIntent, RC_SIGN_IN);
+                }
+                else {
+//                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    startActivity(intent);
+                }
+//                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
+                return true;
+            }
+            else if(drawerItem.getIdentifier() == BTN_CHAT_KIT) {
                 if(user == null) {
                     // Configure Google Sign In
                     GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -1815,6 +1839,12 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                 .withIcon(android.R.drawable.ic_dialog_email)
                 .withIdentifier(BTN_CHAT);
 
+        final PrimaryDrawerItem chatkitDrawerItem = new PrimaryDrawerItem()
+                .withName("ChatKit")
+                .withTextColorRes(R.color.white)
+                .withIcon(android.R.drawable.ic_dialog_email)
+                .withIdentifier(BTN_CHAT_KIT);
+
         PrimaryDrawerItem disableAdsDrawerItem;
         if(!noAds) {
             disableAdsDrawerItem = new PrimaryDrawerItem()
@@ -1844,6 +1874,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                 .addDrawerItems(disableAdsDrawerItem)
                 .addDrawerItems(shareDrawerItem)
                 .addDrawerItems(chatDrawerItem)
+                .addDrawerItems(chatkitDrawerItem)
                 //            .addStickyDrawerItems(initializeStickyDrawerItems())
                 .withOnDrawerItemClickListener(onClicksLis)
                 //            .withAccountHeader(accountHeader)

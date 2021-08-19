@@ -5,9 +5,9 @@ import com.stfalcon.chatkit.commons.models.IUser;
 public class Author implements IUser {
 
     /*...*/
-    String id;
-    String name;
-    String avatar;
+    String id = "ID";
+    String name = "NAME";
+    String avatar = "AVATAR";
 
     @Override
     public String getId() {

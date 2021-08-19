@@ -73,4 +73,3 @@ public class Message implements IMessage {
         return null;
     }
 }
-
