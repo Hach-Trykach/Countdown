@@ -105,7 +105,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import static android.content.ContentValues.TAG;
-import static by.ddrvld.countdowndeathapp.Update.GetWord;
+import static by.ddrvld.countdowndeathapp.UpdateWidget.GetWord;
 
 //import com.anjlab.android.iab.v3.BillingProcessor;
 //import com.anjlab.android.iab.v3.PurchaseInfo;
@@ -1033,7 +1033,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
 //            webView = findViewById(R.id.webView);
 //            webView.setWebViewClient(new MyWebViewClient());
 
-            date_of_death = getDateOfDeathFirstTime();
+            currentTime = getDateOfDeathFirstTime();
             saveTime();
             showMsg("getDateOfDeathFirstTime");
             updateValueInDatabase();
@@ -1402,6 +1402,13 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
         return getRandomLongInRange(1630000000L, 3400000000L);
     }
 
+    private void getDateOfDeathFirstTime2() {
+        date_of_death = getRandomLongInRange(1630000000L, 3400000000L);
+        if(date_of_death <= System.currentTimeMillis() + 1000) {
+            getDateOfDeathFirstTime();
+        }
+    }
+
     @Override
     public View makeView() {
         TextView textView = new TextView(this);
@@ -1675,7 +1682,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
             Intent intent = new Intent(this, Receiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (timeToNotifi * 1000), pendingIntent);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ((timeToNotifi - 1920) * 1000), pendingIntent);
 //            Snackbar.make(findViewById(android.R.id.content), "Alarm set in " + timeToNotifi + " seconds",Snackbar.LENGTH_LONG).show();
         }
         super.onPause();

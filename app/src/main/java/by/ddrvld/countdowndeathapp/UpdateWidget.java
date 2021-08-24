@@ -17,7 +17,7 @@ import java.util.Calendar;
 
 import static by.ddrvld.countdowndeathapp.MainActivity.date_of_death;
 
-public class Update extends AppWidgetProvider {
+public class UpdateWidget extends AppWidgetProvider {
 
     private static int currentWidgetId;
     private static RemoteViews remoteViews;
@@ -56,7 +56,7 @@ public class Update extends AppWidgetProvider {
         ComponentName watchWidget;
 
         remoteViews = new RemoteViews(context.getPackageName(), R.layout.appwidget_provider_layout);
-        watchWidget = new ComponentName(context, Update.class);
+        watchWidget = new ComponentName(context, UpdateWidget.class);
 
         //при клике на виджет в систему отсылается вот такой интент, описание метода ниже
         remoteViews.setOnClickPendingIntent(R.id.linear_layout, getPendingSelfIntent(context, SYNC_CLICKED));
@@ -76,7 +76,7 @@ public class Update extends AppWidgetProvider {
 //        DateFormat format = SimpleDateFormat.getTimeInstance(SimpleDateFormat.MEDIUM, Locale.getDefault());
 //        CharSequence text = format.format(new Date());
 
-        Intent intent = new Intent(context, Update.class);
+        Intent intent = new Intent(context, UpdateWidget.class);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, 0);
 
         remoteViews = new RemoteViews(context.getPackageName(), R.layout.appwidget_provider_layout);
@@ -125,7 +125,7 @@ public class Update extends AppWidgetProvider {
             ComponentName watchWidget;
 
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.appwidget_provider_layout);
-            watchWidget = new ComponentName(context, Update.class);
+            watchWidget = new ComponentName(context, UpdateWidget.class);
 
             remoteViews.setTextViewText(R.id.count, WAITING_MESSAGE);
 

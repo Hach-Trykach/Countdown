@@ -24,8 +24,8 @@ public class WidgetUpdateService  extends Service {
     private void updateInfoWidget()
     {//Обновление виджета
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(this.getApplicationContext().getPackageName(), Update.class.getName()));
-        Update.updateAppWidget(this.getApplicationContext(),appWidgetManager,ids[0]);
+        int[] ids = appWidgetManager.getAppWidgetIds(new ComponentName(this.getApplicationContext().getPackageName(), UpdateWidget.class.getName()));
+        UpdateWidget.updateAppWidget(this.getApplicationContext(),appWidgetManager,ids[0]);
     }
     @Override
     public IBinder onBind(Intent intent) {
