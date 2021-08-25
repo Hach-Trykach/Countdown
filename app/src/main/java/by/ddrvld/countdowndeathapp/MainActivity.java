@@ -1033,7 +1033,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
 //            webView = findViewById(R.id.webView);
 //            webView.setWebViewClient(new MyWebViewClient());
 
-            currentTime = getDateOfDeathFirstTime();
+            date_of_death = getDateOfDeathFirstTime();
             saveTime();
             showMsg("getDateOfDeathFirstTime");
             updateValueInDatabase();
