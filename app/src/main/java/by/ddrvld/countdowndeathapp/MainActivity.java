@@ -61,19 +61,16 @@ import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.play.core.review.ReviewInfo;
@@ -105,7 +102,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
-import static android.content.ContentValues.TAG;
 import static by.ddrvld.countdowndeathapp.UpdateWidget.GetWord;
 
 //import com.anjlab.android.iab.v3.BillingProcessor;
@@ -632,9 +628,8 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
         Bundle bundle = new Bundle();
         firebaseAnalytics.logEvent("clicks_on_date", bundle);
 
-        if (clicks_on_date >= 10) {
+        if (clicks_on_date >= 3) {
             clicks_on_date = 0;
-//            mBillingProcessor.consumePurchase(CHANGE_YOUR_FATE);
             showChangeYourFateDialog();
         }
     }
@@ -1143,58 +1138,67 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
         }
     }
 
+    private static AppOpenManager appOpenManager;
     private void createInterstitialAd() {
+        MobileAds.initialize(
+                this,
+                new OnInitializationCompleteListener() {
+                    @Override
+                    public void onInitializationComplete(InitializationStatus initializationStatus) {}
+                });
+    appOpenManager = new AppOpenManager(this);
+
         //Создаём межстраничное объявление
-        AdRequest adRequest = new AdRequest.Builder().build();
-
-        InterstitialAd.load(this,"ca-app-pub-7528412641056592/9979660478", adRequest,
-        new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                // The mInterstitialAd reference will be null until
-                // an ad is loaded.
-                mInterstitialAd = interstitialAd;
-                Log.i(TAG, "onAdLoaded");
-
-//                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
-//                    @Override
-//                    public void onAdDismissedFullScreenContent() {
-//                        // Called when fullscreen content is dismissed.
-//                        Log.d("TAG", "The ad was dismissed.");
-//                    }
+//        AdRequest adRequest = new AdRequest.Builder().build();
 //
-//                    @Override
-//                    public void onAdFailedToShowFullScreenContent(AdError adError) {
-//                        // Called when fullscreen content failed to show.
-//                        Log.d("TAG", "The ad failed to show.");
-//                        TimerToActivityDate();
-//                    }
+//        InterstitialAd.load(this,"ca-app-pub-7528412641056592/9979660478", adRequest,
+//        new InterstitialAdLoadCallback() {
+//            @Override
+//            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+//                // The mInterstitialAd reference will be null until
+//                // an ad is loaded.
+//                mInterstitialAd = interstitialAd;
+//                Log.i(TAG, "onAdLoaded");
 //
-//                    @Override
-//                    public void onAdShowedFullScreenContent() {
-//                        // Called when fullscreen content is shown.
-//                        // Make sure to set your reference to null so you don't
-//                        // show it a second time.
-//                        mInterstitialAd = null;
-//                        Log.d("TAG", "The ad was shown.");
-//                    }
-//                });
-
-                if (mInterstitialAd != null) {
-                    mInterstitialAd.show(MainActivity.this);
-                } else {
-                    Log.d("TAG", "The interstitial ad wasn't ready yet.");
-                }
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                // Handle the error
-                Log.i(TAG, loadAdError.getMessage());
-                mInterstitialAd = null;
-                TimerToActivityDate();
-            }
-        });
+////                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback(){
+////                    @Override
+////                    public void onAdDismissedFullScreenContent() {
+////                        // Called when fullscreen content is dismissed.
+////                        Log.d("TAG", "The ad was dismissed.");
+////                    }
+////
+////                    @Override
+////                    public void onAdFailedToShowFullScreenContent(AdError adError) {
+////                        // Called when fullscreen content failed to show.
+////                        Log.d("TAG", "The ad failed to show.");
+////                        TimerToActivityDate();
+////                    }
+////
+////                    @Override
+////                    public void onAdShowedFullScreenContent() {
+////                        // Called when fullscreen content is shown.
+////                        // Make sure to set your reference to null so you don't
+////                        // show it a second time.
+////                        mInterstitialAd = null;
+////                        Log.d("TAG", "The ad was shown.");
+////                    }
+////                });
+//
+//                if (mInterstitialAd != null) {
+//                    mInterstitialAd.show(MainActivity.this);
+//                } else {
+//                    Log.d("TAG", "The interstitial ad wasn't ready yet.");
+//                }
+//            }
+//
+//            @Override
+//            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+//                // Handle the error
+//                Log.i(TAG, loadAdError.getMessage());
+//                mInterstitialAd = null;
+//                TimerToActivityDate();
+//            }
+//        });
 
 //        interstitial = new InterstitialAd(MainActivity.this);
 //        interstitial.setAdUnitId("ca-app-pub-7528412641056592/9979660478");
