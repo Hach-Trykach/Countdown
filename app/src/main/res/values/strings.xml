@@ -33,7 +33,7 @@
     <string name="text_yrs2">YRS</string>
     <string name="text_yrs1">YRS</string>
 
-    <string name="sign_out">Sign Out</string>
+    <string name="sign_out">Sign Out of your account</string>
     <string name="type_message">Type message…</string>
     <string name="change_your_fate">Change your fate</string>
     <string name="new_message_after">New message after</string>
@@ -43,6 +43,7 @@
     <string name="also_disable_ads">Also disable ads…</string>
     <string name="disable_ads">Disable ads</string>
     <string name="general_chat">General chat</string>
+    <string name="chat">Chat</string>
     <string name="share_date_of_death">Share date of death</string>
     <string name="chat_language">Chat language</string>
     <string name="one_message_deleted">Message deleted</string>

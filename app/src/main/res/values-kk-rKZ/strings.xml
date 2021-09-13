@@ -68,7 +68,7 @@
     <string name="delete">Delete message</string>
     <string name="edit">Edit message</string>
 
-    <string name="sign_out">шығу</string>
+    <string name="sign_out">Есептік жазбаңыздан шығыңыз</string>
     <string name="type_message">Хабарыңызды енгізіңіз…</string>
     <string name="change_your_fate">Тағдырыңызды өзгертіңіз</string>
     <string name="new_message_after">жаңа хабарлама</string>
@@ -78,4 +78,5 @@
     <string name="also_disable_ads">Сонымен қатар жарнамаларды өшіру…</string>
     <string name="disable_ads">Жарнамаларды өшіру</string>
     <string name="undo">Бас тарту</string>
+    <string name="chat">Чат</string>
 </resources>

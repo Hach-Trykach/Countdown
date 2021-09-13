@@ -73,6 +73,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.play.core.review.ReviewInfo;
@@ -158,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
     private final int BTN_CHANGE_UR_FATE = 9;
     private final int BTN_DISABLE_ADS = 10;
     private final int BTN_CHAT = 11;
-    private final int BTN_CHAT_KIT = 12;
+    private final int BTN_LEAVE_FROM_ACCOUNT = 12;
 
     public static long lastShareTime = 0;
 
@@ -212,6 +213,17 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         myReference = firebaseDatabase.getReference();
+
+
+//                 Удаление записи из БД
+////////////////////////////////////////////////////
+//        myReference
+//                .child("users")
+//                .child(getUniqueKey())
+//                .removeValue();
+////////////////////////////////////////////////////
+
+
 
 //        AudioAttributes attributes = new AudioAttributes.Builder()
 //                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -391,8 +403,6 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
 
 //        UnityAds.initialize (this, unityGameID, this, testMode);
 
-
-
         mBillingClient = BillingClient.newBuilder(this).enablePendingPurchases().setListener(new PurchasesUpdatedListener() {
             @Override
             public void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
@@ -402,14 +412,14 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                     }
                     // Perform your Successful Purchase Task here
 
-                    Snackbar.make(findViewById(android.R.id.content), "Great!! Purchase Flow Successful! :)", Snackbar.LENGTH_LONG).show();
+//                    Snackbar.make(findViewById(android.R.id.content), "Great!! Purchase Flow Successful! :)", Snackbar.LENGTH_LONG).show();
 //                    dismiss();
                 } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
                     // Handle an error caused by a user cancelling the purchase flow.
-                    Snackbar.make(findViewById(android.R.id.content), "User Cancelled the Purchase Flow!", Snackbar.LENGTH_LONG).show();
+//                    Snackbar.make(findViewById(android.R.id.content), "User Cancelled the Purchase Flow!", Snackbar.LENGTH_LONG).show();
                 } else {
                     // Handle any other error codes.
-                    Snackbar.make(findViewById(android.R.id.content), "Error! Purchase Task was not performed!", Snackbar.LENGTH_LONG).show();
+//                    Snackbar.make(findViewById(android.R.id.content), "Error! Purchase Task was not performed!", Snackbar.LENGTH_LONG).show();
                 }
             }
         }).build();
@@ -911,6 +921,47 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                 Bundle bundle = new Bundle();
                 firebaseAnalytics.logEvent("click_on_disable_ads_button", bundle);
 //                mBillingProcessor.purchase(MainActivity.this, DISABLE_ADS);
+
+                mBillingClient.startConnection(new BillingClientStateListener() {
+
+                    @Override
+                    public void onBillingSetupFinished(@NonNull BillingResult billingResult) {
+
+                        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                            // The BillingClient is ready. You can query purchases here.
+
+                            List<String> skuList = new ArrayList<>();
+                            skuList.add(DISABLE_ADS);
+                            SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+                            params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
+                            mBillingClient.querySkuDetailsAsync(params.build(),
+                                    new SkuDetailsResponseListener() {
+                                        @Override
+                                        public void onSkuDetailsResponse(BillingResult billingResult,
+                                                                         List<SkuDetails> skuDetailsList) {
+                                            // Process the result.
+                                            // Retrieve a value for "skuDetails" by calling querySkuDetailsAsync().
+                                            BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                                                    .setSkuDetails(skuDetailsList.get(0))
+                                                    .build();
+                                            int responseCode = mBillingClient.launchBillingFlow(MainActivity.this, billingFlowParams).getResponseCode();
+
+                                            if (responseCode == 0) {
+                                                for (SkuDetails skuDetails : skuDetailsList) {
+                                                    mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
+                                                }
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onBillingServiceDisconnected() {
+                        // Try to restart the connection on the next request to Google Play by calling the startConnection() method.
+                        Toast.makeText(MainActivity.this, "Service Disconnected!", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 return true;
             }
             else if(drawerItem.getIdentifier() == BTN_CHAT) {
@@ -929,34 +980,17 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                     startActivityForResult(signInIntent, RC_SIGN_IN);
                 }
                 else {
-//                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                     Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                     startActivity(intent);
                 }
 //                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
                 return true;
             }
-            else if(drawerItem.getIdentifier() == BTN_CHAT_KIT) {
-                if(user == null) {
-                    // Configure Google Sign In
-                    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(getString(R.string.default_web_client_id))
-                            .requestEmail()
-                            .requestProfile()
-                            .build();
-
-                    // Build a GoogleSignInClient with the options specified by gso.
-                    mGoogleSignInClient = GoogleSignIn.getClient(getBaseContext(), gso);
-
-                    Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                    startActivityForResult(signInIntent, RC_SIGN_IN);
+            else if(drawerItem.getIdentifier() == BTN_LEAVE_FROM_ACCOUNT) {
+                if(user != null) {
+                    mAuth.signOut();
+                    DrawerBuilder(); // не срабатывает
                 }
-                else {
-//                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    startActivity(intent);
-                }
-//                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
                 return true;
             }
             return false;
@@ -1841,10 +1875,19 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                 .withIdentifier(BTN_SHARE);
 
         final PrimaryDrawerItem chatDrawerItem = new PrimaryDrawerItem()
-                .withName("Chat")
+                .withName(R.string.chat)
                 .withTextColorRes(R.color.white)
                 .withIcon(android.R.drawable.ic_dialog_email)
                 .withIdentifier(BTN_CHAT);
+
+        PrimaryDrawerItem leaveAccountDrawerItem = null;
+        if(user != null) {
+            leaveAccountDrawerItem = new PrimaryDrawerItem()
+                    .withName(R.string.sign_out)
+                    .withTextColorRes(R.color.white)
+                    .withIcon(android.R.drawable.ic_menu_close_clear_cancel)
+                    .withIdentifier(BTN_LEAVE_FROM_ACCOUNT);
+        }
 
         PrimaryDrawerItem disableAdsDrawerItem;
         if(!noAds) {
@@ -1875,6 +1918,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                 .addDrawerItems(disableAdsDrawerItem)
                 .addDrawerItems(shareDrawerItem)
                 .addDrawerItems(chatDrawerItem)
+                .addDrawerItems(leaveAccountDrawerItem)
                 //            .addStickyDrawerItems(initializeStickyDrawerItems())
                 .withOnDrawerItemClickListener(onClicksLis)
                 //            .withAccountHeader(accountHeader)
@@ -2052,8 +2096,6 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
 //            BillingActivity billingActivity = new BillingActivity();
 //            launchBilling("0");
 
-
-
             mBillingClient.startConnection(new BillingClientStateListener() {
 
                 @Override
@@ -2064,7 +2106,6 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
 
                         List<String> skuList = new ArrayList<>();
                         skuList.add(CHANGE_YOUR_FATE);
-                        skuList.add(DISABLE_ADS);
                         SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
                         params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
                         mBillingClient.querySkuDetailsAsync(params.build(),

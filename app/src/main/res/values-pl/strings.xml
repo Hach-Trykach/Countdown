@@ -68,7 +68,7 @@
     <string name="delete">Delete message</string>
     <string name="edit">Edit message</string>
 
-    <string name="sign_out">Wyloguj się</string>
+    <string name="sign_out">Wyloguj się ze swojego konta</string>
     <string name="type_message">Wpisz swoją wiadomość…</string>
     <string name="change_your_fate">Zmień swoje przeznaczenie</string>
     <string name="new_message_after">Nowa wiadomość w</string>
@@ -78,4 +78,5 @@
     <string name="also_disable_ads">A także wyłącz reklamy…</string>
     <string name="disable_ads">Wyłącz reklamy</string>
     <string name="undo">Anuluj</string>
+    <string name="chat">Czat</string>
 </resources>

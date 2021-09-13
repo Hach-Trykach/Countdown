@@ -68,7 +68,7 @@
     <string name="delete">Delete message</string>
     <string name="edit">Edit message</string>
 
-    <string name="sign_out">Вийти</string>
+    <string name="sign_out">Вийти з облікового запису</string>
     <string name="type_message">Введіть повідомлення…</string>
     <string name="change_your_fate">Зміни свою долю</string>
     <string name="new_message_after">Нове повідомлення через</string>
@@ -78,4 +78,5 @@
     <string name="also_disable_ads">А також вимкнути рекламу…</string>
     <string name="disable_ads">Вимкнути рекламу</string>
     <string name="undo">Відміна</string>
+    <string name="chat">Чат</string>
 </resources>
