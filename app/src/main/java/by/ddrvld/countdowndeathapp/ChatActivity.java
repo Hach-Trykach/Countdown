@@ -207,6 +207,11 @@ public class ChatActivity extends AppCompatActivity {
 //                selectedItem = i;
 //                selectedListItem = (Message) adapterView.getItemAtPosition(i);
 //            }
+            if(deleteMessageTimer != null) {
+                savedForDeletingListItem = selectedListItem;
+                deleteMessage(savedForDeletingListItem);
+                deleteMessageTimer = null;
+            }
             selectedItem = i;
             selectedListItem = (Message) adapterView.getItemAtPosition(i);
 
@@ -277,7 +282,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
                 }
                 runOnUiThread(() -> {
-                    deleteMessage(savedForDeletingListItem);
+                    deleteMessage(selectedListItem);
                     deleteMessageTimer = null;
                 });
             }
@@ -286,11 +291,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void deleteOneMessage() {
-        if(deleteMessageTimer != null) {
-            savedForDeletingListItem = selectedListItem;
-            deleteMessage(savedForDeletingListItem);
-            deleteMessageTimer = null;
-        }
         if(selectedItem != -1) {
             selectedListItem = (Message) listOfMessages.getItemAtPosition(selectedItem);
             Timer();
