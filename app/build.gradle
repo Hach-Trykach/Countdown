@@ -58,7 +58,7 @@ dependencies {
 
     implementation 'com.googlecode.json-simple:json-simple:1.1'
 
-    implementation 'com.github.stfalcon-studio:Chatkit:0.4.1'
+//    implementation 'com.github.stfalcon-studio:Chatkit:0.4.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

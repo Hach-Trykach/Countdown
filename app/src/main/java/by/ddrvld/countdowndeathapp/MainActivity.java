@@ -953,7 +953,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                 }
                 else {
 //                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                    Intent intent = new Intent(MainActivity.this, ChatKitActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                     startActivity(intent);
                 }
 //                Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.coming_soon), Snackbar.LENGTH_SHORT).show();
@@ -1846,12 +1846,6 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                 .withIcon(android.R.drawable.ic_dialog_email)
                 .withIdentifier(BTN_CHAT);
 
-        final PrimaryDrawerItem chatkitDrawerItem = new PrimaryDrawerItem()
-                .withName("ChatKit")
-                .withTextColorRes(R.color.white)
-                .withIcon(android.R.drawable.ic_dialog_email)
-                .withIdentifier(BTN_CHAT_KIT);
-
         PrimaryDrawerItem disableAdsDrawerItem;
         if(!noAds) {
             disableAdsDrawerItem = new PrimaryDrawerItem()
@@ -1881,7 +1875,6 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
                 .addDrawerItems(disableAdsDrawerItem)
                 .addDrawerItems(shareDrawerItem)
                 .addDrawerItems(chatDrawerItem)
-                .addDrawerItems(chatkitDrawerItem)
                 //            .addStickyDrawerItems(initializeStickyDrawerItems())
                 .withOnDrawerItemClickListener(onClicksLis)
                 //            .withAccountHeader(accountHeader)
