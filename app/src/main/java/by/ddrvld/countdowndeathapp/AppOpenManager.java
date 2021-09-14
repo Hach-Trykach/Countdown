@@ -5,14 +5,21 @@ import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
+
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.appopen.AppOpenAd;
 
+import static androidx.lifecycle.Lifecycle.Event.ON_START;
+import static by.ddrvld.countdowndeathapp.MainActivity.noAds;
+
 /** Prefetches App Open Ads. */
-public class AppOpenManager implements Application.ActivityLifecycleCallbacks {
+public class AppOpenManager implements LifecycleObserver, Application.ActivityLifecycleCallbacks {
     private static final String LOG_TAG = "AppOpenManager";
     private static final String AD_UNIT_ID = "ca-app-pub-7528412641056592/1912216116";
     private AppOpenAd appOpenAd = null;
@@ -28,15 +35,16 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks {
     public AppOpenManager(MainActivity myApplication) {
         this.myApplication = myApplication;
         this.myApplication.registerActivityLifecycleCallbacks(this);
-//        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
 
-//    /** LifecycleObserver methods */
-//    @OnLifecycleEvent(ON_START)
-//    public void onStart() {
-//        showAdIfAvailable();
-//        Log.d(LOG_TAG, "onStart");
-//    }
+    /** LifecycleObserver methods */
+    @OnLifecycleEvent(ON_START)
+    public void onStart() {
+        if(!noAds)
+            showAdIfAvailable();
+        Log.d(LOG_TAG, "onStart");
+    }
 
     /** Request an ad */
     public void fetchAd() {
@@ -45,33 +53,29 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks {
             return;
         }
 
-        loadCallback =
-                new AppOpenAd.AppOpenAdLoadCallback() {
-                    /**
-                     * Called when an app open ad has loaded.
-                     *
-                     * @param ad the loaded app open ad.
-                     */
-                    @Override
-                    public void onAdLoaded(AppOpenAd ad) {
-                        AppOpenManager.this.appOpenAd = ad;
-                    }
+        loadCallback = new AppOpenAd.AppOpenAdLoadCallback() {
+            /**
+             * Called when an app open ad has loaded.
+             *
+             * @param ad the loaded app open ad.
+             */
+            @Override
+            public void onAdLoaded(AppOpenAd ad) {
+                AppOpenManager.this.appOpenAd = ad;
+            }
 
-                    /**
-                     * Called when an app open ad has failed to load.
-                     *
-                     * @param loadAdError the error.
-                     */
-                    @Override
-                    public void onAdFailedToLoad(LoadAdError loadAdError) {
-                        // Handle the error.
-                    }
-
-                };
+            /**
+             * Called when an app open ad has failed to load.
+             *
+             * @param loadAdError the error.
+             */
+            @Override
+            public void onAdFailedToLoad(LoadAdError loadAdError) {
+                // Handle the error.
+            }
+        };
         AdRequest request = getAdRequest();
-        AppOpenAd.load(
-                myApplication, AD_UNIT_ID, request,
-                AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
+        AppOpenAd.load(myApplication, AD_UNIT_ID, request, AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
     }
 
     /** Creates and returns ad request. */

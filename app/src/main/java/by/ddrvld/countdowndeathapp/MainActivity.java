@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
     private final static String DISABLE_ADS = "disable_ads";
     private final static String GPLAY_LICENSE = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlh3IXfvwhrH43ZO3anu7x7mbf3oT9JqAOD+3bTKocpYtvBexKwCiKhv9CrhAkZNaY48sfM80PtnVFAlqljPAcj9UthtHR94YCOSWL/F1SJB8FWxGa94d/JHc4ivuOLw0aNkoh6EdJX+0MH61FFI444bwmMYSKEjZLCkVcoddxq0CMdFcZTb3j4UsWhpgf2OMDLvEPn+qKqYVtrdKnoMd/vK9RTcC6iHvNNssAtBbQUEiA2SPA45shVgxK/jfxshNt96/jzhQUyvGiwYgwOVWrd6gXqkj5oiafzDGZkc6QTknMU2fYovy5FI1h8rKj3PfXaxR1sG5l+CavTj2s1F+QwIDAQAB";
 
+    private static AppOpenManager appOpenManager;
 
 //    public MainActivity() {
 //    }
@@ -209,17 +210,15 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         firebaseDatabase = FirebaseDatabase.getInstance();
         myReference = firebaseDatabase.getReference();
-
+        appOpenManager = new AppOpenManager(this);
 
 //                 Удаление записи из БД
 ////////////////////////////////////////////////////
-//        myReference
-//                .child("users")
-//                .child(getUniqueKey())
-//                .removeValue();
+        myReference
+                .child("users")
+                .child(getUniqueKey())
+                .removeValue();
 ////////////////////////////////////////////////////
-
-
 
 //        AudioAttributes attributes = new AudioAttributes.Builder()
 //                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
@@ -1062,7 +1061,8 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
 //            webView = findViewById(R.id.webView);
 //            webView.setWebViewClient(new MyWebViewClient());
 
-            date_of_death = getDateOfDeathFirstTime();
+//            date_of_death = getDateOfDeathFirstTime();
+            getDateOfDeathFirstTime();
             saveTime();
             showMsg("getDateOfDeathFirstTime");
             updateValueInDatabase();
@@ -1138,15 +1138,8 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
         }
     }
 
-    private static AppOpenManager appOpenManager;
     private void createInterstitialAd() {
-        MobileAds.initialize(
-                this,
-                new OnInitializationCompleteListener() {
-                    @Override
-                    public void onInitializationComplete(InitializationStatus initializationStatus) {}
-                });
-    appOpenManager = new AppOpenManager(this);
+//        appOpenManager.showAdIfAvailable();
 
         //Создаём межстраничное объявление
 //        AdRequest adRequest = new AdRequest.Builder().build();
@@ -1199,7 +1192,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
 //                TimerToActivityDate();
 //            }
 //        });
-
+//
 //        interstitial = new InterstitialAd(MainActivity.this);
 //        interstitial.setAdUnitId("ca-app-pub-7528412641056592/9979660478");
 //        AdRequest adRequesti = new AdRequest.Builder()
@@ -1436,13 +1429,13 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
         return Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-    private long getDateOfDeathFirstTime() {
-        return getRandomLongInRange(1630000000L, 3400000000L);
-    }
+//    private long getDateOfDeathFirstTime() {
+//        return getRandomLongInRange(1630000000L, 3400000000L);
+//    }
 
-    private void getDateOfDeathFirstTime2() {
+    private void getDateOfDeathFirstTime() {
         date_of_death = getRandomLongInRange(1630000000L, 3400000000L);
-        if(date_of_death <= System.currentTimeMillis() + 1000) {
+        if(date_of_death <= System.currentTimeMillis()) {
             getDateOfDeathFirstTime();
         }
     }
