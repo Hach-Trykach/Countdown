@@ -44,14 +44,14 @@ public class BillingActivity extends AppCompatActivity {
 //                    }
                     // Perform your Successful Purchase Task here
 
-                    Snackbar.make(findViewById(android.R.id.content), "Great!! Purchase Flow Successful! :)", Snackbar.LENGTH_LONG).show();
+//                    Snackbar.make(findViewById(android.R.id.content), "Great!! Purchase Flow Successful! :)", Snackbar.LENGTH_LONG).show();
 //                    dismiss();
                 } else if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.USER_CANCELED) {
                     // Handle an error caused by a user cancelling the purchase flow.
-                    Snackbar.make(findViewById(android.R.id.content), "User Cancelled the Purchase Flow!", Snackbar.LENGTH_LONG).show();
+//                    Snackbar.make(findViewById(android.R.id.content), "User Cancelled the Purchase Flow!", Snackbar.LENGTH_LONG).show();
                 } else {
                     // Handle any other error codes.
-                    Snackbar.make(findViewById(android.R.id.content), "Error! Purchase Task was not performed!", Snackbar.LENGTH_LONG).show();
+//                    Snackbar.make(findViewById(android.R.id.content), "Error! Purchase Task was not performed!", Snackbar.LENGTH_LONG).show();
                 }
             }
         }).build();

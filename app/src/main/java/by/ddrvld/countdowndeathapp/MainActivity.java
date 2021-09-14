@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -38,6 +39,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.RemoteViews;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +49,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -214,10 +217,10 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
 
 //                 Удаление записи из БД
 ////////////////////////////////////////////////////
-        myReference
-                .child("users")
-                .child(getUniqueKey())
-                .removeValue();
+//        myReference
+//                .child("users")
+//                .child(getUniqueKey())
+//                .removeValue();
 ////////////////////////////////////////////////////
 
 //        AudioAttributes attributes = new AudioAttributes.Builder()
@@ -627,6 +630,20 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
         Bundle bundle = new Bundle();
         firebaseAnalytics.logEvent("clicks_on_date", bundle);
 
+//////////////////////////////////////////////////////////
+        long timeToNotifi, yearsNow, daysNow, hoursNow, minsNow;
+        yearsNow = years * 31536000;
+        daysNow = days * 86400;
+        hoursNow = hours * 3600;
+        minsNow = mins * 60;
+        timeToNotifi = yearsNow + daysNow + hoursNow + minsNow;
+
+        Intent intent = new Intent(this, Receiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(), 234324243, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + ((timeToNotifi - 1920) * 1000), pendingIntent);
+//////////////////////////////////////////////////////////
+
         if (clicks_on_date >= 3) {
             clicks_on_date = 0;
             showChangeYourFateDialog();
@@ -807,6 +824,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
 //    }
 
     private final Drawer.OnDrawerItemClickListener onClicksLis = new Drawer.OnDrawerItemClickListener() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
             if(drawerItem.getIdentifier() == BTN_COLOR_MATCH)
@@ -1139,7 +1157,7 @@ public class MainActivity extends AppCompatActivity implements TextSwitcher.View
     }
 
     private void createInterstitialAd() {
-//        appOpenManager.showAdIfAvailable();
+        appOpenManager.showAdIfAvailable();
 
         //Создаём межстраничное объявление
 //        AdRequest adRequest = new AdRequest.Builder().build();
